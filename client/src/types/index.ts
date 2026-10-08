@@ -366,3 +366,49 @@ export interface FeedbackSummaryDto {
     byReasonType: Record<string, { count: number; averageRating: number }>;
   };
 }
+
+// ==========================================
+// STAGE 12 PRODUCT EXPERIENCE & LIBRARY TYPES
+// ==========================================
+
+export interface PlaylistSummaryDto {
+  id: string;
+  userId: string;
+  name: string;
+  description?: string;
+  songCount: number;
+  coverSongId?: string;
+  coverArtworkUrl?: string;
+  isPublic: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PlaylistDetailDto extends PlaylistSummaryDto {
+  songs: TrackItem[];
+}
+
+export interface CreatePlaylistInput {
+  name: string;
+  description?: string;
+  isPublic?: boolean;
+}
+
+export interface UpdatePlaylistInput {
+  name?: string;
+  description?: string;
+  isPublic?: boolean;
+}
+
+export interface LibrarySummaryDto {
+  likedCount: number;
+  playlistsCount: number;
+  recentlyPlayedCount: number;
+}
+
+export interface HistoryItem {
+  song: TrackItem;
+  playedAt: string;
+  eventType: string;
+  completionPercent?: number;
+}

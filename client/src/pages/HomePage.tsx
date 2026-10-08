@@ -1,8 +1,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, ArrowRight, SlidersHorizontal } from 'lucide-react';
+import {
+  Sparkles,
+  ArrowRight,
+  SlidersHorizontal,
+  Clock,
+  TrendingUp,
+  LogIn,
+} from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer.js';
-
 import { Badge } from '../components/ui/Badge.js';
 import { Card } from '../components/ui/Card.js';
 import { Button } from '../components/ui/Button.js';
@@ -11,25 +17,21 @@ import { SongCard } from '../components/music/SongCard.js';
 import { RecommendationSection } from '../components/recommendation/RecommendationSection.js';
 import { RecommendationCard } from '../components/recommendation/RecommendationCard.js';
 import { MoodSelector } from '../components/recommendation/MoodSelector.js';
-import { useHealthCheck } from '../hooks/useHealthCheck.js';
 import { useAuth } from '../contexts/AuthContext.js';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext.js';
 import { recommendationService } from '../services/recommendationService.js';
 import { analyticsService } from '../services/analyticsService.js';
+import { libraryService } from '../services/libraryService.js';
 import { fetchPopularTracks } from '../services/musicService.js';
-import { RecommendationItemDto } from '../types/index.js';
-import {
-  MOCK_RECENT_TRACKS,
-  MOCK_VIBE_CHIPS,
-} from '../constants/fixtures.js';
+import { RecommendationItemDto, TrackItem, HistoryItem } from '../types/index.js';
+import { MOCK_VIBE_CHIPS } from '../constants/fixtures.js';
 
 const MOOD_STORAGE_KEY = 'tunesense_active_mood';
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
-  const { health, loading: healthLoading, error: healthError } = useHealthCheck();
   const { isAuthenticated, user } = useAuth();
-  const { playTrack, currentTrack, isPlaying } = useAudioPlayer();
+  const { setQueue, currentTrack, isPlaying } = useAudioPlayer();
 
   const [recommendations, setRecommendations] = useState<RecommendationItemDto[]>([]);
   const [recLoading, setRecLoading] = useState<boolean>(true);
@@ -38,6 +40,21 @@ export const HomePage: React.FC = () => {
   const [activeMood, setActiveMood] = useState<string | null>(() => {
     return sessionStorage.getItem(MOOD_STORAGE_KEY) || null;
   });
+
+  // Real recent history and popular tracks
+  const [recentHistory, setRecentHistory] = useState<HistoryItem[]>([]);
+  const [popularTracks, setPopularTracks] = useState<TrackItem[]>([]);
+
+  // Dynamic greeting based on time of day
+  const getGreeting = (): string => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return 'Good morning';
+    if (hour >= 12 && hour < 17) return 'Good afternoon';
+    if (hour >= 17 && hour < 22) return 'Good evening';
+    return 'Good night';
+  };
+
+  const firstName = user?.name ? user.name.split(' ')[0] : 'Listener';
 
   const loadRecommendations = useCallback(async (mood?: string | null) => {
     setRecLoading(true);
@@ -64,7 +81,7 @@ export const HomePage: React.FC = () => {
           });
         }
       } catch (err) {
-        console.warn('[HomePage] Personalized recommendation failed, falling back to popular:', err);
+        console.warn('[HomePage] Personalized recommendation fallback:', err);
         try {
           const pop = await fetchPopularTracks(10);
           setRecommendations(
@@ -85,7 +102,7 @@ export const HomePage: React.FC = () => {
         setRecLoading(false);
       }
     } else {
-      // Guest user: catalogue popular tracks only (non-personalized)
+      // Guest user: catalogue popular tracks
       try {
         const pop = await fetchPopularTracks(10);
         setRecommendations(
@@ -108,9 +125,23 @@ export const HomePage: React.FC = () => {
     }
   }, [isAuthenticated]);
 
+  const loadExtraSections = useCallback(async () => {
+    try {
+      if (isAuthenticated) {
+        const history = await libraryService.getHistory(5);
+        setRecentHistory(history);
+      }
+      const pop = await fetchPopularTracks(6);
+      setPopularTracks(pop.tracks);
+    } catch (err) {
+      console.warn('[HomePage] Error loading extra sections:', err);
+    }
+  }, [isAuthenticated]);
+
   useEffect(() => {
     loadRecommendations(activeMood);
-  }, [isAuthenticated, activeMood, loadRecommendations]);
+    loadExtraSections();
+  }, [isAuthenticated, activeMood, loadRecommendations, loadExtraSections]);
 
   const handleSelectMood = (moodId: string) => {
     const nextMood = activeMood === moodId ? null : moodId;
@@ -129,45 +160,43 @@ export const HomePage: React.FC = () => {
 
   return (
     <PageContainer>
-      {/* Top Banner: Stage 8 Status & Health */}
+      {/* Hero Greeting & Dashboard Header */}
       <Card className="mb-5 bg-gradient-to-br from-surface to-bg-elevated border-brand-500/20 shadow-glow">
         <div className="flex items-center justify-between mb-2">
           <Badge variant="brand" size="sm">
-            Stage 8 • Mood-Aware Personalization
+            <Sparkles className="w-3 h-3 mr-1" />
+            TuneSense Intelligence
           </Badge>
-          <div className="flex items-center gap-1.5 text-xs">
-            {healthLoading ? (
-              <span className="flex items-center gap-1 text-content-muted">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-                Checking API...
-              </span>
-            ) : healthError ? (
-              <span className="flex items-center gap-1 text-vibe-rose">
-                <span className="w-2 h-2 rounded-full bg-vibe-rose" />
-                API Offline ({healthError})
-              </span>
-            ) : (
-              <span className="flex items-center gap-1 text-vibe-emerald font-medium">
-                <span className="w-2 h-2 rounded-full bg-vibe-emerald" />
-                {health?.service} active
-              </span>
-            )}
-          </div>
+          {isAuthenticated ? (
+            <span className="text-[11px] text-brand-400 font-medium capitalize">
+              {activeMood ? `Mood: ${activeMood}` : 'Personalized'}
+            </span>
+          ) : (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/login')}
+              leftIcon={<LogIn className="w-3.5 h-3.5" />}
+              className="text-xs text-brand-400 -mr-2"
+            >
+              Sign In
+            </Button>
+          )}
         </div>
 
-        <h2 className="text-base font-bold text-content-primary">
-          {isAuthenticated ? `Welcome back, ${user?.name || 'Listener'}` : 'TuneSense Music Discovery'}
-        </h2>
+        <h1 className="text-xl sm:text-2xl font-bold text-content-primary">
+          {isAuthenticated ? `${getGreeting()}, ${firstName}` : 'Discover Your Next Favorite Track'}
+        </h1>
 
-        <p className="text-xs text-content-secondary mt-1">
+        <p className="text-xs text-content-secondary mt-1 max-w-lg leading-relaxed">
           {isAuthenticated
-            ? `Dynamic hybrid recommendation active (${activeStrategy})${activeMood ? ` • Mood: ${activeMood}` : ''}. Explicit taste & acoustic vibe scoring.`
-            : 'Explore catalogue popularity and independent music. Sign in to unlock personalized taste intelligence.'}
+            ? `TuneSense adapts to your listening habits, acoustic preferences, and real-time vibe.`
+            : 'Explore trending independent music with explainable context and acoustic intelligence.'}
         </p>
 
         {isAuthenticated && (
           <div className="mt-3 pt-3 border-t border-surface-border/60 flex items-center justify-between">
-            <span className="text-[11px] text-content-muted">Customize preferences & exploration level</span>
+            <span className="text-[11px] text-content-muted">Fine-tune your acoustic taste & exploration</span>
             <Button
               variant="ghost"
               size="sm"
@@ -185,13 +214,13 @@ export const HomePage: React.FC = () => {
       <div className="mb-4">
         <Input
           isSearch
-          placeholder="Search songs, artists, vibes..."
+          placeholder="Search songs, artists, genres..."
           onClick={() => navigate('/search')}
           readOnly
         />
       </div>
 
-      {/* Mood Selector (Stage 8) - Active for authenticated listeners */}
+      {/* Mood Selector (Interactive for authenticated listeners) */}
       {isAuthenticated && (
         <MoodSelector
           activeMood={activeMood}
@@ -228,8 +257,8 @@ export const HomePage: React.FC = () => {
           isAuthenticated
             ? activeMood
               ? `Because you're feeling ${activeMood} • Explainable hybrid discovery`
-              : 'Personalized hybrid discovery with explainable recommendations'
-            : 'Popular independent tracks from the catalogue'
+              : 'Personalized hybrid recommendations based on your listening'
+            : 'Popular independent tracks across the catalogue'
         }
         badge={
           isAuthenticated
@@ -253,7 +282,8 @@ export const HomePage: React.FC = () => {
             {recommendations.map((rec, index) => {
               const isActive = currentTrack?.id === rec.song.id;
               const handleRecPlay = () => {
-                playTrack(rec.song, {
+                const recSongs = recommendations.map((r) => r.song);
+                setQueue(recSongs, index, {
                   recommendationRequestId: recRequestId || undefined,
                   recommendationStrategy: activeStrategy,
                   recommendationPosition: index + 1,
@@ -278,42 +308,82 @@ export const HomePage: React.FC = () => {
         )}
       </RecommendationSection>
 
-      {/* Quick Recents / Listening Foundation */}
-      <div className="mt-4 mb-6">
-        <div className="flex items-center justify-between mb-3 px-0.5">
-          <h3 className="text-base font-bold text-content-primary">Recent Discovery</h3>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/library')}
-            rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-          >
-            See all
-          </Button>
-        </div>
+      {/* Recently Played Section (if user has history) */}
+      {isAuthenticated && recentHistory.length > 0 && (
+        <div className="mt-6 mb-6">
+          <div className="flex items-center justify-between mb-3 px-0.5">
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-4 h-4 text-brand-400" />
+              <h3 className="text-base font-bold text-content-primary">Recently Played</h3>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/library')}
+              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+              className="text-xs text-content-secondary"
+            >
+              See all
+            </Button>
+          </div>
 
-        <div className="flex flex-col gap-2">
-          {MOCK_RECENT_TRACKS.map((track) => (
-            <SongCard
-              key={track.id}
-              track={track}
-              onClick={() => navigate(`/song/${track.id}`)}
-              onOptionsClick={() => {}}
-            />
-          ))}
+          <div className="flex flex-col gap-2">
+            {recentHistory.map((item, idx) => {
+              const isActive = currentTrack?.id === item.song.id;
+              return (
+                <SongCard
+                  key={`${item.song.id}-${idx}`}
+                  track={item.song}
+                  isActive={isActive}
+                  isPlaying={isActive && isPlaying}
+                  onPlay={() => {
+                    const tracks = recentHistory.map((h) => h.song);
+                    setQueue(tracks, idx);
+                  }}
+                />
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Architectural Guarantee Notice */}
-      <div className="mt-6 p-3.5 rounded-card bg-surface/40 border border-surface-border text-center">
-        <div className="flex items-center justify-center gap-1.5 text-brand-400 mb-1">
-          <ShieldCheck className="w-4 h-4" />
-          <span className="text-xs font-semibold uppercase tracking-wider">Explainable AI Architecture</span>
+      {/* Popular Catalogue Showcase */}
+      {popularTracks.length > 0 && (
+        <div className="mt-6 mb-6">
+          <div className="flex items-center justify-between mb-3 px-0.5">
+            <div className="flex items-center gap-1.5">
+              <TrendingUp className="w-4 h-4 text-brand-400" />
+              <h3 className="text-base font-bold text-content-primary">Top Tracks</h3>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/discover')}
+              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+              className="text-xs text-content-secondary"
+            >
+              Explore
+            </Button>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            {popularTracks.map((track, idx) => {
+              const isActive = currentTrack?.id === track.id;
+              return (
+                <SongCard
+                  key={track.id}
+                  track={track}
+                  isActive={isActive}
+                  isPlaying={isActive && isPlaying}
+                  onPlay={() => {
+                    setQueue(popularTracks, idx);
+                  }}
+                />
+              );
+            })}
+          </div>
         </div>
-        <p className="text-[11px] text-content-muted leading-relaxed">
-          Stage 7 Recommendation Engine: R0 (Popularity) → R1 (Content) → R2 (Behaviour) → R3 (Context) → R4 (Hybrid).
-        </p>
-      </div>
+      )}
     </PageContainer>
   );
 };

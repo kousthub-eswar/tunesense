@@ -1,16 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Play,
   Pause,
-  Volume2,
-  VolumeX,
+  SkipForward,
+  Heart,
   Disc,
   AlertCircle,
   Loader2,
+  Maximize2,
 } from 'lucide-react';
 import { IconButton } from '../ui/IconButton.js';
 import { MusicArtwork } from './MusicArtwork.js';
 import { useAudioPlayer } from '../../contexts/AudioPlayerContext.js';
+import { useAuth } from '../../contexts/AuthContext.js';
+import { libraryService } from '../../services/libraryService.js';
 import { cn } from '../../utils/cn.js';
 
 export interface MiniPlayerProps {
@@ -18,22 +22,46 @@ export interface MiniPlayerProps {
 }
 
 export const MiniPlayer: React.FC<MiniPlayerProps> = ({ className }) => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const {
     currentTrack,
     isPlaying,
     isLoading,
     currentTime,
     duration,
-    volume,
-    isMuted,
     error,
     togglePlayPause,
+    playNext,
     seek,
-    setVolume,
-    toggleMute,
   } = useAudioPlayer();
 
-  const [showVolumeSlider, setShowVolumeSlider] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+
+  useEffect(() => {
+    if (currentTrack && isAuthenticated) {
+      libraryService.checkLikes([currentTrack.id]).then((res) => {
+        setIsLiked(Boolean(res[currentTrack.id]));
+      }).catch(() => {});
+    }
+  }, [currentTrack?.id, isAuthenticated]);
+
+  const handleLikeClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!currentTrack || !isAuthenticated) return;
+
+    const nextLiked = !isLiked;
+    setIsLiked(nextLiked);
+    try {
+      if (nextLiked) {
+        await libraryService.likeSong(currentTrack.id);
+      } else {
+        await libraryService.unlikeSong(currentTrack.id);
+      }
+    } catch {
+      setIsLiked(!nextLiked);
+    }
+  };
 
   const formatTime = (seconds: number): string => {
     if (!seconds || isNaN(seconds)) return '0:00';
@@ -82,6 +110,7 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ className }) => {
       <div
         className="w-full bg-white/10 h-1.5 cursor-pointer relative group tap-target flex items-center -my-1"
         onClick={(e) => {
+          e.stopPropagation();
           const rect = e.currentTarget.getBoundingClientRect();
           const clickX = e.clientX - rect.left;
           const ratio = Math.max(0, Math.min(clickX / rect.width, 1));
@@ -100,7 +129,10 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ className }) => {
       </div>
 
       {/* Player Body */}
-      <div className="p-2.5 flex items-center justify-between gap-2">
+      <div
+        onClick={() => navigate('/player')}
+        className="p-2.5 flex items-center justify-between gap-2 cursor-pointer hover:bg-surface/40 transition-colors"
+      >
         {/* Track Info */}
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
           <MusicArtwork
@@ -135,40 +167,23 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ className }) => {
         </div>
 
         {/* Controls */}
-        <div className="flex items-center gap-1 shrink-0">
-          {/* Volume Control / Slider Popout */}
-          <div className="relative flex items-center">
-            {showVolumeSlider && (
-              <div className="absolute right-8 bottom-0 bg-surface border border-surface-border rounded-lg p-2 shadow-xl flex items-center gap-2 z-50">
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.05"
-                  value={isMuted ? 0 : volume}
-                  onChange={(e) => setVolume(parseFloat(e.target.value))}
-                  className="w-20 accent-brand-500 h-1 cursor-pointer"
-                  aria-label="Volume slider"
-                />
-              </div>
-            )}
+        <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+          {/* Like Heart Button */}
+          {isAuthenticated && (
             <IconButton
               icon={
-                isMuted || volume === 0 ? (
-                  <VolumeX className="w-4 h-4 text-vibe-rose" />
-                ) : (
-                  <Volume2 className="w-4 h-4 text-content-secondary" />
-                )
+                <Heart
+                  className={cn(
+                    'w-4 h-4 transition-colors',
+                    isLiked ? 'text-brand-400 fill-brand-400' : 'text-content-secondary'
+                  )}
+                />
               }
-              aria-label={isMuted ? 'Unmute' : 'Mute'}
+              aria-label={isLiked ? 'Unlike song' : 'Like song'}
               size="sm"
-              onClick={toggleMute}
-              onContextMenu={(e) => {
-                e.preventDefault();
-                setShowVolumeSlider(!showVolumeSlider);
-              }}
+              onClick={handleLikeClick}
             />
-          </div>
+          )}
 
           {/* Play / Pause / Loading Button */}
           <IconButton
@@ -186,6 +201,22 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ className }) => {
             size="md"
             onClick={togglePlayPause}
             disabled={isLoading}
+          />
+
+          {/* Next Track Button */}
+          <IconButton
+            icon={<SkipForward className="w-4 h-4 text-content-secondary" />}
+            aria-label="Next track"
+            size="sm"
+            onClick={playNext}
+          />
+
+          {/* Full Player Expand Button */}
+          <IconButton
+            icon={<Maximize2 className="w-3.5 h-3.5 text-content-muted hover:text-content-primary" />}
+            aria-label="Expand player"
+            size="sm"
+            onClick={() => navigate('/player')}
           />
         </div>
       </div>

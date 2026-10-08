@@ -9,7 +9,10 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "seed:demo": "tsx src/utils/seedDemoData.ts",
-    "clean:demo": "tsx src/utils/seedDemoData.ts --clean"
+    "clean:demo": "tsx src/utils/seedDemoData.ts --clean",
+    "verify:stage12": "node dist/utils/verifyStage12.js",
+    "verify:stage13": "node dist/utils/verifyStage13.js",
+    "verify:stage14": "node dist/utils/verifyStage14.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

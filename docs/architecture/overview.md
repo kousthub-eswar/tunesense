@@ -361,7 +361,58 @@ Recommendation DTO Response / Offline Evaluation (R0–R5 + Ablations)
 - **Stage 8 (Completed):** Personalization, Mood-Aware Input, and User Controls (Explicit preferences, 8 controlled moods, mood acoustic scoring, dislike penalties, exploration/diversity sliders, mobile onboarding wizard, and explainable mood rationale).
 - **Stage 9 (Completed):** Analytics, Recommendation Evaluation, and Experimentation (Telemetry aggregation pipelines, recommendation impression tracking, play attribution, offline temporal evaluation framework, Precision@K, Recall@K, HitRate@K, NDCG@K, Intra-List Diversity, Novelty@K, Catalog Coverage, baseline comparison R0–R4, ablations, subjective mood/explanation feedback, and mobile-first analytics UI).
 - **Stage 10 (Completed):** Advanced NoSQL and Collaborative Personalization (User-based collaborative filtering, sparse `UserSongInteraction` and `UserSimilarity` materialized collections, cosine similarity over sparse vectors, popularity bias dampening, cold-start confidence scaling, R5 collaborative hybrid strategy, collaborative coverage metric, strict temporal non-leakage verification, and privacy-preserving explanations).
-- **Future Stages (Post-Stage 10):** Native mobile packaging, external cloud deployment, and viva demonstration.
+- **Stage 11 (Completed):** Production Data Integration, Real API Validation & System Hardening (Production error sanitization, strict environment schema, SameSite cookie protection, zero-fabrication offline verification suite).
+- **Stage 12 (Completed):** Product Experience, Library & Playlists (`UserLibrary` 1:1 collection, `Playlist` collection with compound indexing and size boundaries, liked songs management, telemetry-backed listening history, full playback queue management with shuffle and repeat modes, mobile-first player experience).
+- **Future Stages (Post-Stage 12):** Native mobile packaging, external cloud deployment, and viva demonstration.
+
+---
+
+## User Library, Playlist & Audio Queue Architecture (Stage 12 Implemented)
+
+### User Library & Playlist Architecture
+```
+User Interaction (Like Song / Add to Playlist / Play Track)
+       │
+       ▼
+Express API (/api/library/* & /api/playlists/*)
+       │
+       ├──► requireAuth Middleware (Validates JWT cookie, extracts sub)
+       │        │
+       │        ├──► LibraryService
+       │        │        ├── Atomic $addToSet / $pull on UserLibrary.likedSongIds
+       │        │        └── Aggregates listening history from ListeningEvent
+       │        │
+       │        └──► PlaylistService
+       │                 ├── Enforces owner-only mutation & IDOR protection
+       │                 ├── Bounded array validation (max 500 songs)
+       │                 └── Maintains UserLibrary.savedPlaylistIds references
+       │
+       ▼
+MongoDB Atlas (userLibraries & playlists Collections)
+```
+
+### Audio Player & Queue Architecture
+```
+AudioPlayerContext (React Context API)
+       │
+       ├── State Management:
+       │     ├── currentTrack (TrackItem)
+       │     ├── queue (TrackItem[])
+       │     ├── queueIndex (number)
+       │     ├── isShuffle (boolean)
+       │     └── repeatMode ('off' | 'one' | 'all')
+       │
+       ├── Playback Lifecycle:
+       │     ├── playTrack(singleTrack) ──► sets queue to [singleTrack], queueIndex to 0
+       │     ├── setQueue(tracks, startIdx) ──► loads full playlist / recommendation list
+       │     ├── playNext() ──► advances index; if at end and repeat='all', loops to 0
+       │     ├── playPrevious() ──► if currentTime > 3s restarts, else moves to index - 1
+       │     └── toggleShuffle() ──► preserves index 0, randomizes remaining items
+       │
+       └── Audio Engine & Telemetry:
+             ├── Native HTML5 Audio element
+             └── Dispatches ListeningEvents (play, pause, skip, complete) automatically
+```
 
 
 

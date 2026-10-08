@@ -685,8 +685,190 @@
 
 ---
 
-## Stage 10 Architecture Note: Classical Collaborative Filtering
-As established in Architectural Decision Record `0009-collaborative-personalization.md`, TuneSense intentionally implements classical, explainable User-Based Collaborative Filtering over sparse MongoDB interaction representations rather than neural networks, embeddings, or vector databases. This aligns with academic explainability, viva defensibility, and NoSQL native aggregation paradigms.
+## Stage 12 Endpoints: User Library & Playlists
+
+### 11. User Library Endpoints
+
+#### GET /api/library
+- **Description:** Returns library overview metrics (counts of liked tracks, playlists, and listening history).
+- **Authentication:** Required (`requireAuth`).
+- **Response `200 OK`:**
+```json
+{
+  "success": true,
+  "data": {
+    "likedCount": 24,
+    "playlistsCount": 3,
+    "recentlyPlayedCount": 85
+  }
+}
+```
+
+#### GET /api/library/likes
+- **Description:** Returns the authenticated user's liked tracks, ordered newest first.
+- **Authentication:** Required (`requireAuth`).
+- **Response `200 OK`:**
+```json
+{
+  "success": true,
+  "data": {
+    "songs": [
+      {
+        "id": "670498b...",
+        "title": "Midnight Resonance",
+        "artistName": "Astral Wave",
+        "durationSeconds": 214,
+        "artworkUrl": "https://...",
+        "streamUrl": "https://...",
+        "provider": "jamendo",
+        "providerTrackId": "1884481"
+      }
+    ],
+    "total": 1
+  }
+}
+```
+
+#### GET /api/library/likes/check?songIds=id1,id2
+- **Description:** Batch checks whether specific tracks are liked by the authenticated user.
+- **Authentication:** Required (`requireAuth`).
+- **Response `200 OK`:**
+```json
+{
+  "success": true,
+  "data": {
+    "670498b...": true,
+    "670498c...": false
+  }
+}
+```
+
+#### POST /api/library/likes/:songId
+- **Description:** Adds a song to the authenticated user's liked tracks using atomic `$addToSet`. Idempotent.
+- **Authentication:** Required (`requireAuth`).
+- **Response `200 OK`:**
+```json
+{
+  "success": true,
+  "data": {
+    "success": true,
+    "isLiked": true,
+    "songId": "670498b..."
+  }
+}
+```
+
+#### DELETE /api/library/likes/:songId
+- **Description:** Removes a song from the authenticated user's liked tracks using atomic `$pull`. Idempotent.
+- **Authentication:** Required (`requireAuth`).
+- **Response `200 OK`:**
+```json
+{
+  "success": true,
+  "data": {
+    "success": true,
+    "isLiked": false,
+    "songId": "670498b..."
+  }
+}
+```
+
+#### GET /api/library/history
+- **Description:** Returns the authenticated user's recently played tracks derived from canonical `ListeningEvent` telemetry.
+- **Authentication:** Required (`requireAuth`).
+- **Query Parameters:** `limit` (*optional*, integer, 1–50, default: 20).
+- **Response `200 OK`:**
+```json
+{
+  "success": true,
+  "data": {
+    "history": [
+      {
+        "song": {
+          "id": "670498b...",
+          "title": "Midnight Resonance",
+          "artistName": "Astral Wave",
+          "durationSeconds": 214,
+          "artworkUrl": "https://..."
+        },
+        "playedAt": "2026-10-08T18:30:00.000Z",
+        "eventType": "complete",
+        "completionPercent": 100
+      }
+    ],
+    "total": 1
+  }
+}
+```
+
+---
+
+### 12. Playlist Endpoints
+
+#### POST /api/playlists
+- **Description:** Creates a new user playlist and records it in `UserLibrary.savedPlaylistIds`.
+- **Authentication:** Required (`requireAuth`).
+- **Request Body:**
+```json
+{
+  "name": "Midnight Chill",
+  "description": "Ambient electronic vibes",
+  "isPublic": false
+}
+```
+- **Response `201 Created`:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "670512a...",
+    "userId": "670481f...",
+    "name": "Midnight Chill",
+    "description": "Ambient electronic vibes",
+    "songCount": 0,
+    "isPublic": false,
+    "createdAt": "2026-10-08T18:40:00.000Z",
+    "updatedAt": "2026-10-08T18:40:00.000Z"
+  }
+}
+```
+
+#### GET /api/playlists
+- **Description:** Returns the authenticated user's playlists ordered by recency (`updatedAt: -1`).
+- **Authentication:** Required (`requireAuth`).
+- **Response `200 OK`:** Array of `PlaylistSummaryDto`.
+
+#### GET /api/playlists/:id
+- **Description:** Returns full playlist details with populated songs. IDOR enforced: private playlists require ownership.
+- **Authentication:** Optional (`optionalAuth`).
+- **Response `200 OK`:** `PlaylistDetailDto`.
+
+#### PUT /api/playlists/:id
+- **Description:** Updates playlist name, description, or visibility. IDOR protected: only owner can edit.
+- **Authentication:** Required (`requireAuth`).
+- **Request Body:**
+```json
+{
+  "name": "Updated Playlist Name",
+  "description": "Updated description"
+}
+```
+- **Response `200 OK`:** `PlaylistSummaryDto`.
+
+#### DELETE /api/playlists/:id
+- **Description:** Deletes a playlist. IDOR protected: only owner can delete.
+- **Authentication:** Required (`requireAuth`).
+- **Response `200 OK`:** `{ "success": true, "data": { "success": true, "deletedId": "..." } }`.
+
+#### POST /api/playlists/:id/songs/:songId
+- **Description:** Adds a song to the playlist using atomic `$addToSet`. Bounded to max 500 songs. IDOR protected.
+- **Authentication:** Required (`requireAuth`).
+- **Response `200 OK`:** Updated `PlaylistDetailDto`.
+
+#### DELETE /api/playlists/:id/songs/:songId
+- **Description:** Removes a song from the playlist using atomic `$pull`. IDOR protected.
+- **Authentication:** Required (`requireAuth`).
+- **Response `200 OK`:** Updated `PlaylistDetailDto`.
 
 
 

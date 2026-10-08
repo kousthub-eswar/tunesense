@@ -10,6 +10,8 @@ import { LoginPage } from '../pages/LoginPage.js';
 import { SignupPage } from '../pages/SignupPage.js';
 import { OnboardingPage } from '../pages/OnboardingPage.js';
 import { AnalyticsPage } from '../pages/AnalyticsPage.js';
+import { PlayerPage } from '../pages/PlayerPage.js';
+import { PlaylistPage } from '../pages/PlaylistPage.js';
 import { PlaceholderPage } from '../pages/PlaceholderPage.js';
 import { NotFoundPage } from '../pages/NotFoundPage.js';
 
@@ -34,10 +36,10 @@ export const AppRoutes: React.FC = () => {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
 
-        {/* Active Stage 3 Music Catalogue Search */}
+        {/* Music Catalogue, Player, and Playlists (Stage 12) */}
         <Route path="/search" element={<SearchPage />} />
-        <Route path="/player" element={<PlaceholderPage />} />
-        <Route path="/playlist/:id" element={<PlaceholderPage />} />
+        <Route path="/player" element={<PlayerPage />} />
+        <Route path="/playlist/:id" element={<PlaylistPage />} />
         <Route path="/song/:id" element={<PlaceholderPage />} />
         <Route path="/recommendations" element={<PlaceholderPage />} />
 

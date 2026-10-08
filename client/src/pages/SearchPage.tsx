@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Search as SearchIcon, X, Music, AlertCircle, Loader2 } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Search as SearchIcon, X, Music, AlertCircle, Loader2, Clock, Trash2 } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer.js';
 import { Input } from '../components/ui/Input.js';
 import { Button } from '../components/ui/Button.js';
@@ -13,10 +14,15 @@ import { useAudioPlayer } from '../contexts/AudioPlayerContext.js';
 import { searchMusic } from '../services/musicService.js';
 import { TrackItem, ArtistItem, AlbumItem } from '../types/index.js';
 
+const RECENT_SEARCHES_KEY = 'tunesense_recent_searches';
+
 type SearchFilter = 'all' | 'tracks' | 'artists' | 'albums';
 
 export const SearchPage: React.FC = () => {
-  const [query, setQuery] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialQuery = searchParams.get('q') || '';
+
+  const [query, setQuery] = useState(initialQuery);
   const [activeFilter, setActiveFilter] = useState<SearchFilter>('all');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,9 +32,34 @@ export const SearchPage: React.FC = () => {
   const [albums, setAlbums] = useState<AlbumItem[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const { playTrack, currentTrack, isPlaying } = useAudioPlayer();
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem(RECENT_SEARCHES_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
 
-  const handleSearch = async (searchQuery: string) => {
+  const { setQueue, currentTrack, isPlaying } = useAudioPlayer();
+
+  const saveRecentSearch = (term: string) => {
+    const clean = term.trim();
+    if (!clean) return;
+    setRecentSearches((prev) => {
+      const filtered = prev.filter((s) => s.toLowerCase() !== clean.toLowerCase());
+      const updated = [clean, ...filtered].slice(0, 8);
+      localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const clearRecentSearches = () => {
+    setRecentSearches([]);
+    localStorage.removeItem(RECENT_SEARCHES_KEY);
+  };
+
+  const handleSearch = useCallback(async (searchQuery: string) => {
     const trimmed = searchQuery.trim();
     if (!trimmed) {
       setTracks([]);
@@ -43,6 +74,7 @@ export const SearchPage: React.FC = () => {
       setIsLoading(true);
       setError(null);
       setHasSearched(true);
+      saveRecentSearch(trimmed);
 
       const results = await searchMusic(trimmed, 20);
       setTracks(results.tracks || []);
@@ -61,21 +93,31 @@ export const SearchPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  // Sync initial query from URL
+  useEffect(() => {
+    if (initialQuery) {
+      setQuery(initialQuery);
+      handleSearch(initialQuery);
+    }
+  }, [initialQuery, handleSearch]);
 
   // Debounced search when query changes
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (query.trim()) {
+      if (query.trim() && query !== initialQuery) {
+        setSearchParams({ q: query.trim() });
         void handleSearch(query);
       }
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [query, initialQuery, handleSearch, setSearchParams]);
 
   const handleClear = () => {
     setQuery('');
+    setSearchParams({});
     setTracks([]);
     setArtists([]);
     setAlbums([]);
@@ -159,7 +201,7 @@ export const SearchPage: React.FC = () => {
         <div className="space-y-3 mt-4">
           <div className="flex items-center gap-2 text-xs text-content-muted mb-2">
             <Loader2 className="w-3.5 h-3.5 animate-spin text-brand-400" />
-            <span>Searching Jamendo catalogue...</span>
+            <span>Searching catalogue...</span>
           </div>
           <Skeleton className="h-16 w-full" />
           <Skeleton className="h-16 w-full" />
@@ -187,6 +229,38 @@ export const SearchPage: React.FC = () => {
         </Card>
       )}
 
+      {/* Recent Searches (shown before user types) */}
+      {!hasSearched && !isLoading && recentSearches.length > 0 && (
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-2 px-0.5">
+            <span className="text-xs font-semibold text-content-secondary uppercase tracking-wider flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5" /> Recent Searches
+            </span>
+            <button
+              onClick={clearRecentSearches}
+              className="text-[11px] text-content-muted hover:text-vibe-rose flex items-center gap-1"
+            >
+              <Trash2 className="w-3 h-3" /> Clear
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {recentSearches.map((term) => (
+              <Badge
+                key={term}
+                variant="neutral"
+                className="cursor-pointer hover:bg-surface-border py-1 px-2.5 bg-surface text-content-primary tap-target"
+                onClick={() => {
+                  setQuery(term);
+                  handleSearch(term);
+                }}
+              >
+                {term}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Initial Guidance State before search */}
       {!hasSearched && !isLoading && (
         <div className="mt-8 text-center px-4">
@@ -212,13 +286,15 @@ export const SearchPage: React.FC = () => {
                 </h3>
               </div>
               <div className="space-y-2">
-                {tracks.map((track) => (
+                {tracks.map((track, idx) => (
                   <SongCard
                     key={track.id}
                     track={track}
                     isActive={currentTrack?.id === track.id}
                     isPlaying={isPlaying && currentTrack?.id === track.id}
-                    onPlay={() => void playTrack(track)}
+                    onPlay={() => {
+                      setQueue(tracks, idx);
+                    }}
                   />
                 ))}
               </div>

@@ -548,5 +548,81 @@ export interface SimilarUserCandidate {
   commonSongs: number;
 }
 
+// ==========================================
+// STAGE 12 PRODUCT EXPERIENCE & LIBRARY INTERFACES
+// ==========================================
+
+/**
+ * UserLibrary Domain Interface
+ * Stores references to user's liked songs and saved playlists.
+ * Enforces 1-to-1 relationship with User via unique index on userId.
+ */
+export interface IUserLibrary {
+  _id: Types.ObjectId;
+  userId: Types.ObjectId;
+  likedSongIds: Types.ObjectId[];
+  savedPlaylistIds: Types.ObjectId[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * Playlist Domain Interface
+ * User-created playlists storing ordered references to Song documents.
+ */
+export interface IPlaylist {
+  _id: Types.ObjectId;
+  userId: Types.ObjectId;
+  name: string;
+  description?: string;
+  songIds: Types.ObjectId[];
+  coverSongId?: Types.ObjectId;
+  isPublic: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface PlaylistSummaryDto {
+  id: string;
+  userId: string;
+  name: string;
+  description?: string;
+  songCount: number;
+  coverSongId?: string;
+  coverArtworkUrl?: string;
+  isPublic: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PlaylistSongDto {
+  id: string;
+  title: string;
+  artistName: string;
+  durationSeconds: number;
+  artworkUrl?: string;
+  streamUrl?: string;
+  provider: string;
+  providerTrackId?: string;
+  albumTitle?: string;
+}
+
+export interface PlaylistDetailDto extends PlaylistSummaryDto {
+  songs: PlaylistSongDto[];
+}
+
+export interface LibrarySummaryDto {
+  likedCount: number;
+  playlistsCount: number;
+  recentlyPlayedCount: number;
+}
+
+export interface HistoryItemDto {
+  song: PlaylistSongDto;
+  playedAt: string;
+  eventType: string;
+  completionPercent?: number;
+}
+
 
 

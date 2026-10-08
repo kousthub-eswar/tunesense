@@ -39,3 +39,25 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
     });
   }
 }
+
+/**
+ * optionalAuth middleware:
+ * If token is present and valid, attaches req.user = { id: payload.sub }.
+ * If not, proceeds without error.
+ */
+export function optionalAuth(req: Request, _res: Response, next: NextFunction): void {
+  try {
+    let token = req.cookies?.[AUTH_COOKIE_NAME];
+    if (!token && req.headers.authorization?.startsWith('Bearer ')) {
+      token = req.headers.authorization.slice(7).trim();
+    }
+
+    if (token) {
+      const payload = authService.verifyToken(token);
+      req.user = { id: payload.sub };
+    }
+  } catch (_err) {
+    // Ignore invalid tokens for optional auth
+  }
+  next();
+}

@@ -11,6 +11,8 @@ import {
   UserSimilarity,
   RecommendationImpression,
   EvaluationFeedback,
+  UserLibrary,
+  Playlist,
 } from '../models/index.js';
 import { connectDatabase, disconnectDatabase } from '../config/database.js';
 import { userTasteProfileService } from '../services/profile/UserTasteProfileService.js';
@@ -29,6 +31,8 @@ export interface SeedResult {
   similaritiesCount: number;
   impressionsCount: number;
   feedbacksCount: number;
+  librariesCount: number;
+  playlistsCount: number;
 }
 
 /**
@@ -57,6 +61,8 @@ export async function cleanDemoData(): Promise<{ deletedUsers: number; deletedSo
   await ListeningEvent.deleteMany({ userId: { $in: demoUserIds } });
   await RecommendationImpression.deleteMany({ userId: { $in: demoUserIds } });
   await EvaluationFeedback.deleteMany({ userId: { $in: demoUserIds } });
+  await UserLibrary.deleteMany({ userId: { $in: demoUserIds } });
+  await Playlist.deleteMany({ userId: { $in: demoUserIds } });
 
   const deletedUsers = await User.deleteMany({ _id: { $in: demoUserIds } });
   const deletedSongs = await Song.deleteMany({ _id: { $in: demoSongIds } });
@@ -611,15 +617,62 @@ export async function seedDemoData(): Promise<SeedResult> {
     explanationText: 'Collaborative recommendations matched my vibe well',
   });
 
+  // 12. Seed User Libraries & Playlists (Stage 12/13 Demo Readiness)
+  const playlistAlice: any = await Playlist.create({
+    userId: userA._id,
+    name: 'Late Night Synthwave',
+    description: 'Energetic electronic and synthwave tracks for late-night focus.',
+    songIds: [song1._id, song4._id, song5._id],
+    coverSongId: song1._id,
+    isPublic: true,
+  });
+
+  const playlistCharlie: any = await Playlist.create({
+    userId: userC._id,
+    name: 'Rock Anthems',
+    description: 'High energy rock and classic riffs.',
+    songIds: [song6._id, song7._id],
+    coverSongId: song6._id,
+    isPublic: false,
+  });
+
+  await UserLibrary.create({
+    userId: userA._id,
+    likedSongIds: [song1._id, song4._id, song5._id],
+    savedPlaylistIds: [playlistAlice._id],
+  });
+
+  await UserLibrary.create({
+    userId: userB._id,
+    likedSongIds: [song1._id, song2._id],
+    savedPlaylistIds: [],
+  });
+
+  await UserLibrary.create({
+    userId: userC._id,
+    likedSongIds: [song6._id, song7._id],
+    savedPlaylistIds: [playlistCharlie._id],
+  });
+
+  await UserLibrary.create({
+    userId: userD._id,
+    likedSongIds: [],
+    savedPlaylistIds: [],
+  });
+
   const interactionsCount = await UserSongInteraction.countDocuments();
   const similaritiesCount = await UserSimilarity.countDocuments();
   const profilesCount = await UserTasteProfile.countDocuments();
+  const librariesCount = await UserLibrary.countDocuments();
+  const playlistsCount = await Playlist.countDocuments();
 
   console.log('[SeedDemoData] Demo seeding completed successfully!');
   console.log(`  Users: 4 (Alice, Bob, Charlie, Dana)`);
   console.log(`  Songs: 8 tracks (e.g. ${song1.title}, ${song5.title}, ${song8.title})`);
   console.log(`  Interactions: ${interactionsCount}`);
   console.log(`  Similarities: ${similaritiesCount}`);
+  console.log(`  Libraries: ${librariesCount}`);
+  console.log(`  Playlists: ${playlistsCount}`);
 
   return {
     usersCount: 4,
@@ -632,6 +685,8 @@ export async function seedDemoData(): Promise<SeedResult> {
     similaritiesCount,
     impressionsCount: 2,
     feedbacksCount: 2,
+    librariesCount,
+    playlistsCount,
   };
 }
 
