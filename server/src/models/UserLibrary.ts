@@ -7,8 +7,6 @@ const userLibrarySchema = new Schema<IUserLibrary>(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'User reference is required'],
-      unique: true,
-      index: true,
     },
     likedSongIds: {
       type: [{ type: Schema.Types.ObjectId, ref: 'Song' }],

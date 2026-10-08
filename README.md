@@ -28,9 +28,15 @@ TuneSense integrates:
 
 ### Authentication & Identity
 - **Account Management:** User registration, login, and secure session management.
-- **JWT Authentication:** Signed JSON Web Tokens stored securely in HTTP-only, `SameSite=Lax` cookies.
-- **Password Security:** Salted password hashing with `bcrypt` (work factor 12).
-- **Anti-Spoofing:** All protected endpoints derive identity exclusively from verified session tokens.
+- **JWT Authentication:** Signed JSON Web Tokens stored securely in HTTP-only cookies (`SameSite=None` with `Secure` in production cross-origin topologies; `SameSite=Lax` in development).
+- **Password Security:** Salted password hashing with `bcrypt` (work factor 12, max 72 characters).
+- **Anti-Spoofing & Timing Defense:** Protected endpoints derive identity from verified sessions; constant-time dummy password hashing prevents email enumeration.
+- **Rate Limiting & Security Headers:** Standard HTTP security headers (`nosniff`, `DENY`, `HSTS`) and token-bucket rate limiting on auth endpoints.
+
+### User Library, Playlists & Queue
+- **User Library (Liked Songs):** Persistent user library tracking favorite tracks with idempotent like/unlike operations.
+- **Custom Playlists:** Full playlist creation, updating, deletion, and track management with bounded size limits (<= 500 tracks).
+- **Playback Queue & Player:** Continuous audio playback queue management, active track state, volume, seek control, and mobile MiniPlayer.
 
 ### Music Catalogue & Streaming
 - **Provider Abstraction:** Clean `IMusicProvider` interface isolating external data sources from domain logic.
@@ -116,6 +122,8 @@ Express API Server (TypeScript, Zod, JWT)
 | `UserTasteProfile` | Materialized View | Precomputed long-term/recent genre weights, acoustic distributions, and confidence |
 | `UserSongInteraction` | Sparse Matrix Collection | Aggregated implicit engagement scores per `(userId, songId)` pair |
 | `UserSimilarity` | Materialized View | Precomputed cosine similarity scores between top peer neighbors |
+| `UserLibrary` | Document | User saved/liked tracks repository and library collection |
+| `Playlist` | Document | User-created custom playlists with bounded capacity (<= 500 tracks) |
 | `RecommendationImpression`| Append-Only Log | Recommendation delivery logs linking recommended tracks to request IDs for CTR tracking |
 | `EvaluationFeedback` | Survey Log | Subjective Likert-scale feedback for recommendation and mood accuracy |
 
@@ -135,7 +143,7 @@ ListeningEvent (Append-only logs)
 
 ### Why NoSQL for TuneSense?
 1. **Schema Flexibility:** Supports evolving acoustic vectors, dynamic genre weight maps, and diverse provider payloads.
-2. **Materialized Derived Collections:** Expensive aggregation pipelines (cosine similarity, recency decay) are precomputed, allowing sub-50ms recommendation response times.
+2. **Materialized Derived Collections:** Expensive aggregation pipelines (cosine similarity, recency decay) are precomputed to ensure responsive recommendation generation without repetitive full-database scans.
 3. **Append-Only Telemetry:** High-throughput logging of `ListeningEvent` and `RecommendationImpression` documents without locking relational tables.
 4. **Compound Index Optimization:** Targeted indexes (`{ userId: 1, createdAt: -1 }`, `{ userId: 1, songId: 1 }`) eliminate full collection scans.
 
@@ -212,13 +220,14 @@ To prevent **future-data leakage**, the evaluation suite partitions listening hi
 
 ## 7. Security & Privacy Controls
 
-- **Password Hashing:** `bcryptjs` utilizing work factor **12**.
-- **JWT Session Security:** Cryptographically signed tokens stored in `HttpOnly`, `SameSite=Lax` cookies (`secure: true` in production).
-- **IDOR Protection:** All user-specific operations derive `userId` directly from verified session cookies, rejecting mismatched route parameters with HTTP 403 Forbidden.
-- **Payload Validation:** Strict schema validation on all API requests using `Zod`.
+- **Password Hashing:** `bcryptjs` utilizing work factor **12** with strict 72-character maximum constraint to prevent silent truncation.
+- **Timing Side-Channel Protection:** Dummy bcrypt verification on non-existent accounts ensures uniform response timing.
+- **JWT Session Security:** Cryptographically signed tokens stored in `HttpOnly` cookies (`SameSite=None; Secure` in production; `SameSite=Lax` in development) with Express `trust proxy` enabled.
+- **Rate Limiting:** Dedicated token-bucket rate limiter restricting sensitive authentication endpoints to 60 requests / 15 minutes per IP.
+- **Security Headers:** Strict response headers (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection`, `Strict-Transport-Security`, `Referrer-Policy`).
+- **Access Control & IDOR Defense:** All user-scoped operations verify ownership from session tokens; system-wide evaluation endpoints are restricted to administrator and demo accounts.
 - **Error Sanitization:** Centralized error handling stripping stack traces and database internal messages in production environments.
 - **Peer Privacy:** Zero exposure of peer PII, user IDs, or raw similarity scores in collaborative recommendations.
-- **Known Residual Low Risk:** Login and registration rate limiting is currently handled at the infrastructure/reverse-proxy layer.
 
 ---
 
@@ -254,13 +263,13 @@ TuneSense/
 ├── server/                     # Express REST API Server
 │   ├── src/
 │   │   ├── config/             # Zod environment schema & DB connection
-│   │   ├── controllers/        # Auth, music, preferences, recommendations, analytics, taste controllers
-│   │   ├── middleware/         # Auth verification, error handler, 404 handler
-│   │   ├── models/             # 11 Mongoose domain schemas
+│   │   ├── controllers/        # Auth, music, preferences, recommendations, analytics, taste, library controllers
+│   │   ├── middleware/         # Auth verification, rate limiting, security headers, error handler
+│   │   ├── models/             # 13 Mongoose domain schemas
 │   │   ├── providers/          # IMusicProvider & JamendoProvider
 │   │   ├── routes/             # REST endpoint routers
-│   │   ├── services/           # RecommendationEngine, TasteProfile, Collaborative, Analytics
-│   │   ├── utils/              # Verification suites (Stages 4–11), demo seeder
+│   │   ├── services/           # RecommendationEngine, TasteProfile, Collaborative, Analytics, Library
+│   │   ├── utils/              # Verification suites (Stages 4–14), demo seeder
 │   │   └── validators/         # Zod request validators
 │   ├── package.json
 │   └── tsconfig.json
@@ -371,7 +380,10 @@ node server/dist/utils/verifyStage4.js
 
 | Suite | Status | Notes |
 | :--- | :---: | :--- |
-| **Stage 11 Production Verification** | **PASS** | 10 Passed, 10 Skipped (offline test mode), 0 Failed |
+| **Stage 14 Live Validation** | **PASS** | 23 / 23 checks passed (Live Atlas + Jamendo verified) |
+| **Stage 13 Deployment Readiness** | **PASS** | Complete verification passed |
+| **Stage 12 Library & Playlists** | **PASS** | All library, playlist capacity & IDOR checks passed |
+| **Stage 11 Production Hardening** | **PASS** | All production hardening checks passed |
 | **Stage 10 Collaborative Filtering** | **PASS** | 34 / 34 checks passed |
 | **Stage 9 Analytics & Evaluation** | **PASS** | 27 / 27 checks passed |
 | **Stage 8 Mood & User Controls** | **PASS** | 24 / 24 checks passed |
@@ -386,8 +398,8 @@ node server/dist/utils/verifyStage4.js
 
 ## 13. Current Project Status
 
-**Current Milestone:** **Stage 11 — Production Data Integration, Real API Validation & System Hardening**  
-**Status:** **Complete**
+**Current Milestone:** **Stages 1–14 — Complete & Hardened**  
+**Status:** **Production Ready**
 
 - [x] Mobile-first responsive UI and native web audio player
 - [x] Decoupled music provider architecture
@@ -397,10 +409,10 @@ node server/dist/utils/verifyStage4.js
 - [x] Recommendation engine with R0–R5 strategies
 - [x] Controlled 8-mood acoustic taxonomy and explicit user controls
 - [x] Offline evaluation framework (NDCG, Precision, Recall, Diversity, Novelty)
-- [x] Classical user-based collaborative filtering over sparse interactions
-- [x] Production error sanitization and configuration validation
-- [ ] MongoDB Atlas live cluster validation (Pending deployment credentials)
-- [ ] Jamendo live API validation (Pending production client ID)
+- [x] Classical user-based collaborative filtering over sparse interactions (batched O(1) candidate query)
+- [x] Production error sanitization, rate limiting, and security headers
+- [x] MongoDB Atlas live cluster integration verified
+- [x] Jamendo live API integration verified
 
 ---
 

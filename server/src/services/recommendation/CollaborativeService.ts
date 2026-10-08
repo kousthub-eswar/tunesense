@@ -21,6 +21,18 @@ export interface UserInteractionEntry {
 }
 
 // In-memory fallback stores for offline testing and degraded development mode
+const MAX_IN_MEMORY_CACHE_ENTRIES = 500;
+
+function setBoundedCache<K, V>(map: Map<K, V>, key: K, value: V): void {
+  if (map.size >= MAX_IN_MEMORY_CACHE_ENTRIES && !map.has(key)) {
+    const firstKey = map.keys().next().value;
+    if (firstKey !== undefined) {
+      map.delete(firstKey);
+    }
+  }
+  map.set(key, value);
+}
+
 const inMemoryInteractions = new Map<string, Map<string, UserInteractionEntry>>(); // userId -> (songId -> entry)
 const inMemorySimilarities = new Map<string, SimilarUserCandidate[]>(); // userId -> similar candidates
 const inMemoryCalculatedAt = new Map<string, Date>(); // userId -> calculation timestamp
@@ -170,8 +182,98 @@ export class CollaborativeService {
       return fallback;
     }
 
-    inMemoryInteractions.set(userId, interactionMap);
+    setBoundedCache(inMemoryInteractions, userId, interactionMap);
     return interactionMap;
+  }
+
+  /**
+   * Incrementally updates sparse interaction for a single user and song from ListeningEvents.
+   * Efficient O(1) query scoped to (userId, songId).
+   */
+  public async updateUserSongInteraction(userId: string, songId: string): Promise<void> {
+    const dbState = getDatabaseState();
+    if (dbState.isConnected && Types.ObjectId.isValid(userId) && Types.ObjectId.isValid(songId)) {
+      try {
+        const userObjId = new Types.ObjectId(userId);
+        const songObjId = new Types.ObjectId(songId);
+
+        const agg = await ListeningEvent.aggregate([
+          { $match: { userId: userObjId, songId: songObjId } },
+          {
+            $group: {
+              _id: '$songId',
+              plays: { $sum: { $cond: [{ $eq: ['$eventType', 'play'] }, 1, 0] } },
+              completes: { $sum: { $cond: [{ $eq: ['$eventType', 'complete'] }, 1, 0] } },
+              pauses: { $sum: { $cond: [{ $eq: ['$eventType', 'pause'] }, 1, 0] } },
+              skips: { $sum: { $cond: [{ $eq: ['$eventType', 'skip'] }, 1, 0] } },
+              lastInteractionAt: { $max: '$timestamp' },
+            },
+          },
+        ]);
+
+        if (agg && agg.length > 0) {
+          const item = agg[0];
+          const score = this.calculateInteractionScore({
+            playCount: item.plays,
+            completionCount: item.completes,
+            pauseCount: item.pauses,
+            skipCount: item.skips,
+          });
+
+          const entry: UserInteractionEntry = {
+            songId: songId,
+            interactionScore: score,
+            playCount: item.plays,
+            completionCount: item.completes,
+            skipCount: item.skips,
+            lastInteractionAt: item.lastInteractionAt || new Date(),
+          };
+
+          await UserSongInteraction.updateOne(
+            { userId: userObjId, songId: songObjId },
+            {
+              $set: {
+                interactionScore: score,
+                playCount: item.plays,
+                completionCount: item.completes,
+                skipCount: item.skips,
+                lastInteractionAt: item.lastInteractionAt || new Date(),
+              },
+            },
+            { upsert: true }
+          );
+
+          let userMap = inMemoryInteractions.get(userId);
+          if (!userMap) {
+            userMap = new Map();
+            setBoundedCache(inMemoryInteractions, userId, userMap);
+          }
+          userMap.set(songId, entry);
+        }
+      } catch (err) {
+        console.warn(`[CollaborativeService] Notice: Error updating interaction for user ${userId}, song ${songId}:`, err);
+      }
+    }
+  }
+
+  /**
+   * Invalidates cached similarities for a user so subsequent recommendations recompute freshly.
+   */
+  public async invalidateSimilarityCache(userId: string): Promise<void> {
+    inMemorySimilarities.delete(userId);
+    inMemoryCalculatedAt.delete(userId);
+
+    const dbState = getDatabaseState();
+    if (dbState.isConnected && Types.ObjectId.isValid(userId)) {
+      try {
+        await UserSimilarity.updateMany(
+          { userId: new Types.ObjectId(userId) },
+          { $set: { calculatedAt: new Date(0) } }
+        );
+      } catch (err) {
+        console.warn(`[CollaborativeService] Notice: Error marking UserSimilarity stale for ${userId}:`, err);
+      }
+    }
   }
 
   /**
@@ -382,17 +484,26 @@ export class CollaborativeService {
             { $limit: 100 },
           ]);
 
-          // Fetch full interactions for candidates to compute proper vector norms
+          // Batch fetch candidate interactions to prevent N+1 queries
+          const candUserIds = overlapping.map((c) => c._id);
+          const candDocs = await UserSongInteraction.find({
+            userId: { $in: candUserIds },
+          }).lean();
+
+          const candInteractionsByUser = new Map<string, Map<string, number>>();
+          for (const item of candDocs) {
+            const uidStr = item.userId.toString();
+            let m = candInteractionsByUser.get(uidStr);
+            if (!m) {
+              m = new Map<string, number>();
+              candInteractionsByUser.set(uidStr, m);
+            }
+            m.set(item.songId.toString(), item.interactionScore);
+          }
+
           for (const cand of overlapping) {
             const candUserIdStr = cand._id.toString();
-            const candInteractions = await UserSongInteraction.find({
-              userId: cand._id,
-            }).lean();
-
-            const candMap = new Map<string, number>();
-            for (const item of candInteractions) {
-              candMap.set(item.songId.toString(), item.interactionScore);
-            }
+            const candMap = candInteractionsByUser.get(candUserIdStr) || new Map<string, number>();
 
             const { similarity, commonSongs } = this.calculateCosineSimilarity(
               targetMap,

@@ -67,6 +67,13 @@ export const createListeningEventSchema = z.object({
       recommendationPosition: z.number().min(0).max(100).optional(),
     })
     .optional(),
+  metadata: z
+    .object({
+      recommendationRequestId: z.string().trim().max(100).optional(),
+      recommendationStrategy: z.string().trim().max(50).optional(),
+      recommendationPosition: z.number().min(0).max(100).optional(),
+    })
+    .optional(),
 });
 
 export type CreateListeningEventInput = z.infer<typeof createListeningEventSchema>;

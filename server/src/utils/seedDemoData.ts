@@ -118,60 +118,7 @@ export async function seedDemoData(): Promise<SeedResult> {
     passwordHash,
   });
 
-  // 3. Create UserPreferences
-  await UserPreference.create({
-    userId: userA._id,
-    preferredGenres: ['electronic', 'ambient'],
-    preferredArtists: ['Neon Wave'],
-    dislikedGenres: ['screamo'],
-    dislikedArtists: [],
-    preferredEnergy: 0.75,
-    preferredMood: 'energetic',
-    favoriteGenres: ['electronic', 'ambient'],
-    favoriteArtists: ['Neon Wave'],
-    personalizationSettings: { explorationLevel: 0.5, diversityLevel: 0.7 },
-  });
-
-  await UserPreference.create({
-    userId: userB._id,
-    preferredGenres: ['electronic', 'ambient', 'synthwave'],
-    preferredArtists: ['Neon Wave', 'Solar Echoes'],
-    dislikedGenres: [],
-    dislikedArtists: [],
-    preferredEnergy: 0.7,
-    preferredMood: 'energetic',
-    favoriteGenres: ['electronic', 'ambient'],
-    favoriteArtists: ['Neon Wave', 'Solar Echoes'],
-    personalizationSettings: { explorationLevel: 0.6, diversityLevel: 0.7 },
-  });
-
-  await UserPreference.create({
-    userId: userC._id,
-    preferredGenres: ['rock'],
-    preferredArtists: ['Stone Thunder'],
-    dislikedGenres: ['electronic', 'screamo'],
-    dislikedArtists: [],
-    preferredEnergy: 0.9,
-    preferredMood: 'energetic',
-    favoriteGenres: ['rock'],
-    favoriteArtists: ['Stone Thunder'],
-    personalizationSettings: { explorationLevel: 0.3, diversityLevel: 0.5 },
-  });
-
-  await UserPreference.create({
-    userId: userD._id, // Cold start
-    preferredGenres: ['classical', 'ambient'],
-    preferredArtists: ['Velvet Strings'],
-    dislikedGenres: [],
-    dislikedArtists: [],
-    preferredEnergy: 0.3,
-    preferredMood: 'calm',
-    favoriteGenres: ['classical'],
-    favoriteArtists: ['Velvet Strings'],
-    personalizationSettings: { explorationLevel: 0.5, diversityLevel: 0.5 },
-  });
-
-  // 4. Create Artists
+  // 3. Create Artists
   const artistNeonWave: any = await Artist.create({
     name: 'Neon Wave',
     imageUrl: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=400&q=80',
@@ -202,6 +149,59 @@ export async function seedDemoData(): Promise<SeedResult> {
     genres: ['classical', 'instrumental'],
     languages: ['instrumental'],
     metadata: { isDemo: true, popularityScore: 0.7 },
+  });
+
+  // 4. Create UserPreferences
+  await UserPreference.create({
+    userId: userA._id,
+    preferredGenres: ['electronic', 'ambient'],
+    preferredArtists: [artistNeonWave._id],
+    dislikedGenres: ['screamo'],
+    dislikedArtists: [],
+    preferredEnergy: 0.75,
+    preferredMood: 'energetic',
+    favoriteGenres: ['electronic', 'ambient'],
+    favoriteArtists: [artistNeonWave._id],
+    personalizationSettings: { explorationLevel: 0.5, diversityLevel: 0.7 },
+  });
+
+  await UserPreference.create({
+    userId: userB._id,
+    preferredGenres: ['electronic', 'ambient', 'synthwave'],
+    preferredArtists: [artistNeonWave._id, artistSolarEchoes._id],
+    dislikedGenres: [],
+    dislikedArtists: [],
+    preferredEnergy: 0.7,
+    preferredMood: 'energetic',
+    favoriteGenres: ['electronic', 'ambient'],
+    favoriteArtists: [artistNeonWave._id, artistSolarEchoes._id],
+    personalizationSettings: { explorationLevel: 0.6, diversityLevel: 0.7 },
+  });
+
+  await UserPreference.create({
+    userId: userC._id,
+    preferredGenres: ['rock'],
+    preferredArtists: [artistStoneThunder._id],
+    dislikedGenres: ['electronic', 'screamo'],
+    dislikedArtists: [],
+    preferredEnergy: 0.9,
+    preferredMood: 'energetic',
+    favoriteGenres: ['rock'],
+    favoriteArtists: [artistStoneThunder._id],
+    personalizationSettings: { explorationLevel: 0.3, diversityLevel: 0.5 },
+  });
+
+  await UserPreference.create({
+    userId: userD._id, // Cold start
+    preferredGenres: ['classical', 'ambient'],
+    preferredArtists: [artistVelvetStrings._id],
+    dislikedGenres: [],
+    dislikedArtists: [],
+    preferredEnergy: 0.3,
+    preferredMood: 'calm',
+    favoriteGenres: ['classical'],
+    favoriteArtists: [artistVelvetStrings._id],
+    personalizationSettings: { explorationLevel: 0.5, diversityLevel: 0.5 },
   });
 
   // 5. Create Albums

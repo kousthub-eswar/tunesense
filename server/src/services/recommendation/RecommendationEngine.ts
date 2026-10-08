@@ -338,12 +338,15 @@ export class RecommendationEngine {
       }
     }
 
-    // Step C: Fallback to fill remaining quota if diversity was too restrictive
+    // Step C: Fallback to fill remaining quota if diversity was too restrictive while strictly respecting maxPerArtist
     if (selected.length < limit) {
       for (const c of candidates) {
         if (selected.length >= limit) break;
         if (!selectedIds.has(c.song.id)) {
-          addCandidate(c);
+          const artistKey = c.song.artistName || c.song.artistId || 'unknown';
+          if ((artistCounts.get(artistKey) || 0) < maxPerArtist) {
+            addCandidate(c);
+          }
         }
       }
     }

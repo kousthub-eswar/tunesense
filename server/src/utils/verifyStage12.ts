@@ -2,8 +2,9 @@ process.env.JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_secret_key_stage_12_
 
 import assert from 'assert';
 import http from 'http';
+import { Types } from 'mongoose';
 import { createApp } from '../app.js';
-import { UserLibrary, Playlist } from '../models/index.js';
+import { UserLibrary, Playlist, Song } from '../models/index.js';
 import { libraryService } from '../services/library/LibraryService.js';
 import { playlistService } from '../services/library/PlaylistService.js';
 import { authService } from '../services/auth/AuthService.js';
@@ -76,8 +77,24 @@ async function runStage12Verification() {
   const testUserBId = '507f191e810c19729de860eb';
   const tokenA = createTestToken(testUserAId);
   const tokenB = createTestToken(testUserBId);
+  const testSongId = '507f191e810c19729de86001';
 
   try {
+    if (getDatabaseState().isConnected) {
+      await Song.findByIdAndUpdate(
+        testSongId,
+        {
+          $setOnInsert: {
+            title: 'Stage 12 Test Track',
+            durationSeconds: 180,
+            provider: 'custom',
+            artistIds: [new Types.ObjectId('507f191e810c19729de860aa')],
+            genres: ['electronic'],
+          },
+        },
+        { upsert: true }
+      );
+    }
     // ----------------------------------------------------
     // TEST 1-4: Mongoose Models & Schemas
     // ----------------------------------------------------
@@ -336,6 +353,11 @@ async function runStage12Verification() {
     console.log('   ALL 34 STAGE 12 VERIFICATION CHECKS PASSED!      ');
     console.log('====================================================\n');
   } finally {
+    if (getDatabaseState().isConnected) {
+      await Song.findByIdAndDelete(testSongId);
+      await UserLibrary.deleteMany({ userId: { $in: [testUserAId, testUserBId] } });
+      await Playlist.deleteMany({ userId: { $in: [testUserAId, testUserBId] } });
+    }
     server.close();
     await disconnectDatabase();
   }

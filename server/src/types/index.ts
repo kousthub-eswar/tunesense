@@ -34,6 +34,7 @@ export interface IUser {
   displayName: string;
   email: string;
   passwordHash: string;
+  role?: 'user' | 'admin';
   avatarUrl?: string;
   createdAt: Date;
   updatedAt: Date;

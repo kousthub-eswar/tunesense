@@ -6,6 +6,9 @@ import { analyticsService } from '../services/analytics/AnalyticsService.js';
 import { EVALUATION_CONFIG } from '../config/evaluationConfig.js';
 import { CandidateSongEnriched } from '../services/recommendation/types.js';
 import { Song } from '../models/Song.js';
+import { ListeningEvent } from '../models/ListeningEvent.js';
+import { RecommendationImpression } from '../models/RecommendationImpression.js';
+import { Types } from 'mongoose';
 import { connectDatabase, disconnectDatabase, getDatabaseState } from '../config/database.js';
 import { authService } from '../services/auth/AuthService.js';
 
@@ -140,6 +143,8 @@ async function runStage9Verification() {
   const userBId = '507f191e810c19729de86002';
   const tokenA = createTestToken(userAId);
   const tokenB = createTestToken(userBId);
+  const s1Id = '507f191e810c19729de86011';
+  const s2Id = '507f191e810c19729de86012';
 
   try {
     // ----------------------------------------------------
@@ -148,18 +153,37 @@ async function runStage9Verification() {
     console.log('[Test 1-6] Verifying user listening analytics aggregation...');
 
     const isDbConnected = getDatabaseState().isConnected;
-    let s1Id = '507f191e810c19729de86011';
-    let s2Id = '507f191e810c19729de86012';
 
     if (isDbConnected) {
       try {
-        const existingSongs = await Song.find().limit(2);
-        if (existingSongs.length >= 2) {
-          s1Id = existingSongs[0]._id.toString();
-          s2Id = existingSongs[1]._id.toString();
-        }
+        await Song.findByIdAndUpdate(
+          s1Id,
+          {
+            $setOnInsert: {
+              title: 'Stage 9 Test Track 1',
+              durationSeconds: 200,
+              provider: 'custom',
+              artistIds: [new Types.ObjectId('507f191e810c19729de860aa')],
+              genres: ['electronic'],
+            },
+          },
+          { upsert: true }
+        );
+        await Song.findByIdAndUpdate(
+          s2Id,
+          {
+            $setOnInsert: {
+              title: 'Stage 9 Test Track 2',
+              durationSeconds: 180,
+              provider: 'custom',
+              artistIds: [new Types.ObjectId('507f191e810c19729de860bb')],
+              genres: ['rock'],
+            },
+          },
+          { upsert: true }
+        );
       } catch (err) {
-        console.warn('Could not query Mongo songs, using fallback IDs');
+        console.warn('Could not upsert Mongo songs, using fallback IDs', err);
       }
     }
 
@@ -544,6 +568,16 @@ async function runStage9Verification() {
     console.log('   ALL 27 STAGE 9 VERIFICATION CHECKS PASSED!        ');
     console.log('====================================================\n');
   } finally {
+    if (getDatabaseState().isConnected) {
+      try {
+        await Song.findByIdAndDelete(s1Id);
+        await Song.findByIdAndDelete(s2Id);
+        await ListeningEvent.deleteMany({ userId: userAId });
+        await RecommendationImpression.deleteMany({ userId: userAId });
+      } catch (err) {
+        // ignore
+      }
+    }
     server.close();
     await disconnectDatabase();
   }

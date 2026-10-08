@@ -1,7 +1,13 @@
+import fs from 'fs';
+import path from 'path';
 import dotenv from 'dotenv';
 import { z } from 'zod';
 
 dotenv.config();
+const serverEnvPath = path.resolve(process.cwd(), 'server/.env');
+if (fs.existsSync(serverEnvPath)) {
+  dotenv.config({ path: serverEnvPath });
+}
 
 const envSchema = z.object({
   PORT: z.string().default('5000').transform((val) => parseInt(val, 10)),
@@ -25,6 +31,11 @@ if (!parsedEnv.success) {
 const resolvedClientOrigin =
   parsedEnv.data.CLIENT_ORIGIN || parsedEnv.data.CLIENT_URL || 'http://localhost:5173';
 
+const DEV_FALLBACK_JWT_SECRET = 'tunesense_dev_jwt_secret_key_minimum_32_characters_12345';
+const resolvedJwtSecret =
+  parsedEnv.data.JWT_SECRET ||
+  (parsedEnv.data.NODE_ENV !== 'production' ? DEV_FALLBACK_JWT_SECRET : undefined);
+
 export const config = {
   port: parsedEnv.data.PORT,
   nodeEnv: parsedEnv.data.NODE_ENV,
@@ -33,7 +44,7 @@ export const config = {
   mongodbUri: parsedEnv.data.MONGODB_URI,
   mongodbDbName: parsedEnv.data.MONGODB_DB_NAME,
   jamendoClientId: parsedEnv.data.JAMENDO_CLIENT_ID,
-  jwtSecret: parsedEnv.data.JWT_SECRET,
+  jwtSecret: resolvedJwtSecret,
   jwtExpiresIn: parsedEnv.data.JWT_EXPIRES_IN,
   isProduction: parsedEnv.data.NODE_ENV === 'production',
   isTest: parsedEnv.data.NODE_ENV === 'test',
@@ -47,12 +58,13 @@ export const config = {
 export function validateStartupConfig(): { valid: boolean; errors: string[]; warnings: string[] } {
   const errors: string[] = [];
   const warnings: string[] = [];
+  const rawJwt = process.env.JWT_SECRET;
 
   if (config.isProduction) {
     if (!config.mongodbUri || config.mongodbUri.trim() === '') {
       errors.push('MONGODB_URI is required in production environment.');
     }
-    if (!config.jwtSecret || config.jwtSecret.trim() === '') {
+    if (!rawJwt || rawJwt.trim() === '') {
       errors.push('JWT_SECRET is required in production environment for secure session signing.');
     }
     if (!config.jamendoClientId || config.jamendoClientId.trim() === '') {
@@ -64,7 +76,7 @@ export function validateStartupConfig(): { valid: boolean; errors: string[]; war
     if (!config.mongodbUri) {
       warnings.push('MONGODB_URI is not set. Server will operate in in-memory degraded mode.');
     }
-    if (!config.jwtSecret) {
+    if (!rawJwt) {
       warnings.push('JWT_SECRET is not set. Using temporary development fallback secret.');
     }
     if (!config.jamendoClientId) {

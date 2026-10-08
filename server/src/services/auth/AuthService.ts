@@ -4,6 +4,9 @@ import { config } from '../../config/index.js';
 import { User, UserPreference } from '../../models/index.js';
 import { SafeUserDto, AuthTokenPayload, IUser } from '../../types/index.js';
 
+// Precomputed dummy bcrypt hash (cost factor 12) for constant-time comparison against nonexistent accounts
+const DUMMY_HASH = '$2a$12$e8rG.hG8QhmN6p8xYy1hMe8H5C7.l2WlAeVt3.fC76L7n8vQ0Y3c6';
+
 export class AuthService {
   private get secret(): string {
     const s = config.jwtSecret || process.env.JWT_SECRET;
@@ -135,6 +138,8 @@ export class AuthService {
     // 1. Find user by email
     const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
+      // Execute dummy password verification so response timing matches an existing user
+      await this.comparePassword(data.password, DUMMY_HASH);
       const err = new Error('Invalid email or password.');
       (err as unknown as { status: number }).status = 401;
       throw err;

@@ -3,6 +3,8 @@ import { Song, ListeningEvent } from '../../models/index.js';
 import { CreateListeningEventInput } from '../../validators/listeningEventValidators.js';
 import { ListeningEventDto, IListeningEventContext, IListeningEventMetadata } from '../../types/index.js';
 import { getDatabaseState } from '../../config/database.js';
+import { collaborativeService } from '../recommendation/CollaborativeService.js';
+import { userTasteProfileService } from '../profile/UserTasteProfileService.js';
 
 export class ListeningEventService {
   /**
@@ -67,6 +69,18 @@ export class ListeningEventService {
     }).sort({ timestamp: -1 });
 
     if (recentDuplicate && input.eventType === 'play') {
+      const incomingRecId =
+        input.recommendation?.recommendationRequestId || input.metadata?.recommendationRequestId;
+      if (incomingRecId && !recentDuplicate.metadata?.recommendationRequestId) {
+        const meta = (recentDuplicate.metadata || {}) as IListeningEventMetadata;
+        meta.recommendationRequestId = incomingRecId;
+        meta.recommendationStrategy =
+          input.recommendation?.recommendationStrategy || input.metadata?.recommendationStrategy;
+        meta.recommendationPosition =
+          input.recommendation?.recommendationPosition ?? input.metadata?.recommendationPosition;
+        recentDuplicate.metadata = meta;
+        await recentDuplicate.save();
+      }
       // Return existing event DTO safely without writing a duplicate document
       return this.toDto(recentDuplicate);
     }
@@ -87,9 +101,12 @@ export class ListeningEventService {
       completionPercent,
       playbackSpeed,
       deviceType: input.context?.deviceType || 'unknown',
-      recommendationRequestId: input.recommendation?.recommendationRequestId,
-      recommendationStrategy: input.recommendation?.recommendationStrategy,
-      recommendationPosition: input.recommendation?.recommendationPosition,
+      recommendationRequestId:
+        input.recommendation?.recommendationRequestId || input.metadata?.recommendationRequestId,
+      recommendationStrategy:
+        input.recommendation?.recommendationStrategy || input.metadata?.recommendationStrategy,
+      recommendationPosition:
+        input.recommendation?.recommendationPosition ?? input.metadata?.recommendationPosition,
     };
 
     const timestamp = input.timestamp ? new Date(input.timestamp) : new Date();
@@ -103,6 +120,21 @@ export class ListeningEventService {
       context: eventContext,
       metadata: eventMetadata,
     });
+
+    // 7. Personalization pipeline materialization (failsafe)
+    // Synchronously updates sparse UserSongInteraction for (userId, songId),
+    // refreshes UserTasteProfile materialized view, and invalidates similarity cache
+    // so future recommendations reflect this event immediately.
+    try {
+      await collaborativeService.updateUserSongInteraction(userId, songDoc._id.toString());
+      await userTasteProfileService.rebuildProfile(userId);
+      await collaborativeService.invalidateSimilarityCache(userId);
+    } catch (materializationError) {
+      console.warn(
+        '[ListeningEventService] Non-fatal personalization pipeline materialization notice:',
+        materializationError
+      );
+    }
 
     return this.toDto(eventDoc);
   }

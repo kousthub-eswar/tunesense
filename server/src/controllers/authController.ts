@@ -4,13 +4,13 @@ import { signupSchema, loginSchema } from '../validators/authValidators.js';
 import { AUTH_COOKIE_NAME } from '../middleware/authMiddleware.js';
 import { config } from '../config/index.js';
 
-const COOKIE_OPTIONS = {
+export const getCookieOptions = () => ({
   httpOnly: true,
   secure: config.isProduction,
-  sameSite: 'lax' as const,
+  sameSite: (config.isProduction ? 'none' : 'lax') as 'none' | 'lax',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   path: '/',
-};
+});
 
 /**
  * POST /api/auth/signup
@@ -21,7 +21,7 @@ export async function signup(req: Request, res: Response, next: NextFunction): P
 
     const { user, token } = await authService.signup(validatedData);
 
-    res.cookie(AUTH_COOKIE_NAME, token, COOKIE_OPTIONS);
+    res.cookie(AUTH_COOKIE_NAME, token, getCookieOptions());
 
     res.status(201).json({
       status: 'ok',
@@ -52,7 +52,7 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
 
     const { user, token } = await authService.login(validatedData);
 
-    res.cookie(AUTH_COOKIE_NAME, token, COOKIE_OPTIONS);
+    res.cookie(AUTH_COOKIE_NAME, token, getCookieOptions());
 
     res.status(200).json({
       status: 'ok',
@@ -81,7 +81,7 @@ export function logout(_req: Request, res: Response): void {
   res.clearCookie(AUTH_COOKIE_NAME, {
     httpOnly: true,
     secure: config.isProduction,
-    sameSite: 'lax',
+    sameSite: (config.isProduction ? 'none' : 'lax') as 'none' | 'lax',
     path: '/',
   });
 

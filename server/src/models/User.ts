@@ -22,6 +22,11 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: [true, 'Password hash is required'],
     },
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
+    },
     avatarUrl: {
       type: String,
       trim: true,

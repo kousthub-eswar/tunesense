@@ -240,7 +240,7 @@ async function runStage6Verification() {
       pass('Audio Features: User acoustic feature preference profile is accurately computed');
 
       // 3h. Behavioural statistics (skip rate, completion rate, average completion)
-      const behaviour = completedProfile.behaviour;
+      const behaviour = skippedProfile.behaviour;
       if (behaviour.totalEvents !== 3) throw new Error(`Expected 3 total events, got ${behaviour.totalEvents}`);
       if (behaviour.playCount !== 1 || behaviour.completeCount !== 1 || behaviour.skipCount !== 1) {
         throw new Error('Event counts mismatch');
