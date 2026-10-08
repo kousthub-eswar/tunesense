@@ -16,7 +16,7 @@ A comprehensive security review of the TuneSense music recommendation platform w
 
 | Category | Control Evaluated | Status | Details & Implementation |
 | :--- | :--- | :--- | :--- |
-| **Authentication** | Password Storage & Hashing | **PASS** | Passwords hashed using `bcryptjs` with salt work factor of 10. Raw passwords and hashes are never exposed in user DTOs. |
+| **Authentication** | Password Storage & Hashing | **PASS** | Passwords hashed using `bcryptjs` with salt work factor of 12. Raw passwords and hashes are never exposed in user DTOs. |
 | **Authentication** | JWT Lifecycle & Signing | **PASS** | Signed using `jsonwebtoken` with 7-day expiration (`7d`). Production requires non-empty `JWT_SECRET`. |
 | **Session Security** | HTTP-Only Cookies | **PASS** | Session cookie (`tunesense_token`) is marked `httpOnly: true`, `sameSite: 'lax'`, and dynamically sets `secure: true` in production (`NODE_ENV === 'production'`). |
 | **Authorization** | User Identity Resolution | **PASS** | All protected endpoints strictly derive user identity from `req.user.id` extracted by `requireAuth` middleware. |

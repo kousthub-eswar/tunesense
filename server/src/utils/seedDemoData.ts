@@ -85,7 +85,7 @@ export async function seedDemoData(): Promise<SeedResult> {
   // 1. Clean previous demo records
   await cleanDemoData();
 
-  const passwordHash = await bcrypt.hash('DemoPassword123!', 10);
+  const passwordHash = await bcrypt.hash('DemoPassword123!', 12);
 
   // 2. Create Demo Users
   const userA: any = await User.create({
