@@ -1,0 +1,11 @@
+export { User } from './User.js';
+export { Song } from './Song.js';
+export { Artist } from './Artist.js';
+export { Album } from './Album.js';
+export { UserPreference } from './UserPreference.js';
+export { ListeningEvent } from './ListeningEvent.js';
+export { UserTasteProfile } from './UserTasteProfile.js';
+export { RecommendationImpression } from './RecommendationImpression.js';
+export { EvaluationFeedback } from './EvaluationFeedback.js';
+export { UserSongInteraction } from './UserSongInteraction.js';
+export { UserSimilarity } from './UserSimilarity.js';
