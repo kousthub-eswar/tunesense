@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Music, UserPlus, AlertCircle } from 'lucide-react';
+import { Music, UserPlus, AlertCircle, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer.js';
 import { Card } from '../components/ui/Card.js';
 import { Input } from '../components/ui/Input.js';
@@ -9,12 +9,21 @@ import { useAuth } from '../contexts/AuthContext.js';
 
 export const SignupPage: React.FC = () => {
   const navigate = useNavigate();
-  const { signup } = useAuth();
+  const { signup, isAuthenticated } = useAuth();
+
+  // If already authenticated, redirect to home
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/home', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{
@@ -39,7 +48,7 @@ export const SignupPage: React.FC = () => {
     }
 
     if (!email.trim()) {
-      errors.email = 'Email is required';
+      errors.email = 'Email address is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       errors.email = 'Please enter a valid email address';
     }
@@ -73,6 +82,7 @@ export const SignupPage: React.FC = () => {
         email: email.trim(),
         password,
       });
+      // Navigate to onboarding to set initial taste and genres
       navigate('/onboarding');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Registration failed. Please try again.';
@@ -83,8 +93,19 @@ export const SignupPage: React.FC = () => {
   };
 
   return (
-    <PageContainer>
-      <div className="max-w-md mx-auto pt-6 pb-12">
+    <PageContainer hasBottomNav={false}>
+      <div className="max-w-md mx-auto pt-4 pb-12">
+        {/* Navigation back to landing page */}
+        <div className="mb-4">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-xs text-content-muted hover:text-content-primary transition-colors py-1"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Back to TuneSense</span>
+          </Link>
+        </div>
+
         {/* Header Branding */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-500/10 border border-brand-500/20 text-brand-400 mb-4 shadow-lg shadow-brand-500/10">
@@ -112,7 +133,7 @@ export const SignupPage: React.FC = () => {
               id="signup-name"
               type="text"
               label="Full Name"
-              placeholder="Alex Parker"
+              placeholder="Alex Rivers"
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
@@ -128,7 +149,7 @@ export const SignupPage: React.FC = () => {
               id="signup-email"
               type="email"
               label="Email Address"
-              placeholder="alex@example.com"
+              placeholder="you@example.com"
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -142,8 +163,8 @@ export const SignupPage: React.FC = () => {
 
             <Input
               id="signup-password"
-              type="password"
-              label="Password (min 8 chars)"
+              type={showPassword ? 'text' : 'password'}
+              label="Password (min. 8 characters)"
               placeholder="••••••••"
               value={password}
               onChange={(e) => {
@@ -154,22 +175,46 @@ export const SignupPage: React.FC = () => {
               autoComplete="new-password"
               disabled={isLoading}
               required
+              rightElement={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="p-1 text-content-muted hover:text-content-primary transition-colors"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              }
             />
 
             <Input
               id="signup-confirm-password"
-              type="password"
+              type={showConfirmPassword ? 'text' : 'password'}
               label="Confirm Password"
               placeholder="••••••••"
               value={confirmPassword}
               onChange={(e) => {
                 setConfirmPassword(e.target.value);
-                if (fieldErrors.confirmPassword) setFieldErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+                if (fieldErrors.confirmPassword) {
+                  setFieldErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+                }
               }}
               error={fieldErrors.confirmPassword}
               autoComplete="new-password"
               disabled={isLoading}
               required
+              rightElement={
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="p-1 text-content-muted hover:text-content-primary transition-colors"
+                  aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                  tabIndex={-1}
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              }
             />
 
             <div className="pt-2">
@@ -180,8 +225,9 @@ export const SignupPage: React.FC = () => {
                 size="md"
                 isLoading={isLoading}
                 leftIcon={<UserPlus className="w-4 h-4" />}
+                className="shadow-glow"
               >
-                Create Account
+                Create Account & Set Taste
               </Button>
             </div>
           </form>

@@ -25,6 +25,7 @@ import { libraryService } from '../services/libraryService.js';
 import { fetchPopularTracks } from '../services/musicService.js';
 import { RecommendationItemDto, TrackItem, HistoryItem } from '../types/index.js';
 import { MOCK_VIBE_CHIPS } from '../constants/fixtures.js';
+import { cn } from '../utils/cn.js';
 
 const MOOD_STORAGE_KEY = 'tunesense_active_mood';
 
@@ -237,16 +238,32 @@ export const HomePage: React.FC = () => {
           </span>
         </div>
         <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-          {MOCK_VIBE_CHIPS.map((chip) => (
-            <Badge
-              key={chip.label}
-              variant={chip.variant}
-              className="cursor-pointer hover:scale-105 transition-transform shrink-0"
-              onClick={() => navigate('/discover')}
-            >
-              {chip.label}
-            </Badge>
-          ))}
+          {MOCK_VIBE_CHIPS.map((chip) => {
+            const mappedMood =
+              chip.label === 'Deep Focus'
+                ? 'focused'
+                : chip.label === 'Late Night'
+                ? 'calm'
+                : chip.label === 'Energetic Gym'
+                ? 'energetic'
+                : chip.label === 'Acoustic Calm'
+                ? 'relaxed'
+                : 'sad';
+            const isSelected = activeMood === mappedMood;
+            return (
+              <Badge
+                key={chip.label}
+                variant={chip.variant}
+                className={cn(
+                  'cursor-pointer hover:scale-105 transition-all shrink-0 py-1 px-3',
+                  isSelected && 'ring-2 ring-brand-400 font-bold shadow-glow'
+                )}
+                onClick={() => handleSelectMood(mappedMood)}
+              >
+                {chip.label}
+              </Badge>
+            );
+          })}
         </div>
       </div>
 

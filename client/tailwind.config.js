@@ -13,28 +13,29 @@ export default {
     extend: {
       colors: {
         bg: {
-          main: '#0B0D13',
-          elevated: '#121520',
-          subtle: '#181C2A',
+          main: '#0B0B10',
+          elevated: '#15151F',
+          subtle: '#1C1C29',
         },
         surface: {
-          DEFAULT: '#191D2B',
-          hover: '#22273A',
-          border: 'rgba(255, 255, 255, 0.08)',
-          'border-active': 'rgba(139, 92, 246, 0.4)',
+          DEFAULT: '#15151F',
+          secondary: '#1C1C29',
+          hover: '#232334',
+          border: '#262638',
+          'border-active': 'rgba(139, 92, 246, 0.5)',
         },
         content: {
-          primary: '#F8FAFC',
-          secondary: '#94A3B8',
-          muted: '#64748B',
+          primary: '#F5F3FF',
+          secondary: '#A1A1B5',
+          muted: '#717188',
         },
         brand: {
           50: '#f5f3ff',
           100: '#ede9fe',
           200: '#ddd6fe',
           300: '#c4b5fd',
-          400: '#a78bfa',
-          500: '#8b5cf6', // Primary vibrant accent
+          400: '#A78BFA', // Accent highlight
+          500: '#8B5CF6', // Primary accent
           600: '#7c3aed',
           700: '#6d28d9',
           glow: 'rgba(139, 92, 246, 0.35)',

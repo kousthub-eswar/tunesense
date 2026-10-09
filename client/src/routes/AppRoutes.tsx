@@ -1,47 +1,51 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { AppShell } from '../components/layout/AppShell.js';
+import { ProtectedRoute } from '../components/auth/ProtectedRoute.js';
+import { LandingPage } from '../pages/LandingPage.js';
 import { HomePage } from '../pages/HomePage.js';
 import { DiscoverPage } from '../pages/DiscoverPage.js';
-import { LibraryPage } from '../pages/LibraryPage.js';
-import { ProfilePage } from '../pages/ProfilePage.js';
 import { SearchPage } from '../pages/SearchPage.js';
+import { SongDetailPage } from '../pages/SongDetailPage.js';
+import { RecommendationsPage } from '../pages/RecommendationsPage.js';
+import { LibraryPage } from '../pages/LibraryPage.js';
+import { PlaylistPage } from '../pages/PlaylistPage.js';
+import { ProfilePage } from '../pages/ProfilePage.js';
+import { AnalyticsPage } from '../pages/AnalyticsPage.js';
 import { LoginPage } from '../pages/LoginPage.js';
 import { SignupPage } from '../pages/SignupPage.js';
 import { OnboardingPage } from '../pages/OnboardingPage.js';
-import { AnalyticsPage } from '../pages/AnalyticsPage.js';
 import { PlayerPage } from '../pages/PlayerPage.js';
-import { PlaylistPage } from '../pages/PlaylistPage.js';
-import { PlaceholderPage } from '../pages/PlaceholderPage.js';
 import { NotFoundPage } from '../pages/NotFoundPage.js';
 
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
-      <Route element={<AppShell />}>
-        {/* Default Redirect */}
-        <Route path="/" element={<Navigate to="/home" replace />} />
+      {/* Public Landing Page for unauthenticated listeners */}
+      <Route path="/" element={<LandingPage />} />
 
-        {/* Primary Core Navigation */}
+      {/* Main Application Shell */}
+      <Route element={<AppShell />}>
+        {/* Core Discovery & Browsing (accessible to all listeners) */}
         <Route path="/home" element={<HomePage />} />
         <Route path="/discover" element={<DiscoverPage />} />
-        <Route path="/library" element={<LibraryPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/song/:id" element={<SongDetailPage />} />
+        <Route path="/player" element={<PlayerPage />} />
 
-        {/* Stage 9 Analytics & Evaluation */}
-        <Route path="/analytics" element={<AnalyticsPage />} />
-
-        {/* Authentication & Onboarding Routes (Stage 4 & Stage 8) */}
+        {/* Authentication Routes */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
-        <Route path="/onboarding" element={<OnboardingPage />} />
 
-        {/* Music Catalogue, Player, and Playlists (Stage 12) */}
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/player" element={<PlayerPage />} />
-        <Route path="/playlist/:id" element={<PlaylistPage />} />
-        <Route path="/song/:id" element={<PlaceholderPage />} />
-        <Route path="/recommendations" element={<PlaceholderPage />} />
+        {/* Protected User Routes (Require Authenticated Session) */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/recommendations" element={<RecommendationsPage />} />
+          <Route path="/library" element={<LibraryPage />} />
+          <Route path="/playlist/:id" element={<PlaylistPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/analytics" element={<AnalyticsPage />} />
+          <Route path="/onboarding" element={<OnboardingPage />} />
+        </Route>
 
         {/* 404 Catch-All */}
         <Route path="*" element={<NotFoundPage />} />
@@ -49,3 +53,5 @@ export const AppRoutes: React.FC = () => {
     </Routes>
   );
 };
+
+export default AppRoutes;

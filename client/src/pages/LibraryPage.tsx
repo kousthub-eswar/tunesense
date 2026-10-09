@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Heart,
   Clock,
@@ -26,7 +26,19 @@ import { PlaylistSummaryDto, TrackItem, HistoryItem } from '../types/index.js';
 type Tab = 'playlists' | 'likes' | 'history';
 
 export const LibraryPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<Tab>('playlists');
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab') as Tab | null;
+  const [activeTab, setActiveTab] = useState<Tab>(
+    tabParam === 'playlists' || tabParam === 'likes' || tabParam === 'history'
+      ? tabParam
+      : 'playlists'
+  );
+
+  useEffect(() => {
+    if (tabParam && (tabParam === 'playlists' || tabParam === 'likes' || tabParam === 'history')) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { setQueue, currentTrack, isPlaying } = useAudioPlayer();

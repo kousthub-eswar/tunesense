@@ -88,7 +88,7 @@ export const ProfilePage: React.FC = () => {
     setIsLoggingOut(true);
     try {
       await logout();
-      navigate('/login');
+      navigate('/', { replace: true });
     } catch {
       // Logout completed client-side regardless
     } finally {

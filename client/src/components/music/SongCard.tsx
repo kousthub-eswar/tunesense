@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Play, Pause, Heart, ListPlus } from 'lucide-react';
 import { MusicArtwork } from './MusicArtwork.js';
 import { IconButton } from '../ui/IconButton.js';
@@ -106,14 +107,16 @@ export const SongCard: React.FC<SongCardProps> = ({
           </div>
 
           <div className="min-w-0 flex-1">
-            <h4
+            <Link
+              to={`/song/${track.id}`}
+              onClick={(e) => e.stopPropagation()}
               className={cn(
-                'text-sm font-semibold truncate',
+                'text-sm font-semibold truncate block hover:underline hover:text-brand-300 transition-colors',
                 isActive ? 'text-brand-400' : 'text-content-primary'
               )}
             >
               {title}
-            </h4>
+            </Link>
             <p className="text-xs text-content-secondary truncate mt-0.5">
               {artist}
               {album ? ` • ${album}` : ''}

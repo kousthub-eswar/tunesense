@@ -105,14 +105,22 @@ export const OnboardingPage: React.FC = () => {
   return (
     <PageContainer>
       {/* Progress Header */}
-      <div className="mb-5">
-        <div className="flex items-center justify-between mb-2">
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-2.5">
           <Badge variant="brand" size="sm">
             Step {currentStep} of 5
           </Badge>
-          <span className="text-xs text-content-muted">Personalized Setup</span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-content-muted hidden sm:inline">Personalized Setup</span>
+            <button
+              onClick={() => navigate('/home')}
+              className="text-xs text-content-secondary hover:text-brand-300 transition-colors underline-offset-4 hover:underline"
+            >
+              Skip to Home →
+            </button>
+          </div>
         </div>
-        <div className="w-full bg-surface-border rounded-full h-1.5 overflow-hidden">
+        <div className="w-full bg-surface-secondary rounded-full h-1.5 overflow-hidden">
           <div
             className="bg-brand-500 h-1.5 transition-all duration-300 rounded-full"
             style={{ width: `${(currentStep / 5) * 100}%` }}

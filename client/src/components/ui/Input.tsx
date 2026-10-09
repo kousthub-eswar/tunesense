@@ -6,12 +6,14 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   label?: string;
   error?: string;
   isSearch?: boolean;
+  rightElement?: React.ReactNode;
 }
 
 export const Input: React.FC<InputProps> = ({
   label,
   error,
   isSearch = false,
+  rightElement,
   className,
   id,
   ...props
@@ -37,11 +39,17 @@ export const Input: React.FC<InputProps> = ({
             'w-full bg-surface text-content-primary rounded-input border border-surface-border px-3.5 py-2.5 text-sm placeholder:text-content-muted',
             'transition-colors duration-200 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500',
             isSearch && 'pl-10',
+            Boolean(rightElement) && 'pr-11',
             error && 'border-vibe-rose focus:border-vibe-rose focus:ring-vibe-rose',
             className
           )}
           {...props}
         />
+        {rightElement && (
+          <div className="absolute right-2.5 flex items-center text-content-muted">
+            {rightElement}
+          </div>
+        )}
       </div>
       {error && <p className="text-xs text-vibe-rose mt-1.5">{error}</p>}
     </div>
