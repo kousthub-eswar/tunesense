@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Music2 } from 'lucide-react';
 import { cn } from '../../utils/cn.js';
 
@@ -17,12 +17,20 @@ export const MusicArtwork: React.FC<MusicArtworkProps> = ({
   className,
   fallbackIcon,
 }) => {
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setHasError(false);
+  }, [src]);
+
   const sizeStyles = {
     sm: 'w-10 h-10 rounded-lg min-w-[40px]',
     md: 'w-14 h-14 rounded-artwork min-w-[56px]',
     lg: 'w-24 h-24 rounded-artwork min-w-[96px]',
     xl: 'w-48 h-48 rounded-2xl min-w-[192px]',
   };
+
+  const shouldShowFallback = !src || hasError;
 
   return (
     <div
@@ -32,12 +40,13 @@ export const MusicArtwork: React.FC<MusicArtworkProps> = ({
         className
       )}
     >
-      {src ? (
+      {!shouldShowFallback ? (
         <img
           src={src}
           alt={alt}
           className="w-full h-full object-cover select-none"
           loading="lazy"
+          onError={() => setHasError(true)}
         />
       ) : (
         fallbackIcon || <Music2 className="w-1/2 h-1/2 text-content-muted" />

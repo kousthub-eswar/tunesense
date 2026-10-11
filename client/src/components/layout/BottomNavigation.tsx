@@ -53,7 +53,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ className })
                 {item.label}
               </span>
               {isActive && (
-                <span className="w-1 h-1 rounded-full bg-brand-400 mt-0.5 shadow-glow" />
+                <span className="w-1 h-1 rounded-full bg-brand-400 mt-0.5" />
               )}
             </>
           )}

@@ -156,7 +156,7 @@ export const DesktopPlayer: React.FC = () => {
           <button
             onClick={togglePlayPause}
             disabled={isLoading}
-            className="w-9 h-9 rounded-full bg-brand-500 hover:bg-brand-400 text-white flex items-center justify-center transition-transform active:scale-95 shadow-md shadow-brand-500/25"
+            className="w-9 h-9 rounded-full bg-brand-500 hover:bg-brand-400 text-white flex items-center justify-center transition-transform active:scale-95 shadow-md"
             aria-label={isPlaying ? 'Pause' : 'Play'}
           >
             {isLoading ? (

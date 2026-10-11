@@ -42,8 +42,7 @@ const GENRE_VIBE_TILES = [
     id: 'electronic',
     label: 'Electronic & Synth',
     query: 'electronic synth',
-    gradient: 'from-[#1e1433] via-[#151322] to-[#13131B]',
-    border: 'border-brand-500/30 hover:border-brand-500/60',
+    border: 'border-surface-border hover:border-zinc-700',
     accentColor: 'text-brand-300',
     icon: Flame,
   },
@@ -51,8 +50,7 @@ const GENRE_VIBE_TILES = [
     id: 'ambient',
     label: 'Ambient Chill',
     query: 'ambient chillout',
-    gradient: 'from-[#102030] via-[#121924] to-[#13131B]',
-    border: 'border-sky-500/30 hover:border-sky-500/60',
+    border: 'border-surface-border hover:border-zinc-700',
     accentColor: 'text-sky-300',
     icon: Headphones,
   },
@@ -60,8 +58,7 @@ const GENRE_VIBE_TILES = [
     id: 'lofi',
     label: 'Lo-Fi Beats',
     query: 'lofi beats',
-    gradient: 'from-[#281c15] via-[#1d1717] to-[#13131B]',
-    border: 'border-amber-500/30 hover:border-amber-500/60',
+    border: 'border-surface-border hover:border-zinc-700',
     accentColor: 'text-amber-300',
     icon: Coffee,
   },
@@ -69,8 +66,7 @@ const GENRE_VIBE_TILES = [
     id: 'acoustic',
     label: 'Acoustic & Folk',
     query: 'acoustic folk',
-    gradient: 'from-[#12241f] via-[#131c19] to-[#13131B]',
-    border: 'border-emerald-500/30 hover:border-emerald-500/60',
+    border: 'border-surface-border hover:border-zinc-700',
     accentColor: 'text-emerald-300',
     icon: Guitar,
   },
@@ -78,8 +74,7 @@ const GENRE_VIBE_TILES = [
     id: 'indie',
     label: 'Indie & Alt Rock',
     query: 'indie rock',
-    gradient: 'from-[#281523] via-[#1c141c] to-[#13131B]',
-    border: 'border-rose-500/30 hover:border-rose-500/60',
+    border: 'border-surface-border hover:border-zinc-700',
     accentColor: 'text-rose-300',
     icon: Radio,
   },
@@ -87,8 +82,7 @@ const GENRE_VIBE_TILES = [
     id: 'focus',
     label: 'Focus & Flow',
     query: 'focus deep study',
-    gradient: 'from-[#161633] via-[#141525] to-[#13131B]',
-    border: 'border-indigo-500/30 hover:border-indigo-500/60',
+    border: 'border-surface-border hover:border-zinc-700',
     accentColor: 'text-indigo-300',
     icon: Target,
   },
@@ -400,12 +394,11 @@ export const HomePage: React.FC = () => {
                 key={tile.id}
                 onClick={() => handleSelectGenreTile(tile.query)}
                 className={cn(
-                  'p-3 sm:p-3.5 rounded-xl bg-gradient-to-br border transition-all duration-200 cursor-pointer select-none flex items-center justify-between group min-h-[58px]',
-                  tile.gradient,
+                  'p-3 sm:p-3.5 rounded-xl bg-surface border transition-colors duration-150 cursor-pointer select-none flex items-center justify-between group min-h-[58px]',
                   tile.border,
                   isTileActive
-                    ? 'ring-2 ring-brand-400 border-brand-400 bg-surface shadow-md'
-                    : 'hover:scale-[1.02] shadow-sm'
+                    ? 'border-brand-500 bg-surface-secondary text-brand-300'
+                    : 'hover:bg-surface-secondary'
                 )}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
@@ -601,9 +594,9 @@ export const HomePage: React.FC = () => {
             {!isAuthenticated && (
               <div
                 onClick={() => navigate('/signup')}
-                className="w-36 sm:w-40 md:w-44 shrink-0 rounded-xl p-3 bg-gradient-to-br from-surface-secondary to-surface border border-brand-500/25 flex flex-col items-center justify-center text-center cursor-pointer hover:border-brand-500/50 transition-colors select-none group"
+                className="w-36 sm:w-40 md:w-44 shrink-0 rounded-xl p-3 bg-surface border border-surface-border flex flex-col items-center justify-center text-center cursor-pointer hover:bg-surface-secondary hover:border-zinc-700 transition-colors select-none group"
               >
-                <div className="w-10 h-10 rounded-full bg-brand-500/15 border border-brand-500/30 text-brand-400 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                <div className="w-10 h-10 rounded-full bg-surface-secondary text-brand-400 flex items-center justify-center mb-2">
                   <Sparkles className="w-5 h-5" />
                 </div>
                 <h3 className="text-xs font-bold text-content-primary">Tailor Your Taste</h3>

@@ -173,10 +173,10 @@ export const SongDetailPage: React.FC = () => {
       </div>
 
       {/* Track Hero Banner */}
-      <Card className="p-6 mb-6 bg-gradient-to-br from-surface via-bg-elevated to-bg-main border-surface-border/80 shadow-xl">
+      <Card className="p-6 mb-6 bg-surface border border-surface-border">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
           {/* Large Artwork */}
-          <div className="relative w-44 h-44 sm:w-52 sm:h-52 shrink-0 rounded-2xl overflow-hidden shadow-2xl border border-surface-border/60">
+          <div className="relative w-44 h-44 sm:w-52 sm:h-52 shrink-0 rounded-2xl overflow-hidden border border-surface-border/60">
             <MusicArtwork
               src={track.artworkUrl}
               alt={track.title}
@@ -241,7 +241,7 @@ export const SongDetailPage: React.FC = () => {
                     <Play className="w-4 h-4 fill-current" />
                   )
                 }
-                className="shadow-glow px-6"
+                className="px-6"
               >
                 {isCurrentTrackActive && isPlaying ? 'Pause' : 'Play Track'}
               </Button>

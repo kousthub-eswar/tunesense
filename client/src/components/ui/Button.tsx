@@ -33,7 +33,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variantStyles = {
     primary:
-      'bg-brand-500 text-white hover:bg-brand-600 shadow-lg shadow-brand-500/25 active:bg-brand-700',
+      'bg-brand-500 text-white hover:bg-brand-600 shadow-sm active:bg-brand-700',
     secondary:
       'bg-surface hover:bg-surface-hover text-content-primary border border-surface-border active:border-surface-border-active',
     ghost:
@@ -41,7 +41,7 @@ export const Button: React.FC<ButtonProps> = ({
     outline:
       'bg-transparent border border-surface-border text-content-primary hover:bg-white/5 active:bg-white/10',
     danger:
-      'bg-vibe-rose text-white hover:bg-rose-600 shadow-lg shadow-rose-500/20',
+      'bg-vibe-rose text-white hover:bg-rose-600 shadow-sm',
   };
 
   return (

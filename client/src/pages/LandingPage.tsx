@@ -10,6 +10,9 @@ import {
   Headphones,
   Sliders,
   Disc,
+  Target,
+  Feather,
+  Zap,
 } from 'lucide-react';
 import { Button } from '../components/ui/Button.js';
 import { useAuth } from '../contexts/AuthContext.js';
@@ -26,27 +29,16 @@ export const LandingPage: React.FC = () => {
   }, [isAuthenticated, isLoading, navigate]);
 
   return (
-    <div className="min-h-screen bg-[#0b0b10] text-content-primary flex flex-col justify-between relative overflow-x-hidden select-none">
-      {/* Background Ambient Glow Gradients */}
-      <div
-        className="pointer-events-none absolute top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[500px] rounded-full bg-brand-500/10 blur-[130px] -z-10"
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute bottom-[10%] right-[-10%] w-[450px] h-[450px] rounded-full bg-vibe-cyan/10 blur-[140px] -z-10"
-        aria-hidden="true"
-      />
-
+    <div className="min-h-screen bg-[#09090D] text-content-primary flex flex-col justify-between relative overflow-x-hidden select-none">
       {/* Top Header Bar */}
       <header className="w-full max-w-6xl mx-auto px-5 py-5 sm:py-6 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-2xl bg-brand-500/15 border border-brand-500/30 flex items-center justify-center text-brand-400 shadow-glow">
+          <div className="w-10 h-10 rounded-2xl bg-surface border border-surface-border flex items-center justify-center text-brand-400">
             <Radio className="w-5 h-5 text-brand-400" />
           </div>
           <div>
             <span className="text-lg font-bold tracking-tight text-white flex items-center gap-1.5">
               TuneSense
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
             </span>
           </div>
         </div>
@@ -62,16 +54,16 @@ export const LandingPage: React.FC = () => {
 
       {/* Main Hero & Visual Composition */}
       <main className="w-full max-w-5xl mx-auto px-5 py-6 sm:py-10 flex-1 flex flex-col items-center justify-center text-center">
-        {/* Subtle Vibe Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/25 text-brand-300 text-xs font-medium mb-6 shadow-glow/30">
+        {/* Vibe Badge */}
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface border border-surface-border text-content-secondary text-xs font-medium mb-6">
           <Sparkles className="w-3.5 h-3.5 text-brand-400" />
-          <span>Next-Generation Music Discovery</span>
+          <span>Personalized Music Discovery</span>
         </div>
 
         {/* Primary Tagline */}
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white max-w-3xl leading-[1.15]">
           Music that understands <br className="hidden sm:inline" />
-          <span className="bg-gradient-to-r from-brand-300 via-brand-400 to-vibe-cyan bg-clip-text text-transparent">
+          <span className="text-brand-400">
             your vibe.
           </span>
         </h1>
@@ -81,46 +73,43 @@ export const LandingPage: React.FC = () => {
           TuneSense adapts to how you feel. Discover curated tracks, mood-aligned playlists, and transparent recommendations tailored to your unique taste.
         </p>
 
-        {/* Tasteful Visual Music Composition */}
+        {/* Visual Music Composition */}
         <div className="mt-8 mb-8 sm:mt-10 sm:mb-10 w-full max-w-md sm:max-w-lg mx-auto relative px-4">
           <div className="relative mx-auto w-64 h-64 sm:w-72 sm:h-72 flex items-center justify-center">
-            {/* Ambient Record Glow */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-brand-600/20 via-brand-500/30 to-vibe-cyan/20 blur-xl" />
-
-            {/* Glowing Vinyl Visual */}
-            <div className="relative w-56 h-56 sm:w-64 sm:h-64 rounded-full bg-gradient-to-br from-[#1a1a26] via-[#101018] to-[#0d0d14] border border-white/10 shadow-2xl flex items-center justify-center">
+            {/* Vinyl Visual */}
+            <div className="relative w-56 h-56 sm:w-64 sm:h-64 rounded-full bg-[#13131B] border border-surface-border shadow-xl flex items-center justify-center">
               {/* Concentric Grooves */}
               <div className="absolute inset-3 rounded-full border border-white/[0.04]" />
               <div className="absolute inset-7 rounded-full border border-white/[0.04]" />
-              <div className="absolute inset-12 rounded-full border border-white/[0.06]" />
+              <div className="absolute inset-12 rounded-full border border-white/[0.05]" />
               <div className="absolute inset-16 rounded-full border border-white/[0.04]" />
 
               {/* Center Vinyl Label */}
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br from-brand-700 via-brand-600 to-brand-900 border-2 border-brand-400/40 shadow-glow flex flex-col items-center justify-center p-2 text-center">
-                <Disc className="w-7 h-7 text-white/90 animate-spin" style={{ animationDuration: '10s' }} />
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-surface border border-surface-border flex flex-col items-center justify-center p-2 text-center">
+                <Disc className="w-7 h-7 text-content-secondary" />
                 <span className="text-[10px] font-bold tracking-wider text-white uppercase mt-1">
                   TuneSense
                 </span>
-                <span className="text-[8px] text-brand-200">Hi-Fi Audio</span>
+                <span className="text-[8px] text-content-muted">Music Player</span>
               </div>
             </div>
 
             {/* Floating Mood Chip 1 (Top Left) */}
-            <div className="absolute -top-1 -left-2 sm:-left-6 bg-surface/90 backdrop-blur-md border border-brand-500/30 px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 animate-bounce" style={{ animationDuration: '4s' }}>
-              <span className="text-xs">🎯</span>
-              <span className="text-[11px] font-semibold text-brand-300">Deep Focus</span>
+            <div className="absolute -top-1 -left-2 sm:-left-6 bg-surface border border-surface-border px-3 py-1.5 rounded-full shadow-md flex items-center gap-1.5">
+              <Target className="w-3.5 h-3.5 text-content-secondary" />
+              <span className="text-[11px] font-semibold text-content-primary">Deep Focus</span>
             </div>
 
             {/* Floating Mood Chip 2 (Bottom Right) */}
-            <div className="absolute -bottom-1 -right-2 sm:-right-6 bg-surface/90 backdrop-blur-md border border-vibe-cyan/30 px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 animate-bounce" style={{ animationDuration: '5s' }}>
-              <span className="text-xs">🌿</span>
-              <span className="text-[11px] font-semibold text-vibe-cyan">Chill Ambient</span>
+            <div className="absolute -bottom-1 -right-2 sm:-right-6 bg-surface border border-surface-border px-3 py-1.5 rounded-full shadow-md flex items-center gap-1.5">
+              <Feather className="w-3.5 h-3.5 text-content-secondary" />
+              <span className="text-[11px] font-semibold text-content-primary">Chill Ambient</span>
             </div>
 
             {/* Floating Mood Chip 3 (Top Right) */}
-            <div className="absolute top-4 -right-1 sm:-right-4 bg-surface/90 backdrop-blur-md border border-brand-400/20 px-2.5 py-1 rounded-full shadow-md hidden xs:flex items-center gap-1">
-              <span className="text-xs">⚡</span>
-              <span className="text-[10px] font-medium text-white">Energetic</span>
+            <div className="absolute top-4 -right-1 sm:-right-4 bg-surface border border-surface-border px-2.5 py-1 rounded-full shadow-sm hidden xs:flex items-center gap-1">
+              <Zap className="w-3.5 h-3.5 text-content-secondary" />
+              <span className="text-[10px] font-medium text-content-primary">Energetic</span>
             </div>
           </div>
         </div>
@@ -135,7 +124,7 @@ export const LandingPage: React.FC = () => {
             onClick={() => navigate('/signup')}
             leftIcon={<UserPlus className="w-4 h-4" />}
             rightIcon={<ArrowRight className="w-4 h-4" />}
-            className="text-sm font-semibold shadow-glow py-3.5 rounded-xl"
+            className="text-sm font-semibold py-3.5 rounded-xl"
           >
             Create Account
           </Button>
@@ -185,10 +174,25 @@ export const LandingPage: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="w-full max-w-5xl mx-auto px-5 py-4 text-center border-t border-surface-border/40">
+      <footer className="w-full max-w-5xl mx-auto px-5 py-6 text-center border-t border-surface-border/40">
         <p className="text-[11px] text-content-muted">
           TuneSense • Personalized, context-aware music discovery & streaming
         </p>
+        <div className="mt-2 flex items-center justify-center gap-4 text-xs text-content-muted">
+          <Link
+            to="/privacy-policy"
+            className="hover:text-white transition-colors underline-offset-4 hover:underline"
+          >
+            Privacy Policy
+          </Link>
+          <span className="text-surface-border">•</span>
+          <Link
+            to="/terms-and-conditions"
+            className="hover:text-white transition-colors underline-offset-4 hover:underline"
+          >
+            Terms & Conditions
+          </Link>
+        </div>
       </footer>
     </div>
   );

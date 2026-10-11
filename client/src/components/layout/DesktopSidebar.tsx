@@ -48,7 +48,7 @@ export const DesktopSidebar: React.FC = () => {
       {/* Brand Header */}
       <div className="p-5 border-b border-surface-border/60">
         <NavLink to="/home" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-brand-500/15 border border-brand-500/30 flex items-center justify-center text-brand-400 group-hover:scale-105 transition-transform shadow-glow">
+          <div className="w-10 h-10 rounded-xl bg-surface border border-surface-border flex items-center justify-center text-brand-400 group-hover:scale-105 transition-transform">
             <Radio className="w-5 h-5 text-brand-400" />
           </div>
           <div className="min-w-0">
@@ -160,7 +160,7 @@ export const DesktopSidebar: React.FC = () => {
               fullWidth
               onClick={() => navigate('/signup')}
               leftIcon={<UserPlus className="w-3.5 h-3.5" />}
-              className="text-xs shadow-glow"
+              className="text-xs"
             >
               Get Started
             </Button>
@@ -176,6 +176,23 @@ export const DesktopSidebar: React.FC = () => {
             </Button>
           </div>
         )}
+
+        {/* Legal links */}
+        <div className="mt-2.5 pt-2 border-t border-surface-border/30 flex items-center justify-between px-1 text-[10px] text-content-muted">
+          <NavLink
+            to="/privacy-policy"
+            className="hover:text-content-secondary transition-colors"
+          >
+            Privacy Policy
+          </NavLink>
+          <span>•</span>
+          <NavLink
+            to="/terms-and-conditions"
+            className="hover:text-content-secondary transition-colors"
+          >
+            Terms & Conditions
+          </NavLink>
+        </div>
       </div>
     </aside>
   );

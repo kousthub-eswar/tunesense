@@ -155,7 +155,7 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ className }) => {
             type="button"
             onClick={togglePlayPause}
             disabled={isLoading}
-            className="w-8 h-8 rounded-full bg-brand-500 hover:bg-brand-400 text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm shadow-brand-500/30"
+            className="w-8 h-8 rounded-full bg-brand-500 hover:bg-brand-400 text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm"
             aria-label={isPlaying ? 'Pause' : 'Play'}
           >
             {isLoading ? (

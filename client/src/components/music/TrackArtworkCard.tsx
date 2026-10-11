@@ -118,7 +118,7 @@ export const TrackArtworkCard: React.FC<TrackArtworkCardProps> = ({
                 e.stopPropagation();
                 onPlay?.();
               }}
-              className="w-10 h-10 rounded-full bg-brand-500 hover:bg-brand-400 text-white flex items-center justify-center shadow-lg shadow-brand-500/40 transition-transform active:scale-95"
+              className="w-10 h-10 rounded-full bg-brand-500 hover:bg-brand-400 text-white flex items-center justify-center shadow-md transition-transform active:scale-95"
               aria-label={isActive && isPlaying ? 'Pause' : 'Play'}
             >
               {isActive && isPlaying ? (

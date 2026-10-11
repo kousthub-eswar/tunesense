@@ -15,7 +15,6 @@
   --color-muted-text: #6F6D82;
   --color-brand-accent: #9664FF;
   --color-brand-highlight: #B59AFF;
-  --color-brand-glow: rgba(150, 100, 255, 0.25);
 
   --radius-card: 16px;
   --radius-button: 12px;
@@ -76,4 +75,16 @@ body {
 /* Prevent unwanted mobile text magnification */
 input, select, textarea {
   font-size: 16px !important;
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

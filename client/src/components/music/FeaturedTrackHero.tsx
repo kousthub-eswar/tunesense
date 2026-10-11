@@ -65,7 +65,7 @@ export const FeaturedTrackHero: React.FC<FeaturedTrackHeroProps> = ({
       <div
         onClick={onPlay}
         className={cn(
-          'relative overflow-hidden rounded-2xl bg-gradient-to-r from-surface-secondary via-surface to-surface border border-surface-border p-3.5 sm:p-5 transition-all duration-300 hover:border-brand-500/35 cursor-pointer group select-none shadow-sm',
+          'relative overflow-hidden rounded-2xl bg-surface border border-surface-border p-3.5 sm:p-5 transition-all duration-300 hover:border-brand-500/35 cursor-pointer group select-none shadow-sm',
           isActive && 'border-brand-500/40 ring-1 ring-brand-500/20',
           className
         )}
@@ -82,7 +82,7 @@ export const FeaturedTrackHero: React.FC<FeaturedTrackHeroProps> = ({
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-brand-400">
-                <Disc className="w-10 h-10 animate-spin" style={{ animationDuration: '6s' }} />
+                <Disc className={cn('w-10 h-10', isActive && isPlaying && 'animate-spin')} style={{ animationDuration: '6s' }} />
               </div>
             )}
 

@@ -32,17 +32,17 @@ interface StrategyOption {
 const STRATEGIES: StrategyOption[] = [
   {
     id: 'hybrid',
-    name: 'Hybrid AI',
+    name: 'Hybrid Personalization',
     code: 'R4',
     icon: Sparkles,
     description: 'Blends content features, collaborative signals, and current listening context',
   },
   {
     id: 'collaborativeHybrid',
-    name: 'Full Collab Hybrid',
+    name: 'Collaborative Hybrid',
     code: 'R5',
     icon: BrainCircuit,
-    description: 'Matrix factorization SVD blended with multi-factor acoustic profile matching',
+    description: 'Cosine similarity over sparse user interaction matrices blended with acoustic matching',
   },
   {
     id: 'context',
@@ -166,7 +166,7 @@ export const RecommendationsPage: React.FC = () => {
             <div className="flex items-center gap-2 mb-1.5">
               <Badge variant="brand" size="sm">
                 <Sparkles className="w-3 h-3 mr-1" />
-                Explainable AI Engine
+                Explainable Recommendation Engine
               </Badge>
               <Badge variant="neutral" size="sm" className="font-mono text-[10px]">
                 {currentStrategyObj.code}
@@ -176,7 +176,7 @@ export const RecommendationsPage: React.FC = () => {
               Recommendation Lab
             </h1>
             <p className="text-xs sm:text-sm text-content-secondary mt-1 max-w-xl">
-              Inspect TuneSense's transparent recommendation strategies (R0–R5) with explainability badges and acoustic scoring.
+              Inspect TuneSense's transparent recommendation strategies (R0 to R5) with explainability badges and acoustic scoring.
             </p>
           </div>
 
@@ -197,7 +197,7 @@ export const RecommendationsPage: React.FC = () => {
               onClick={handlePlayAll}
               disabled={isLoading || recommendations.length === 0}
               leftIcon={<Play className="w-3.5 h-3.5 fill-current" />}
-              className="text-xs shadow-glow"
+              className="text-xs"
             >
               Play All ({recommendations.length})
             </Button>
@@ -301,10 +301,10 @@ export const RecommendationsPage: React.FC = () => {
           </div>
           <h3 className="text-base font-bold text-content-primary mb-1">No Recommendations Found</h3>
           <p className="text-xs text-content-secondary max-w-md mx-auto mb-4">
-            Try switching to another strategy (like Hybrid AI or Popularity) or selecting a different listening mood.
+            Try switching to another strategy (like Hybrid Personalization or Popularity) or selecting a different listening mood.
           </p>
           <Button variant="secondary" size="sm" onClick={() => setActiveStrategy('hybrid')}>
-            Switch to Hybrid AI
+            Switch to Hybrid Personalization
           </Button>
         </Card>
       ) : (

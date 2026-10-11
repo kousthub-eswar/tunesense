@@ -120,9 +120,9 @@ export const LibraryPage: React.FC = () => {
 
       {/* Guest Sign-In Callout (Compact & Intentional) */}
       {!isAuthenticated && (
-        <div className="mb-5 p-3.5 rounded-xl bg-gradient-to-r from-brand-900/40 via-surface to-bg-elevated border border-brand-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-glow/20">
+        <div className="mb-5 p-3.5 rounded-xl bg-surface border border-surface-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-surface-secondary text-brand-400 flex items-center justify-center shrink-0">
               <Disc className="w-5 h-5" />
             </div>
             <div>
@@ -162,7 +162,7 @@ export const LibraryPage: React.FC = () => {
           className={cn(
             'flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-semibold shrink-0 transition-all select-none',
             activeTab === 'playlists'
-              ? 'bg-brand-500 text-white shadow-sm shadow-brand-500/30'
+              ? 'bg-brand-500 text-white shadow-sm'
               : 'bg-surface/80 hover:bg-surface text-content-secondary hover:text-white border border-surface-border'
           )}
         >
@@ -181,7 +181,7 @@ export const LibraryPage: React.FC = () => {
           className={cn(
             'flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-semibold shrink-0 transition-all select-none',
             activeTab === 'likes'
-              ? 'bg-brand-500 text-white shadow-sm shadow-brand-500/30'
+              ? 'bg-brand-500 text-white shadow-sm'
               : 'bg-surface/80 hover:bg-surface text-content-secondary hover:text-white border border-surface-border'
           )}
         >
@@ -200,7 +200,7 @@ export const LibraryPage: React.FC = () => {
           className={cn(
             'flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-semibold shrink-0 transition-all select-none',
             activeTab === 'history'
-              ? 'bg-brand-500 text-white shadow-sm shadow-brand-500/30'
+              ? 'bg-brand-500 text-white shadow-sm'
               : 'bg-surface/80 hover:bg-surface text-content-secondary hover:text-white border border-surface-border'
           )}
         >

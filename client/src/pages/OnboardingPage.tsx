@@ -163,6 +163,7 @@ export const OnboardingPage: React.FC = () => {
             <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 pt-2">
               {MOOD_OPTIONS.map((mood) => {
                 const selected = preferredMood === mood.id;
+                const MoodIcon = mood.icon;
                 return (
                   <button
                     key={mood.id}
@@ -170,12 +171,12 @@ export const OnboardingPage: React.FC = () => {
                     onClick={() => setPreferredMood(selected ? null : mood.id)}
                     className={`flex flex-col items-start p-3.5 rounded-2xl text-xs transition-all border text-left ${
                       selected
-                        ? 'bg-brand-500/15 border-brand-500 text-brand-300 shadow-glow'
+                        ? 'bg-brand-500/15 border-brand-500 text-brand-300'
                         : 'bg-surface/70 hover:bg-surface border-surface-border text-content-secondary'
                     }`}
                   >
                     <div className="flex items-center justify-between w-full mb-1">
-                      <span className="text-xl">{mood.emoji}</span>
+                      <MoodIcon className="w-5 h-5 text-content-secondary" />
                       {selected && <Check className="w-3.5 h-3.5 text-brand-400" />}
                     </div>
                     <span className="font-semibold text-content-primary text-sm">{mood.label}</span>
@@ -211,7 +212,7 @@ export const OnboardingPage: React.FC = () => {
                     onClick={() => toggleGenre(genre)}
                     className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs font-medium min-h-[44px] transition-all border ${
                       selected
-                        ? 'bg-brand-500 text-white border-brand-400 shadow-glow'
+                        ? 'bg-brand-500 text-white border-brand-400'
                         : 'bg-surface/70 hover:bg-surface border-surface-border text-content-secondary hover:text-white'
                     }`}
                   >
@@ -304,7 +305,7 @@ export const OnboardingPage: React.FC = () => {
                           : 'bg-surface/70 border-surface-border text-content-secondary hover:text-white hover:border-brand-500/40'
                       }`}
                     >
-                      <span>{alreadyAdded ? '✓' : '+'}</span>
+                      {alreadyAdded ? <Check className="w-3 h-3 text-content-muted" /> : <Plus className="w-3 h-3" />}
                       <span>{artist}</span>
                     </button>
                   );
@@ -334,7 +335,11 @@ export const OnboardingPage: React.FC = () => {
                     Primary Listening Vibe
                   </span>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-lg">{selectedMoodObj?.emoji || '✨'}</span>
+                    {selectedMoodObj ? (
+                      <selectedMoodObj.icon className="w-4 h-4 text-brand-400" />
+                    ) : (
+                      <Sparkles className="w-4 h-4 text-brand-400" />
+                    )}
                     <span className="text-sm font-semibold text-content-primary">
                       {selectedMoodObj?.label || 'Flexible / Dynamic'}
                     </span>
@@ -411,7 +416,7 @@ export const OnboardingPage: React.FC = () => {
                     ))
                   ) : (
                     <span className="text-xs text-content-muted italic">
-                      No specific artists seeded — automatic discovery enabled
+                      No specific artists seeded (automatic discovery enabled)
                     </span>
                   )}
                 </div>
@@ -482,7 +487,7 @@ export const OnboardingPage: React.FC = () => {
               disabled={isSaving}
               isLoading={isSaving}
               rightIcon={currentStep === 4 ? <Sparkles className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
-              className="min-h-[44px] px-6 shadow-glow"
+              className="min-h-[44px] px-6"
             >
               {currentStep === 4 ? 'Finish & Start Listening' : 'Continue'}
             </Button>

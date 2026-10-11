@@ -16,6 +16,8 @@ import { LoginPage } from '../pages/LoginPage.js';
 import { SignupPage } from '../pages/SignupPage.js';
 import { OnboardingPage } from '../pages/OnboardingPage.js';
 import { PlayerPage } from '../pages/PlayerPage.js';
+import { PrivacyPolicyPage } from '../pages/PrivacyPolicyPage.js';
+import { TermsAndConditionsPage } from '../pages/TermsAndConditionsPage.js';
 import { NotFoundPage } from '../pages/NotFoundPage.js';
 
 export const AppRoutes: React.FC = () => {
@@ -34,6 +36,10 @@ export const AppRoutes: React.FC = () => {
         <Route path="/player" element={<PlayerPage />} />
         <Route path="/library" element={<LibraryPage />} />
         <Route path="/playlist/:id" element={<PlaylistPage />} />
+
+        {/* Public Legal Documentation (accessible to all listeners) */}
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
 
         {/* Authentication Routes */}
         <Route path="/login" element={<LoginPage />} />

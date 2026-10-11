@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <rect width="32" height="32" rx="7" fill="#09090D"/>
+  <rect x="0.5" y="0.5" width="31" height="31" rx="6.5" stroke="#262635" stroke-width="1"/>
+  <!-- Central acoustic pulse core -->
+  <circle cx="16" cy="16" r="2.75" fill="#B59AFF"/>
+  <!-- Inner signal wave arcs -->
+  <path d="M11 11a7.07 7.07 0 0 0 0 10" stroke="#9664FF" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M21 11a7.07 7.07 0 0 1 0 10" stroke="#9664FF" stroke-width="2.2" stroke-linecap="round"/>
+  <!-- Outer signal wave arcs -->
+  <path d="M7 7a12.73 12.73 0 0 0 0 18" stroke="#9664FF" stroke-width="2" stroke-linecap="round"/>
+  <path d="M25 7a12.73 12.73 0 0 1 0 18" stroke="#9664FF" stroke-width="2" stroke-linecap="round"/>
+</svg>

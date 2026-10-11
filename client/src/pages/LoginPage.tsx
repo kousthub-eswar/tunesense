@@ -102,7 +102,7 @@ export const LoginPage: React.FC = () => {
 
         {/* Header Branding */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-500/10 border border-brand-500/20 text-brand-400 mb-4 shadow-lg shadow-brand-500/10">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-500/10 border border-brand-500/20 text-brand-400 mb-4">
             <Music className="w-7 h-7" />
           </div>
           <h1 className="text-2xl font-bold text-content-primary tracking-tight">
@@ -174,7 +174,6 @@ export const LoginPage: React.FC = () => {
                 size="md"
                 isLoading={isLoading}
                 leftIcon={<LogIn className="w-4 h-4" />}
-                className="shadow-glow"
               >
                 Sign In
               </Button>

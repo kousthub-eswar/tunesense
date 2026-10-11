@@ -21,66 +21,45 @@ import { fetchPopularTracks } from '../services/musicService.js';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext.js';
 import { TrackItem } from '../types/index.js';
 
+import { MOOD_OPTIONS } from '../constants/moods.js';
+
 const DISCOVER_GENRES = [
   {
     name: 'Electronic & Synth',
     query: 'electronic',
-    gradient: 'from-purple-950/80 via-indigo-900/40 to-surface',
-    border: 'border-purple-500/20 hover:border-purple-500/50',
     tag: 'ELECTRONIC',
     icon: Flame,
   },
   {
     name: 'Ambient & Chill',
     query: 'ambient',
-    gradient: 'from-cyan-950/80 via-blue-900/40 to-surface',
-    border: 'border-cyan-500/20 hover:border-cyan-500/50',
     tag: 'AMBIENT',
     icon: Headphones,
   },
   {
     name: 'Acoustic & Folk',
     query: 'acoustic',
-    gradient: 'from-emerald-950/80 via-teal-900/40 to-surface',
-    border: 'border-emerald-500/20 hover:border-emerald-500/50',
     tag: 'ACOUSTIC',
     icon: Music,
   },
   {
     name: 'Lo-Fi & Chillhop',
     query: 'lofi',
-    gradient: 'from-amber-950/80 via-orange-900/40 to-surface',
-    border: 'border-amber-500/20 hover:border-amber-500/50',
     tag: 'LO-FI',
     icon: Radio,
   },
   {
     name: 'Rock & Alternative',
     query: 'rock',
-    gradient: 'from-rose-950/80 via-pink-900/40 to-surface',
-    border: 'border-rose-500/20 hover:border-rose-500/50',
     tag: 'INDIE ROCK',
     icon: Sparkles,
   },
   {
     name: 'Pop & Grooves',
     query: 'pop',
-    gradient: 'from-violet-950/80 via-fuchsia-900/40 to-surface',
-    border: 'border-violet-500/20 hover:border-violet-500/50',
     tag: 'POP',
     icon: Compass,
   },
-];
-
-const DISCOVER_MOODS = [
-  { id: 'energetic', label: 'High Energy', emoji: '⚡', color: 'hover:border-amber-400/50' },
-  { id: 'focused', label: 'Deep Focus', emoji: '🎯', color: 'hover:border-brand-400/50' },
-  { id: 'calm', label: 'Calm & Flow', emoji: '🍃', color: 'hover:border-emerald-400/50' },
-  { id: 'relaxed', label: 'Relaxed', emoji: '🌊', color: 'hover:border-cyan-400/50' },
-  { id: 'happy', label: 'Uplifting', emoji: '☀️', color: 'hover:border-yellow-400/50' },
-  { id: 'romantic', label: 'Romantic', emoji: '🌹', color: 'hover:border-rose-400/50' },
-  { id: 'sad', label: 'Melancholic', emoji: '🌧️', color: 'hover:border-blue-400/50' },
-  { id: 'nostalgic', label: 'Nostalgic', emoji: '📼', color: 'hover:border-purple-400/50' },
 ];
 
 export const DiscoverPage: React.FC = () => {
@@ -161,17 +140,20 @@ export const DiscoverPage: React.FC = () => {
           </span>
         </div>
         <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
-          {DISCOVER_MOODS.map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              onClick={() => handleSelectMood(m.id)}
-              className={`shrink-0 flex items-center gap-2 py-2 px-3.5 rounded-full bg-surface/80 hover:bg-surface border border-surface-border text-xs font-medium text-content-primary transition-all hover:scale-105 active:scale-95 shadow-sm ${m.color}`}
-            >
-              <span className="text-sm select-none">{m.emoji}</span>
-              <span>{m.label}</span>
-            </button>
-          ))}
+          {MOOD_OPTIONS.map((m) => {
+            const Icon = m.icon;
+            return (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => handleSelectMood(m.id)}
+                className="shrink-0 flex items-center gap-2 py-2 px-3.5 rounded-full bg-surface hover:bg-surface-secondary border border-surface-border text-xs font-medium text-content-primary transition-colors select-none"
+              >
+                <Icon className="w-3.5 h-3.5 text-content-secondary shrink-0" />
+                <span>{m.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -256,20 +238,20 @@ export const DiscoverPage: React.FC = () => {
               <div
                 key={genre.name}
                 onClick={() => navigate(`/search?q=${encodeURIComponent(genre.query)}`)}
-                className={`relative overflow-hidden p-4 rounded-xl bg-gradient-to-br ${genre.gradient} border ${genre.border} cursor-pointer group hover:scale-[1.02] active:scale-[0.99] transition-all flex flex-col justify-between min-h-[115px] select-none shadow-sm`}
+                className="relative overflow-hidden p-4 rounded-xl bg-surface border border-surface-border cursor-pointer group hover:bg-surface-secondary hover:border-surface-border-active transition-colors flex flex-col justify-between min-h-[115px] select-none"
               >
                 {/* Subtle background ambient icon */}
-                <Icon className="absolute -bottom-2 -right-2 w-16 h-16 text-white/[0.05] group-hover:text-white/[0.1] transition-colors pointer-events-none" />
+                <Icon className="absolute -bottom-2 -right-2 w-16 h-16 text-white/[0.04] group-hover:text-white/[0.08] transition-colors pointer-events-none" />
 
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono tracking-wider text-brand-300 uppercase font-semibold">
+                  <span className="text-[10px] font-mono tracking-wider text-content-secondary uppercase font-semibold">
                     {genre.tag}
                   </span>
-                  <Sparkles className="w-3.5 h-3.5 text-brand-400 opacity-60 group-hover:opacity-100 transition-opacity" />
+                  <Icon className="w-3.5 h-3.5 text-content-muted group-hover:text-content-secondary transition-colors" />
                 </div>
 
                 <div className="relative z-10 mt-3">
-                  <h4 className="text-sm font-bold text-white group-hover:text-brand-200 transition-colors leading-tight">
+                  <h4 className="text-sm font-bold text-white group-hover:text-content-primary transition-colors leading-tight">
                     {genre.name}
                   </h4>
                   <p className="text-[11px] text-content-secondary mt-1 group-hover:text-white/80 transition-colors">

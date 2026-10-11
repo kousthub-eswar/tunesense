@@ -103,7 +103,7 @@ export const PlayerPage: React.FC = () => {
   if (!currentTrack) {
     return (
       <div className="min-h-[80vh] flex flex-col items-center justify-center p-6 text-center select-none">
-        <div className="w-16 h-16 rounded-full bg-surface border border-surface-border flex items-center justify-center text-brand-400 mb-4 animate-pulse shadow-glow">
+        <div className="w-16 h-16 rounded-full bg-surface border border-surface-border flex items-center justify-center text-brand-400 mb-4">
           <Disc className="w-8 h-8" />
         </div>
         <h2 className="text-xl font-bold text-content-primary">No Track Playing</h2>
@@ -115,7 +115,6 @@ export const PlayerPage: React.FC = () => {
             variant="primary"
             size="sm"
             onClick={() => navigate('/home')}
-            className="shadow-glow"
           >
             Go to Home
           </Button>
@@ -358,7 +357,7 @@ export const PlayerPage: React.FC = () => {
                 aria-label={isPlaying ? 'Pause' : 'Play'}
                 variant="primary"
                 size="lg"
-                className="w-14 h-14 rounded-full shadow-glow"
+                className="w-14 h-14 rounded-full shadow-md"
                 onClick={togglePlayPause}
                 disabled={isLoading}
               />
@@ -568,7 +567,7 @@ export const PlayerPage: React.FC = () => {
                   aria-label={isPlaying ? 'Pause' : 'Play'}
                   variant="primary"
                   size="lg"
-                  className="w-16 h-16 rounded-full shadow-glow"
+                  className="w-16 h-16 rounded-full shadow-md"
                   onClick={togglePlayPause}
                   disabled={isLoading}
                 />
@@ -673,7 +672,7 @@ export const PlayerPage: React.FC = () => {
                         className={cn(
                           'flex items-center justify-between p-3 rounded-2xl cursor-pointer transition-all text-left group',
                           isCurrent
-                            ? 'bg-brand-500/15 border border-brand-500/35 text-brand-300 shadow-glow/10'
+                            ? 'bg-brand-500/15 border border-brand-500/35 text-brand-300'
                             : 'hover:bg-surface/80 border border-transparent hover:border-surface-border text-content-primary'
                         )}
                       >
@@ -685,7 +684,7 @@ export const PlayerPage: React.FC = () => {
                             )}
                           >
                             {isCurrent && isPlaying ? (
-                              <Sparkles className="w-3.5 h-3.5 text-brand-400 animate-pulse inline" />
+                              <Sparkles className="w-3.5 h-3.5 text-brand-400 inline" />
                             ) : (
                               idx + 1
                             )}
@@ -740,10 +739,10 @@ export const PlayerPage: React.FC = () => {
                 <div className="pt-3 border-t border-surface-border flex items-center justify-between text-[11px] text-content-muted">
                   <div className="flex items-center gap-1.5">
                     <Music2 className="w-3.5 h-3.5 text-brand-400" />
-                    <span>Free Streaming Catalogue</span>
+                    <span>Streaming Catalogue</span>
                   </div>
                   <span className="font-mono text-[10px] text-content-secondary">
-                    Lossless 320kbps MP3
+                    Music via Jamendo
                   </span>
                 </div>
               </div>

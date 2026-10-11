@@ -175,9 +175,9 @@ export const ProfilePage: React.FC = () => {
       {/* Profile Identity Card */}
       {isAuthenticated && user ? (
         <>
-          <Card className="p-4 mb-5 bg-gradient-to-r from-surface to-bg-elevated border-surface-border">
+          <Card className="p-4 mb-5 bg-surface border-surface-border">
           <div className="flex items-center gap-3.5 mb-4">
-            <Avatar name={user.name} size="lg" className="border-brand-500/40 ring-2 ring-brand-500/20" />
+            <Avatar name={user.name} size="lg" className="border-brand-500/40" />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <h3 className="text-base font-bold text-content-primary truncate">{user.name}</h3>
@@ -215,11 +215,11 @@ export const ProfilePage: React.FC = () => {
 
         {/* Analytics & Benchmarks Entry */}
         <Card
-          className="p-3.5 mb-5 bg-gradient-to-r from-brand-900/30 to-surface border-brand-500/30 cursor-pointer hover:border-brand-500/50 transition-all flex items-center justify-between"
+          className="p-3.5 mb-5 bg-surface border-surface-border cursor-pointer hover:bg-surface-secondary hover:border-zinc-700 transition-colors flex items-center justify-between"
           onClick={() => navigate('/analytics')}
         >
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center flex-shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-surface-secondary text-brand-400 flex items-center justify-center flex-shrink-0">
               <BarChart3 className="w-5 h-5" />
             </div>
             <div>
@@ -236,7 +236,7 @@ export const ProfilePage: React.FC = () => {
         </Card>
       </>
       ) : (
-        <Card className="p-5 mb-5 bg-gradient-to-r from-surface to-bg-elevated border-surface-border">
+        <Card className="p-5 mb-5 bg-surface border-surface-border">
           <div className="flex items-center gap-3.5 mb-4">
             <Avatar name="Guest User" size="lg" className="border-brand-500/30" />
             <div>
@@ -589,6 +589,7 @@ export const ProfilePage: React.FC = () => {
                   <div className="grid grid-cols-2 gap-2">
                     {MOOD_OPTIONS.map((m) => {
                       const isSel = preferredMood === m.id;
+                      const Icon = m.icon;
                       return (
                         <button
                           key={m.id}
@@ -600,7 +601,7 @@ export const ProfilePage: React.FC = () => {
                               : 'bg-surface-elevated/70 hover:bg-surface-elevated border-surface-border text-content-secondary'
                           }`}
                         >
-                          <span className="text-base select-none">{m.emoji}</span>
+                          <Icon className="w-4 h-4 text-content-secondary shrink-0" />
                           <span>{m.label}</span>
                         </button>
                       );

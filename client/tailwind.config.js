@@ -38,7 +38,6 @@ export default {
           500: '#9664FF', // Primary accent
           600: '#844df0',
           700: '#7037dc',
-          glow: 'rgba(150, 100, 255, 0.25)',
         },
         vibe: {
           cyan: '#38bdf8',
@@ -68,7 +67,7 @@ export default {
       boxShadow: {
         card: '0 4px 20px -2px rgba(0, 0, 0, 0.5)',
         player: '0 -4px 24px -2px rgba(0, 0, 0, 0.65)',
-        glow: '0 0 20px -2px rgba(139, 92, 246, 0.3)',
+        glow: 'none',
       },
       spacing: {
         'safe-bottom': 'calc(env(safe-area-inset-bottom, 0px) + 72px)',

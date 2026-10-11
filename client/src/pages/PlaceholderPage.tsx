@@ -45,7 +45,7 @@ const ROUTE_META_MAP: Record<string, RouteMilestoneInfo> = {
     badgeVariant: 'brand',
   },
   '/recommendations': {
-    title: 'Explainable AI Engine',
+    title: 'Explainable Recommendation Engine',
     stage: 'Future Stage: Recommendation Core',
     description: 'Context-aware, mood-aware, and hybrid collaborative recommendations with explainability badges.',
     badgeVariant: 'emerald',
@@ -98,7 +98,7 @@ export const PlaceholderPage: React.FC = () => {
         </Button>
       </div>
 
-      <Card className="p-6 text-center border-brand-500/20 bg-gradient-to-b from-surface to-bg-elevated">
+      <Card className="p-6 text-center border-surface-border bg-surface">
         <div className="w-12 h-12 rounded-2xl bg-brand-500/15 border border-brand-500/30 text-brand-400 flex items-center justify-center mx-auto mb-3">
           <Construction className="w-6 h-6" />
         </div>

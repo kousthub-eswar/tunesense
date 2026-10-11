@@ -121,7 +121,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
           onKeyDown={(e) => e.key === 'Enter' && navigate('/home')}
           aria-label="TuneSense Home"
         >
-          <div className="w-9 h-9 rounded-xl bg-brand-500/15 border border-brand-500/30 flex items-center justify-center text-brand-400 group-hover:scale-105 transition-transform shadow-glow shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-brand-500/15 border border-brand-500/30 flex items-center justify-center text-brand-400 group-hover:scale-105 transition-transform shrink-0">
             <Radio className="w-4 h-4 text-brand-400" />
           </div>
           <div className="min-w-0">
@@ -190,7 +190,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
             {/* Drawer Header */}
             <div className="h-16 px-4 border-b border-surface-border flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-xl bg-brand-500/15 border border-brand-500/30 flex items-center justify-center text-brand-400 shadow-glow shrink-0">
+                <div className="w-8 h-8 rounded-xl bg-brand-500/15 border border-brand-500/30 flex items-center justify-center text-brand-400 shrink-0">
                   <Radio className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
@@ -298,6 +298,25 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
                   </Button>
                 </div>
               )}
+
+              {/* Legal navigation */}
+              <div className="mt-3 pt-2.5 border-t border-surface-border/40 flex items-center justify-center gap-3 text-[11px] text-content-muted">
+                <button
+                  type="button"
+                  onClick={() => handleNavClick('/privacy-policy')}
+                  className="hover:text-white transition-colors"
+                >
+                  Privacy Policy
+                </button>
+                <span>•</span>
+                <button
+                  type="button"
+                  onClick={() => handleNavClick('/terms-and-conditions')}
+                  className="hover:text-white transition-colors"
+                >
+                  Terms & Conditions
+                </button>
+              </div>
             </div>
           </div>
         </div>

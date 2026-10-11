@@ -505,13 +505,13 @@ export const AnalyticsPage: React.FC = () => {
                                   key={strat}
                                   className={`py-2.5 px-2 text-center font-mono ${
                                     strat === 'R5_collaborative_hybrid'
-                                      ? 'font-bold text-purple-400'
+                                      ? 'font-bold text-brand-300'
                                       : strat === 'R4_hybrid'
                                       ? 'font-bold text-brand-400'
                                       : ''
                                   }`}
                                 >
-                                  {val !== undefined ? Number(val).toFixed(2) : '—'}
+                                  {val !== undefined ? Number(val).toFixed(2) : 'N/A'}
                                 </td>
                               );
                             }
@@ -520,8 +520,8 @@ export const AnalyticsPage: React.FC = () => {
                       ))}
                     </tbody>
                   </table>
-                  <div className="mt-3 p-3 rounded-card bg-purple-500/10 border border-purple-500/20 text-[11px] text-purple-200 leading-relaxed">
-                    <strong>Note:</strong> Collaborative recommendations use anonymized aggregate listening patterns from users with similar tastes. Individual listener identities and private histories are strictly protected.
+                  <div className="mt-3 p-3 rounded-card bg-surface border border-surface-border text-[11px] text-content-secondary leading-relaxed">
+                    <strong className="text-content-primary">Note:</strong> Collaborative recommendations use anonymized aggregate listening patterns from users with similar tastes. Individual listener identities and private histories are strictly protected.
                   </div>
                 </div>
               ) : (

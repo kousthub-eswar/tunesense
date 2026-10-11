@@ -27,7 +27,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
   };
 
   const variantStyles = {
-    primary: 'bg-brand-500 text-white hover:bg-brand-600 shadow-md shadow-brand-500/25',
+    primary: 'bg-brand-500 text-white hover:bg-brand-600 shadow-sm',
     secondary: 'bg-surface hover:bg-surface-hover text-content-primary border border-surface-border',
     ghost: 'bg-transparent hover:bg-white/10 text-content-secondary hover:text-content-primary',
   };
