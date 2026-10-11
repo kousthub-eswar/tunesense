@@ -29,7 +29,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ className })
     <nav
       aria-label="Main Mobile Navigation"
       className={cn(
-        'w-full bg-bg-elevated/95 backdrop-blur-lg border-t border-surface-border px-2 py-2 flex items-center justify-around z-40',
+        'w-full bg-[#09090D]/95 backdrop-blur-xl border-t border-surface-border px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-around z-40',
         className
       )}
     >
@@ -39,7 +39,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ className })
           to={item.path}
           className={({ isActive }) =>
             cn(
-              'flex flex-col items-center justify-center flex-1 py-1 px-2 rounded-xl transition-all duration-200 select-none tap-target',
+              'flex flex-col items-center justify-center flex-1 py-1 px-1.5 rounded-xl transition-all duration-200 select-none tap-target',
               isActive
                 ? 'text-brand-400 font-semibold'
                 : 'text-content-muted hover:text-content-secondary'
@@ -49,7 +49,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ className })
           {({ isActive }) => (
             <>
               {renderIcon(item.iconName, isActive)}
-              <span className="text-[11px] mt-1 font-medium tracking-tight">
+              <span className="text-[10px] sm:text-[11px] mt-1 font-medium tracking-tight">
                 {item.label}
               </span>
               {isActive && (

@@ -26,12 +26,11 @@ export function errorHandler(
   }
 
   // 2. Handle unconfigured provider credentials gracefully (HTTP 503)
-  if (err?.message && typeof err.message === 'string' && err.message.includes('JAMENDO_CLIENT_ID')) {
+  if (err?.message && typeof err.message === 'string' && (err.message.includes('JAMENDO_CLIENT_ID') || err.message.includes('Jamendo API Client ID'))) {
     res.status(503).json({
       error: {
-        message:
-          'Music provider (Jamendo) is not configured. Please set JAMENDO_CLIENT_ID in server/.env to search live music.',
-        code: 'PROVIDER_NOT_CONFIGURED',
+        message: 'External music catalogue service is temporarily unavailable. Please retry shortly.',
+        code: 'CATALOGUE_UNAVAILABLE',
       },
     });
     return;

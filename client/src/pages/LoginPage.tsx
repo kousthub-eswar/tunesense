@@ -6,6 +6,7 @@ import { Card } from '../components/ui/Card.js';
 import { Input } from '../components/ui/Input.js';
 import { Button } from '../components/ui/Button.js';
 import { useAuth } from '../contexts/AuthContext.js';
+import { preferenceService } from '../services/preferenceService.js';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -56,6 +57,25 @@ export const LoginPage: React.FC = () => {
     setIsLoading(true);
     try {
       await login({ email: email.trim(), password });
+
+      // Check whether user has configured preferences; if not, send to onboarding
+      try {
+        const prefs = await preferenceService.getPreferences();
+        const hasConfigured =
+          (prefs?.preferredGenres && prefs.preferredGenres.length > 0) ||
+          (prefs?.favoriteGenres && prefs.favoriteGenres.length > 0) ||
+          Boolean(prefs?.preferredMood);
+
+        if (!hasConfigured) {
+          navigate('/onboarding', { replace: true });
+          return;
+        }
+      } catch {
+        // If preferences call fails or is unconfigured, guide to onboarding
+        navigate('/onboarding', { replace: true });
+        return;
+      }
+
       navigate(from, { replace: true });
     } catch (err: unknown) {
       const message =
@@ -163,7 +183,7 @@ export const LoginPage: React.FC = () => {
         </Card>
 
         {/* Footer Links */}
-        <div className="text-center mt-6 space-y-2">
+        <div className="text-center mt-6 space-y-3">
           <p className="text-xs text-content-secondary">
             Don't have an account yet?{' '}
             <Link
@@ -173,6 +193,15 @@ export const LoginPage: React.FC = () => {
               Create Account
             </Link>
           </p>
+
+          <div className="pt-1">
+            <Link
+              to="/home"
+              className="text-xs text-content-muted hover:text-white transition-colors underline-offset-4 hover:underline"
+            >
+              Continue as Guest →
+            </Link>
+          </div>
         </div>
       </div>
     </PageContainer>

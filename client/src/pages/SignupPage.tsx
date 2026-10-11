@@ -234,7 +234,7 @@ export const SignupPage: React.FC = () => {
         </Card>
 
         {/* Footer Links */}
-        <div className="text-center mt-6">
+        <div className="text-center mt-6 space-y-3">
           <p className="text-xs text-content-secondary">
             Already have an account?{' '}
             <Link
@@ -244,6 +244,15 @@ export const SignupPage: React.FC = () => {
               Sign In
             </Link>
           </p>
+
+          <div className="pt-1">
+            <Link
+              to="/home"
+              className="text-xs text-content-muted hover:text-white transition-colors underline-offset-4 hover:underline"
+            >
+              Continue as Guest →
+            </Link>
+          </div>
         </div>
       </div>
     </PageContainer>

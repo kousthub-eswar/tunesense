@@ -13,38 +13,38 @@ export default {
     extend: {
       colors: {
         bg: {
-          main: '#0B0B10',
-          elevated: '#15151F',
-          subtle: '#1C1C29',
+          main: '#09090D',
+          elevated: '#13131B',
+          subtle: '#1B1B27',
         },
         surface: {
-          DEFAULT: '#15151F',
-          secondary: '#1C1C29',
-          hover: '#232334',
-          border: '#262638',
-          'border-active': 'rgba(139, 92, 246, 0.5)',
+          DEFAULT: '#13131B',
+          secondary: '#1B1B27',
+          hover: '#1F1F2C',
+          border: '#272735',
+          'border-active': 'rgba(150, 100, 255, 0.5)',
         },
         content: {
-          primary: '#F5F3FF',
-          secondary: '#A1A1B5',
-          muted: '#717188',
+          primary: '#F7F5FF',
+          secondary: '#A2A0B5',
+          muted: '#6F6D82',
         },
         brand: {
           50: '#f5f3ff',
           100: '#ede9fe',
           200: '#ddd6fe',
           300: '#c4b5fd',
-          400: '#A78BFA', // Accent highlight
-          500: '#8B5CF6', // Primary accent
-          600: '#7c3aed',
-          700: '#6d28d9',
-          glow: 'rgba(139, 92, 246, 0.35)',
+          400: '#B59AFF', // Highlight accent
+          500: '#9664FF', // Primary accent
+          600: '#844df0',
+          700: '#7037dc',
+          glow: 'rgba(150, 100, 255, 0.25)',
         },
         vibe: {
-          cyan: '#06b6d4',
-          emerald: '#10b981',
-          amber: '#f59e0b',
-          rose: '#f43f5e',
+          cyan: '#38bdf8',
+          emerald: '#34d399',
+          amber: '#fbbf24',
+          rose: '#fb7185',
         },
       },
       fontFamily: {

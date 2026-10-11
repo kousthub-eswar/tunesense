@@ -32,6 +32,8 @@ export const AppRoutes: React.FC = () => {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/song/:id" element={<SongDetailPage />} />
         <Route path="/player" element={<PlayerPage />} />
+        <Route path="/library" element={<LibraryPage />} />
+        <Route path="/playlist/:id" element={<PlaylistPage />} />
 
         {/* Authentication Routes */}
         <Route path="/login" element={<LoginPage />} />
@@ -40,8 +42,6 @@ export const AppRoutes: React.FC = () => {
         {/* Protected User Routes (Require Authenticated Session) */}
         <Route element={<ProtectedRoute />}>
           <Route path="/recommendations" element={<RecommendationsPage />} />
-          <Route path="/library" element={<LibraryPage />} />
-          <Route path="/playlist/:id" element={<PlaylistPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/onboarding" element={<OnboardingPage />} />

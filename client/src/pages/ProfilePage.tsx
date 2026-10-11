@@ -162,13 +162,13 @@ export const ProfilePage: React.FC = () => {
     <PageContainer>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-xl font-bold text-content-primary">Account & Identity</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-content-primary">Account & Preferences</h2>
           <p className="text-xs text-content-secondary mt-0.5">
-            Stage 8 Personalization & User Controls
+            Personalized taste profile and listening controls
           </p>
         </div>
         <Badge variant={isAuthenticated ? 'emerald' : 'brand'} size="sm">
-          {isAuthenticated ? 'Authenticated' : 'Guest'}
+          {isAuthenticated ? 'Active Member' : 'Guest'}
         </Badge>
       </div>
 
@@ -186,7 +186,7 @@ export const ProfilePage: React.FC = () => {
               <p className="text-xs text-content-secondary truncate">{user.email}</p>
               <div className="flex items-center gap-2 mt-1">
                 <Badge variant="emerald" size="sm">
-                  Active Account
+                  Active Member
                 </Badge>
                 <span className="text-[10px] text-content-muted">
                   ID: {user.id.slice(-6)}
@@ -197,8 +197,8 @@ export const ProfilePage: React.FC = () => {
 
           <div className="border-t border-surface-border/60 pt-3 flex items-center justify-between">
             <div className="text-xs text-content-secondary">
-              Session type:{' '}
-              <span className="font-medium text-brand-400">Secure HTTP-Only JWT</span>
+              Session:{' '}
+              <span className="font-medium text-brand-400">Secure Session</span>
             </div>
             <Button
               variant="outline"
@@ -213,7 +213,7 @@ export const ProfilePage: React.FC = () => {
           </div>
         </Card>
 
-        {/* Stage 9 Analytics & Offline Benchmarks Entry */}
+        {/* Analytics & Benchmarks Entry */}
         <Card
           className="p-3.5 mb-5 bg-gradient-to-r from-brand-900/30 to-surface border-brand-500/30 cursor-pointer hover:border-brand-500/50 transition-all flex items-center justify-between"
           onClick={() => navigate('/analytics')}
@@ -224,11 +224,11 @@ export const ProfilePage: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <h4 className="text-xs font-bold text-content-primary">System Analytics & Benchmarks</h4>
-                <Badge variant="brand" size="sm">Stage 9</Badge>
+                <h4 className="text-xs font-bold text-content-primary">Listening Analytics & Telemetry</h4>
+                <Badge variant="brand" size="sm">Insights</Badge>
               </div>
               <p className="text-[11px] text-content-secondary mt-0.5">
-                Explore listening telemetry, recommendation conversion, and R0–R4 evaluation
+                Explore listening telemetry, recommendation conversion, and algorithm benchmarks
               </p>
             </div>
           </div>
@@ -244,7 +244,7 @@ export const ProfilePage: React.FC = () => {
               <p className="text-xs text-content-secondary">Browsing catalogue anonymously</p>
               <div className="flex items-center gap-1.5 mt-1">
                 <Badge variant="cyan" size="sm">
-                  Unauthenticated
+                  Guest Explorer
                 </Badge>
               </div>
             </div>
@@ -631,31 +631,33 @@ export const ProfilePage: React.FC = () => {
       {/* Account Details / Status Info Card */}
       <div className="mb-4">
         <h3 className="text-xs font-semibold text-content-secondary uppercase tracking-wider mb-2 px-1">
-          Identity & Security
+          Account Security & Privacy
         </h3>
         <Card className="p-4 space-y-2.5 text-xs">
           <div className="flex items-center justify-between py-1 border-b border-surface-border">
-            <span className="text-content-secondary">Authentication State</span>
+            <span className="text-content-secondary">Account Status</span>
             <span className="font-medium flex items-center gap-1.5 text-content-primary">
               <CheckCircle className="w-3.5 h-3.5 text-vibe-emerald" />
-              {isAuthenticated ? 'Authenticated User' : 'Guest (Unauthenticated)'}
+              {isAuthenticated ? 'Active Member' : 'Guest Explorer'}
             </span>
           </div>
           <div className="flex items-center justify-between py-1 border-b border-surface-border">
-            <span className="text-content-secondary">Token Storage</span>
-            <span className="font-mono text-brand-400">HTTP-Only Cookie (tunesense_token)</span>
+            <span className="text-content-secondary">Session Security</span>
+            <span className="font-medium text-brand-400">Encrypted & Secure</span>
           </div>
           <div className="flex items-center justify-between py-1">
-            <span className="text-content-secondary">Password Security</span>
-            <span className="font-mono text-content-primary">bcryptjs (Work Factor 12)</span>
+            <span className="text-content-secondary">Library Sync</span>
+            <span className="font-medium text-content-primary">
+              {isAuthenticated ? 'Synchronized' : 'Local Device Only'}
+            </span>
           </div>
         </Card>
       </div>
 
-      {/* System Diagnostic & Environment Status */}
+      {/* System Platform & Environment Status */}
       <div className="mb-4">
         <h3 className="text-xs font-semibold text-content-secondary uppercase tracking-wider mb-2 px-1">
-          System & Environment
+          Platform & Services
         </h3>
         <Card className="p-4 space-y-2 text-xs">
           <div className="flex items-center justify-between py-1 border-b border-surface-border">
@@ -670,12 +672,12 @@ export const ProfilePage: React.FC = () => {
           <div className="flex items-center justify-between py-1 border-b border-surface-border">
             <span className="text-content-secondary">Environment</span>
             <span className="font-mono text-brand-400 capitalize">
-              {health?.environment || 'development'}
+              {health?.environment || 'production'}
             </span>
           </div>
           <div className="flex items-center justify-between py-1">
-            <span className="text-content-secondary">Current Milestone</span>
-            <span className="font-mono text-vibe-emerald">Stage 8 Personalization & Mood</span>
+            <span className="text-content-secondary">Platform Version</span>
+            <span className="font-mono text-vibe-emerald">TuneSense v1.0 • Music Intelligence</span>
           </div>
         </Card>
       </div>

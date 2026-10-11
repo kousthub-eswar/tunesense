@@ -3,19 +3,19 @@
 @tailwind utilities;
 
 :root {
-  --color-bg-main: #0B0B10;
-  --color-bg-elevated: #15151F;
-  --color-bg-subtle: #1C1C29;
-  --color-surface: #15151F;
-  --color-surface-secondary: #1C1C29;
-  --color-surface-hover: #232334;
-  --color-surface-border: #262638;
-  --color-primary-text: #F5F3FF;
-  --color-secondary-text: #A1A1B5;
-  --color-muted-text: #717188;
-  --color-brand-accent: #8B5CF6;
-  --color-brand-highlight: #A78BFA;
-  --color-brand-glow: rgba(139, 92, 246, 0.35);
+  --color-bg-main: #09090D;
+  --color-bg-elevated: #13131B;
+  --color-bg-subtle: #1B1B27;
+  --color-surface: #13131B;
+  --color-surface-secondary: #1B1B27;
+  --color-surface-hover: #1F1F2C;
+  --color-surface-border: #272735;
+  --color-primary-text: #F7F5FF;
+  --color-secondary-text: #A2A0B5;
+  --color-muted-text: #6F6D82;
+  --color-brand-accent: #9664FF;
+  --color-brand-highlight: #B59AFF;
+  --color-brand-glow: rgba(150, 100, 255, 0.25);
 
   --radius-card: 16px;
   --radius-button: 12px;
@@ -55,6 +55,16 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.25);
+}
+
+/* Cross-browser no-scrollbar utility */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 /* Touch friendly minimum tap target */

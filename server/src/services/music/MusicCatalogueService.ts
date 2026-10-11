@@ -167,32 +167,122 @@ export class MusicCatalogueService {
     limit = 20,
     offset = 0
   ): Promise<CatalogueSearchResultDto> {
-    const rawResult: ProviderSearchResult = await this.provider.searchTracks(
-      query,
-      limit,
-      offset
-    );
+    try {
+      const rawResult: ProviderSearchResult = await this.provider.searchTracks(
+        query,
+        limit,
+        offset
+      );
 
-    // Persist discovered tracks in parallel (controlled limit)
-    const persistedTracks: CatalogueTrackDto[] = await Promise.all(
-      rawResult.tracks.map((track) => this.persistTrack(track))
-    );
+      // Persist discovered tracks in parallel (controlled limit)
+      const persistedTracks: CatalogueTrackDto[] = await Promise.all(
+        rawResult.tracks.map((track) => this.persistTrack(track))
+      );
 
-    return {
-      query: rawResult.query,
-      tracks: persistedTracks,
-      artists: rawResult.artists,
-      albums: rawResult.albums,
-      totalResults: rawResult.totalResults,
-    };
+      return {
+        query: rawResult.query,
+        tracks: persistedTracks,
+        artists: rawResult.artists,
+        albums: rawResult.albums,
+        totalResults: rawResult.totalResults,
+      };
+    } catch (providerError) {
+      const dbState = getDatabaseState();
+      // If MongoDB is connected and has genuinely matching cached songs
+      if (dbState.isConnected) {
+        try {
+          const regex = new RegExp(query.trim(), 'i');
+          const matchingSongs = await Song.find({ title: regex })
+            .limit(limit)
+            .populate('artistIds')
+            .populate('albumId');
+
+          if (matchingSongs && matchingSongs.length > 0) {
+            console.warn(`[MusicCatalogueService] Upstream provider unavailable; serving ${matchingSongs.length} cached search matches.`);
+            const tracks: CatalogueTrackDto[] = matchingSongs.map((songDoc: any) => {
+              const primaryArtist = Array.isArray(songDoc.artistIds) && songDoc.artistIds.length > 0 ? songDoc.artistIds[0] : null;
+              const albumDoc = songDoc.albumId;
+              return {
+                id: songDoc._id.toString(),
+                title: songDoc.title,
+                artistId: primaryArtist ? (primaryArtist._id?.toString() || primaryArtist.toString()) : undefined,
+                artistName: primaryArtist && primaryArtist.name ? primaryArtist.name : 'Unknown Artist',
+                albumId: albumDoc ? (albumDoc._id?.toString() || albumDoc.toString()) : undefined,
+                albumTitle: albumDoc && albumDoc.title ? albumDoc.title : undefined,
+                durationSeconds: songDoc.durationSeconds || 180,
+                artworkUrl: songDoc.artworkUrl,
+                streamUrl: undefined,
+                genres: songDoc.genres || [],
+                languages: songDoc.languages || [],
+                provider: songDoc.provider || 'jamendo',
+                providerTrackId: songDoc.providerTrackId || songDoc._id.toString(),
+              };
+            });
+            return {
+              query,
+              tracks,
+              artists: [],
+              albums: [],
+              totalResults: tracks.length,
+            };
+          }
+        } catch (dbErr) {
+          console.warn('[MusicCatalogueService] Error searching cached songs:', dbErr);
+        }
+      }
+      throw providerError;
+    }
   }
 
   /**
    * Retrieves popular tracks and caches them locally.
+   * If upstream provider is unavailable, falls back to genuinely cached MongoDB songs if present.
    */
   public async getPopularTracks(limit = 20): Promise<CatalogueTrackDto[]> {
-    const rawTracks = await this.provider.getPopularTracks(limit);
-    return Promise.all(rawTracks.map((track) => this.persistTrack(track)));
+    try {
+      const rawTracks = await this.provider.getPopularTracks(limit);
+      return await Promise.all(rawTracks.map((track) => this.persistTrack(track)));
+    } catch (providerError) {
+      const dbState = getDatabaseState();
+      // If MongoDB is connected and genuinely contains cached songs, fall back to them
+      if (dbState.isConnected) {
+        try {
+          const cachedSongs = await Song.find()
+            .sort({ createdAt: -1 })
+            .limit(limit)
+            .populate('artistIds')
+            .populate('albumId');
+
+          if (cachedSongs && cachedSongs.length > 0) {
+            console.warn('[MusicCatalogueService] Upstream provider unavailable; serving genuinely cached catalogue songs.');
+            return cachedSongs.map((songDoc: any) => {
+              const primaryArtist = Array.isArray(songDoc.artistIds) && songDoc.artistIds.length > 0 ? songDoc.artistIds[0] : null;
+              const albumDoc = songDoc.albumId;
+              return {
+                id: songDoc._id.toString(),
+                title: songDoc.title,
+                artistId: primaryArtist ? (primaryArtist._id?.toString() || primaryArtist.toString()) : undefined,
+                artistName: primaryArtist && primaryArtist.name ? primaryArtist.name : 'Unknown Artist',
+                albumId: albumDoc ? (albumDoc._id?.toString() || albumDoc.toString()) : undefined,
+                albumTitle: albumDoc && albumDoc.title ? albumDoc.title : undefined,
+                durationSeconds: songDoc.durationSeconds || 180,
+                artworkUrl: songDoc.artworkUrl,
+                streamUrl: undefined,
+                genres: songDoc.genres || [],
+                languages: songDoc.languages || [],
+                provider: songDoc.provider || 'jamendo',
+                providerTrackId: songDoc.providerTrackId || songDoc._id.toString(),
+              };
+            });
+          }
+        } catch (dbErr) {
+          console.warn('[MusicCatalogueService] Failed to query cached songs from MongoDB:', dbErr);
+        }
+      }
+
+      // If no genuine cache is available, rethrow the provider error so genuine failures are transparent
+      throw providerError;
+    }
   }
 
   /**

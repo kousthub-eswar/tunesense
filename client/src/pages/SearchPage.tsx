@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search as SearchIcon, X, Music, AlertCircle, Loader2, Clock, Trash2 } from 'lucide-react';
+import { Search as SearchIcon, X, Music, AlertCircle, Loader2, Clock, Trash2, RotateCcw } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer.js';
 import { Input } from '../components/ui/Input.js';
 import { Button } from '../components/ui/Button.js';
@@ -211,10 +211,21 @@ export const SearchPage: React.FC = () => {
 
       {/* Error Message */}
       {error && !isLoading && (
-        <Card className="p-4 bg-vibe-rose/10 border-vibe-rose/30 text-center my-4">
+        <Card className="p-5 bg-vibe-rose/10 border-vibe-rose/30 text-center my-4">
           <AlertCircle className="w-6 h-6 text-vibe-rose mx-auto mb-2" />
           <h4 className="text-sm font-semibold text-content-primary">Catalogue Notice</h4>
           <p className="text-xs text-rose-300 mt-1 max-w-sm mx-auto">{error}</p>
+          <div className="flex items-center justify-center gap-2 mt-4">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => handleSearch(query)}
+              leftIcon={<RotateCcw className="w-3.5 h-3.5" />}
+              className="text-xs border-vibe-rose/30 text-content-primary hover:bg-vibe-rose/20"
+            >
+              Retry Search
+            </Button>
+          </div>
         </Card>
       )}
 

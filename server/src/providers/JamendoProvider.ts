@@ -54,20 +54,29 @@ export class JamendoProvider implements IMusicProvider {
       });
 
       if (!response.ok) {
-        throw new Error(`Jamendo API HTTP error ${response.status}: ${response.statusText}`);
+        const error = new Error(`Jamendo API HTTP error ${response.status}: ${response.statusText}`);
+        (error as any).status = response.status >= 500 ? 503 : response.status;
+        (error as any).code = 'CATALOGUE_UNAVAILABLE';
+        throw error;
       }
 
       const data = (await response.json()) as RawJamendoResponse<T>;
 
       if (data.headers.status === 'failed') {
         const errorMsg = data.headers.error_message || 'Jamendo API request failed';
-        throw new Error(`Jamendo API error (code ${data.headers.code}): ${errorMsg}`);
+        const error = new Error(`Jamendo API error (code ${data.headers.code}): ${errorMsg}`);
+        (error as any).status = 503;
+        (error as any).code = 'CATALOGUE_UNAVAILABLE';
+        throw error;
       }
 
       return data;
     } catch (err: unknown) {
       if (err instanceof Error && err.name === 'AbortError') {
-        throw new Error(`Jamendo API request timed out after ${this.timeoutMs}ms`);
+        const timeoutErr = new Error(`Jamendo API request timed out after ${this.timeoutMs}ms`);
+        (timeoutErr as any).status = 503;
+        (timeoutErr as any).code = 'CATALOGUE_UNAVAILABLE';
+        throw timeoutErr;
       }
       throw err;
     } finally {

@@ -82,24 +82,9 @@ export const DesktopPlayer: React.FC = () => {
 
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
-  // Standby bar when no track is queued
+  // Hide desktop player when no track is selected
   if (!currentTrack) {
-    return (
-      <div className="hidden md:flex fixed bottom-0 left-0 right-0 h-20 bg-bg-elevated/95 backdrop-blur-xl border-t border-surface-border px-6 items-center justify-between z-40 select-none">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-surface/80 border border-surface-border flex items-center justify-center text-content-muted">
-            <Disc className="w-6 h-6 text-brand-400/60" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-content-secondary">Audio Player Standby</p>
-            <p className="text-[11px] text-content-muted">Select any song, mood, or recommendation to start listening</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 text-xs text-content-muted">
-          <span>Creative Commons Audio via Jamendo API</span>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

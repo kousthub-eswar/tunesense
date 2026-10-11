@@ -15,8 +15,8 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   return (
     <main
       className={cn(
-        'w-full flex-1 px-4 py-4 md:px-8 md:py-6 md:max-w-6xl md:mx-auto overflow-y-auto overflow-x-hidden',
-        hasBottomNav && 'pb-32 md:pb-28', // clearance for MiniPlayer & BottomNavigation on mobile, and DesktopPlayer on desktop
+        'w-full flex-1 px-3.5 sm:px-5 md:px-8 py-4 md:py-6 md:max-w-6xl md:mx-auto overflow-x-hidden',
+        hasBottomNav && 'pb-[calc(9.5rem+env(safe-area-inset-bottom))] md:pb-28',
         className
       )}
     >

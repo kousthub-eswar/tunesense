@@ -63,52 +63,23 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ className }) => {
     }
   };
 
-  const formatTime = (seconds: number): string => {
-    if (!seconds || isNaN(seconds)) return '0:00';
-    const m = Math.floor(seconds / 60);
-    const s = Math.floor(seconds % 60);
-    return `${m}:${String(s).padStart(2, '0')}`;
-  };
-
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
-  // Standby state when no track has been selected yet
+  // Return null when no track is queued or active (removes intrusive standby banner)
   if (!currentTrack) {
-    return (
-      <div
-        className={cn(
-          'mx-3 mb-2 p-2.5 bg-bg-elevated/95 backdrop-blur-md border border-surface-border rounded-player shadow-player flex items-center justify-between select-none',
-          className
-        )}
-      >
-        <div className="flex items-center gap-3 min-w-0 flex-1">
-          <MusicArtwork
-            size="sm"
-            fallbackIcon={<Disc className="w-5 h-5 text-brand-400" />}
-          />
-          <div className="min-w-0 flex-1">
-            <h5 className="text-xs font-semibold text-content-primary truncate">
-              Audio Standby
-            </h5>
-            <p className="text-[11px] text-content-muted truncate">
-              Search or select a track to listen
-            </p>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
     <div
       className={cn(
-        'mx-3 mb-2 bg-bg-elevated/95 backdrop-blur-md border border-surface-border rounded-player shadow-player overflow-hidden select-none transition-all duration-200',
+        'mx-3 mb-2 bg-[#15151f]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-player overflow-hidden select-none transition-all duration-200',
         className
       )}
     >
       {/* Interactive Progress Seek Bar */}
       <div
-        className="w-full bg-white/10 h-1.5 cursor-pointer relative group tap-target flex items-center -my-1"
+        className="w-full bg-white/10 h-1 cursor-pointer relative group flex items-center"
         onClick={(e) => {
           e.stopPropagation();
           const rect = e.currentTarget.getBoundingClientRect();
@@ -118,27 +89,27 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ className }) => {
         }}
       >
         <div
-          className="bg-brand-500 h-1.5 transition-all duration-100 group-hover:bg-brand-400"
+          className="bg-brand-500 h-1 transition-all duration-100 group-hover:bg-brand-400"
           style={{ width: `${progressPercent}%` }}
         />
-        {/* Scrubber Knob */}
         <div
-          className="absolute w-3 h-3 bg-white rounded-full shadow -ml-1.5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+          className="absolute w-2.5 h-2.5 bg-white rounded-full -ml-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow"
           style={{ left: `${progressPercent}%` }}
         />
       </div>
 
-      {/* Player Body */}
+      {/* Mini Player Body */}
       <div
         onClick={() => navigate('/player')}
-        className="p-2.5 flex items-center justify-between gap-2 cursor-pointer hover:bg-surface/40 transition-colors"
+        className="px-3 py-2 flex items-center justify-between gap-2.5 cursor-pointer hover:bg-white/[0.03] transition-colors"
       >
-        {/* Track Info */}
+        {/* Track Artwork & Info */}
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
           <MusicArtwork
             src={currentTrack.artworkUrl}
             alt={currentTrack.title}
             size="sm"
+            className="rounded-lg shadow-sm"
             fallbackIcon={
               <Disc
                 className={cn(
@@ -157,16 +128,10 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ className }) => {
             <p className="text-[11px] text-content-secondary truncate">
               {currentTrack.artistName}
             </p>
-            {/* Playback time indicators */}
-            <div className="text-[10px] text-content-muted font-mono mt-0.5">
-              <span>{formatTime(currentTime)}</span>
-              <span> / </span>
-              <span>{formatTime(duration || currentTrack.durationSeconds)}</span>
-            </div>
           </div>
         </div>
 
-        {/* Controls */}
+        {/* Action Controls */}
         <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
           {/* Like Heart Button */}
           {isAuthenticated && (
@@ -174,7 +139,7 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ className }) => {
               icon={
                 <Heart
                   className={cn(
-                    'w-4 h-4 transition-colors',
+                    'w-3.5 h-3.5 transition-colors',
                     isLiked ? 'text-brand-400 fill-brand-400' : 'text-content-secondary'
                   )}
                 />
@@ -185,35 +150,34 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ className }) => {
             />
           )}
 
-          {/* Play / Pause / Loading Button */}
-          <IconButton
-            icon={
-              isLoading ? (
-                <Loader2 className="w-4 h-4 text-brand-400 animate-spin" />
-              ) : isPlaying ? (
-                <Pause className="w-4 h-4 text-white fill-white" />
-              ) : (
-                <Play className="w-4 h-4 text-white fill-white ml-0.5" />
-              )
-            }
-            aria-label={isPlaying ? 'Pause' : 'Play'}
-            variant="primary"
-            size="md"
+          {/* Play / Pause Button */}
+          <button
+            type="button"
             onClick={togglePlayPause}
             disabled={isLoading}
-          />
+            className="w-8 h-8 rounded-full bg-brand-500 hover:bg-brand-400 text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm shadow-brand-500/30"
+            aria-label={isPlaying ? 'Pause' : 'Play'}
+          >
+            {isLoading ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+            ) : isPlaying ? (
+              <Pause className="w-3.5 h-3.5 fill-white" />
+            ) : (
+              <Play className="w-3.5 h-3.5 fill-white ml-0.5" />
+            )}
+          </button>
 
           {/* Next Track Button */}
           <IconButton
-            icon={<SkipForward className="w-4 h-4 text-content-secondary" />}
+            icon={<SkipForward className="w-3.5 h-3.5 text-content-secondary hover:text-white" />}
             aria-label="Next track"
             size="sm"
             onClick={playNext}
           />
 
-          {/* Full Player Expand Button */}
+          {/* Expand Full Player Button */}
           <IconButton
-            icon={<Maximize2 className="w-3.5 h-3.5 text-content-muted hover:text-content-primary" />}
+            icon={<Maximize2 className="w-3.5 h-3.5 text-content-muted hover:text-white" />}
             aria-label="Expand player"
             size="sm"
             onClick={() => navigate('/player')}
@@ -223,8 +187,8 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ className }) => {
 
       {/* Error Notice */}
       {error && (
-        <div className="bg-vibe-rose/15 border-t border-vibe-rose/30 px-3 py-1 flex items-center gap-1.5 text-[11px] text-rose-300">
-          <AlertCircle className="w-3.5 h-3.5 shrink-0 text-vibe-rose" />
+        <div className="bg-vibe-rose/15 border-t border-vibe-rose/30 px-3 py-1 flex items-center gap-1.5 text-[10px] text-rose-300">
+          <AlertCircle className="w-3 h-3 shrink-0 text-vibe-rose" />
           <span className="truncate">{error}</span>
         </div>
       )}
