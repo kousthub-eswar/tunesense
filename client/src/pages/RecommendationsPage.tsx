@@ -7,8 +7,8 @@ import {
   Zap,
   Users,
   TrendingUp,
-  BrainCircuit,
   Info,
+  Activity,
 } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer.js';
 import { Card } from '../components/ui/Card.js';
@@ -38,18 +38,25 @@ const STRATEGIES: StrategyOption[] = [
     description: 'Blends content features, collaborative signals, and current listening context',
   },
   {
-    id: 'collaborativeHybrid',
-    name: 'Collaborative Hybrid',
+    id: 'collaborative',
+    name: 'Collaborative Personalization',
     code: 'R5',
-    icon: BrainCircuit,
+    icon: Users,
     description: 'Cosine similarity over sparse user interaction matrices blended with acoustic matching',
   },
   {
     id: 'context',
-    name: 'Mood & Context',
+    name: 'Context-Aware',
     code: 'R3',
     icon: Zap,
-    description: 'Real-time situational matching using valence, energy, and session vibe',
+    description: 'Real-time situational matching across time of day and day of week patterns',
+  },
+  {
+    id: 'behaviour',
+    name: 'Behavioural Personalization',
+    code: 'R2',
+    icon: Activity,
+    description: 'Emphasizes recent completion rates, repeat listening habits, and emerging trends',
   },
   {
     id: 'content',
@@ -57,13 +64,6 @@ const STRATEGIES: StrategyOption[] = [
     code: 'R1',
     icon: Compass,
     description: 'Direct acoustic attribute cosine similarity and genre affinity modeling',
-  },
-  {
-    id: 'collaborative',
-    name: 'Co-Listening',
-    code: 'R2',
-    icon: Users,
-    description: 'User-user item collaborative filtering derived from community listening history',
   },
   {
     id: 'popularity',

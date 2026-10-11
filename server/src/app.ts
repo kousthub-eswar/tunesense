@@ -10,6 +10,9 @@ import { securityHeaders } from './middleware/securityHeaders.js';
 export function createApp(): Express {
   const app = express();
 
+  // Disable Express fingerprinting header (removes X-Powered-By: Express)
+  app.disable('x-powered-by');
+
   // Trust first proxy hop (essential for Render / Railway / reverse proxies to handle HTTPS cookies)
   app.set('trust proxy', 1);
 

@@ -104,14 +104,25 @@ export async function runHardeningVerification() {
       const isColdStart = coldProfile.metadata.eventCountUsed === 0;
       record('F1-01', 'Cold-Start Baseline', isColdStart ? 'PASS' : 'FAIL', `Initial event count is ${coldProfile.metadata.eventCountUsed}`);
 
-      // Record Listening Event via ListeningEventService
-      const recordedEvent = await listeningEventService.recordEvent(userId, {
+      // Record play event
+      await listeningEventService.recordEvent(userId, {
         songId: testSong._id.toString(),
         eventType: 'play',
         playback: {
-          positionSeconds: 180,
+          positionSeconds: 0,
           durationSeconds: 210,
-          completionPercent: 85,
+          completionPercent: 0,
+        },
+      });
+
+      // Record complete event (triggers deferred taste-profile rebuild)
+      const recordedEvent = await listeningEventService.recordEvent(userId, {
+        songId: testSong._id.toString(),
+        eventType: 'complete',
+        playback: {
+          positionSeconds: 210,
+          durationSeconds: 210,
+          completionPercent: 100,
         },
       });
 
@@ -130,6 +141,9 @@ export async function runHardeningVerification() {
         interactionValid ? 'PASS' : 'FAIL',
         interactionValid ? `Score: ${interaction?.interactionScore}, PlayCount: ${interaction?.playCount}` : 'Interaction record not found or score zero'
       );
+
+      // Await deferred background taste-profile rebuild execution (Phase 6A asynchronous pipeline)
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       // Verify UserTasteProfile reflected the event
       const updatedProfile = await userTasteProfileService.getProfile(userId);

@@ -225,12 +225,11 @@ export class RecommendationScorer {
     const dayNorm = Math.min(1.0, dayDist / 0.25);
 
     // Context acoustic appropriateness:
-    // Morning: favors higher acousticness/valence, moderate energy
-    // Late Night: favors lower energy/tempo
-    // Evening: favors higher danceability/energy
+    // Only adjust alignment if real, measured acoustic energy is available on candidate metadata.
+    // If energy is unmeasured (e.g. live Jamendo tracks without acoustic features), neutral 0.5 is preserved.
     let acousticAlignment = 0.5;
-    if (candidate.metadata) {
-      const energy = candidate.metadata.energy ?? 0.5;
+    if (candidate.metadata && typeof candidate.metadata.energy === 'number') {
+      const energy = candidate.metadata.energy;
       if (context.timeOfDay === 'late_night') {
         acousticAlignment = energy < 0.6 ? 0.8 : 0.3;
       } else if (context.timeOfDay === 'evening') {

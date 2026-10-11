@@ -74,6 +74,9 @@ TuneSense integrates:
 - **Jamendo API Integration:** Streaming legal, Creative Commons-licensed audio tracks.
 - **Catalogue Search & Details:** Fast search and retrieval across tracks, artists, and albums.
 - **Resilient Fallback Cache:** Offline acoustic fallback cache ensuring continuous recommendations and playback even during external provider latency or network interruptions.
+- **Acoustic Metadata Distinction:**
+  - **Seeded Evaluation Tracks:** Pre-seeded demo and benchmark tracks include curated acoustic measurements (`energy`, `valence`, `danceability`, `tempo`, `acousticness`) for offline testing, algorithm verification, and deterministic model evaluation.
+  - **Live Jamendo Catalogue Tracks:** Live tracks retrieved from the Jamendo API supply high-quality MP3 streaming URLs, Creative Commons licensing, duration, artwork, genre tags, and vocal/instrumental flags. Jamendo does not provide native continuous acoustic features (such as valence or energy). TuneSense represents unavailable acoustic features explicitly and gracefully applies non-penalizing neutral baselines (0.50) in recommendation scoring rather than inventing or fabricating measurements.
 
 ### Personalization & Taste Intelligence
 - **Dynamic Taste Profile:** Dual-layer aggregation combining long-term taste with 30-day exponential recency decay ($\lambda = 0.05$).

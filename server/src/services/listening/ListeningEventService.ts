@@ -4,7 +4,7 @@ import { CreateListeningEventInput } from '../../validators/listeningEventValida
 import { ListeningEventDto, IListeningEventContext, IListeningEventMetadata } from '../../types/index.js';
 import { getDatabaseState } from '../../config/database.js';
 import { collaborativeService } from '../recommendation/CollaborativeService.js';
-import { userTasteProfileService } from '../profile/UserTasteProfileService.js';
+import { tasteProfileRebuildScheduler } from '../profile/TasteProfileRebuildScheduler.js';
 
 export class ListeningEventService {
   /**
@@ -121,19 +121,21 @@ export class ListeningEventService {
       metadata: eventMetadata,
     });
 
-    // 7. Personalization pipeline materialization (failsafe)
-    // Synchronously updates sparse UserSongInteraction for (userId, songId),
-    // refreshes UserTasteProfile materialized view, and invalidates similarity cache
-    // so future recommendations reflect this event immediately.
+    // 7. Personalization pipeline materialization
+    // Synchronously updates sparse UserSongInteraction for (userId, songId) (lightweight single-document operation)
     try {
       await collaborativeService.updateUserSongInteraction(userId, songDoc._id.toString());
-      await userTasteProfileService.rebuildProfile(userId);
-      await collaborativeService.invalidateSimilarityCache(userId);
-    } catch (materializationError) {
+    } catch (interactionError) {
       console.warn(
-        '[ListeningEventService] Non-fatal personalization pipeline materialization notice:',
-        materializationError
+        '[ListeningEventService] Non-fatal user song interaction update notice:',
+        interactionError
       );
+    }
+
+    // 8. Deferred, throttled taste-profile rebuild out of synchronous request path
+    // Only 'complete' and 'skip' events trigger profile rebuilds, coalesced to max ~once per minute per user.
+    if (tasteProfileRebuildScheduler.isEventEligible(input.eventType)) {
+      tasteProfileRebuildScheduler.scheduleRebuild(userId);
     }
 
     return this.toDto(eventDoc);

@@ -1,15 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { User } from '../models/User.js';
-import { config } from '../config/index.js';
 
 /**
  * Access control middleware for global/system-wide evaluation and analytics endpoints:
  * - GET /api/evaluation/feedback-summary
  * - GET /api/evaluation/recommendations
  *
- * Restricts unconstrained global data operations in production to administrators
- * and designated evaluation/demo accounts (@demo.tunesense.ai).
- * Allows open access in local development and test environments.
+ * Restricts global data operations strictly to authenticated accounts whose trusted,
+ * server-validated role is 'admin'. Suffix-based email authorization is prohibited.
  */
 export async function requireEvaluationAccess(
   req: Request,
@@ -25,12 +23,6 @@ export async function requireEvaluationAccess(
     return;
   }
 
-  // Development and test environments permit evaluation queries
-  if (!config.isProduction) {
-    next();
-    return;
-  }
-
   try {
     const userDoc = await User.findById(userId).lean();
     if (!userDoc) {
@@ -41,12 +33,7 @@ export async function requireEvaluationAccess(
       return;
     }
 
-    const isAuthorized =
-      userDoc.role === 'admin' ||
-      userDoc.email.endsWith('@demo.tunesense.ai') ||
-      userDoc.email.endsWith('@admin.tunesense.ai');
-
-    if (!isAuthorized) {
+    if (userDoc.role !== 'admin') {
       res.status(403).json({
         success: false,
         error: {

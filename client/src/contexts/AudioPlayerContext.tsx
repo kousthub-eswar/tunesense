@@ -26,6 +26,25 @@ interface PlaybackSession {
   attribution?: AudioPlayerTrackAttribution;
 }
 
+/**
+ * Safely checks if an error represents an expected playback AbortError
+ * (e.g. play() request cancelled by rapid track switching, pause, or a new load request).
+ */
+function isPlaybackAbortError(err: unknown): boolean {
+  if (err instanceof Error && err.name === 'AbortError') {
+    return true;
+  }
+  if (
+    typeof err === 'object' &&
+    err !== null &&
+    'name' in err &&
+    (err as { name: string }).name === 'AbortError'
+  ) {
+    return true;
+  }
+  return false;
+}
+
 export type RepeatMode = 'off' | 'one' | 'all';
 
 export interface AudioPlayerContextType {
@@ -80,6 +99,7 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const isAuthRef = useRef<boolean>(isAuthenticated);
   const playbackRef = useRef<PlaybackSession | null>(null);
+  const playRequestIdRef = useRef<number>(0);
 
   // Refs for current playback options in event listeners
   const queueRef = useRef<TrackItem[]>([]);
@@ -111,6 +131,8 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
   const playTrackInternal = useCallback(async (track: TrackItem, attribution?: AudioPlayerTrackAttribution) => {
     const audio = audioRef.current;
     if (!audio) return;
+
+    const currentRequestId = ++playRequestIdRef.current;
 
     // Track Switching: Record skip for previous track if interrupted early
     const previousSession = playbackRef.current;
@@ -153,6 +175,10 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
       // If streamUrl is not directly present, query backend stream endpoint
       if (!streamUrl) {
         const streamInfo = await fetchTrackStream(track.id);
+        // If a newer track was requested while fetching stream info, discard this superseded request
+        if (playRequestIdRef.current !== currentRequestId) {
+          return;
+        }
         streamUrl = streamInfo.streamUrl;
       }
 
@@ -160,18 +186,43 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
         throw new Error('No valid playable stream URL returned for this track.');
       }
 
+      // Check once more before assigning new source to the shared audio element
+      if (playRequestIdRef.current !== currentRequestId) {
+        return;
+      }
+
       audio.src = streamUrl;
       audio.volume = isMuted ? 0 : volume;
       await audio.play();
-      setIsPlaying(true);
-    } catch (err) {
+
+      // Only mark playing if this track request is still active
+      if (playRequestIdRef.current === currentRequestId) {
+        setIsPlaying(true);
+      }
+    } catch (err: unknown) {
+      const isSuperseded = playRequestIdRef.current !== currentRequestId;
+      const isAbort = isPlaybackAbortError(err);
+
+      // Expected cancellation caused by a superseded playback request or intentional pause
+      if (isAbort) {
+        return;
+      }
+
+      // Do not allow errors from stale, superseded requests to overwrite active track state
+      if (isSuperseded) {
+        return;
+      }
+
       console.error('[AudioPlayer] Playback failed:', err);
       setError(
         err instanceof Error ? err.message : 'Unable to play this track. Please try again.'
       );
       setIsPlaying(false);
     } finally {
-      setIsLoading(false);
+      // Only reset loading if this request is still the active one
+      if (playRequestIdRef.current === currentRequestId) {
+        setIsLoading(false);
+      }
     }
   }, [volume, isMuted]);
 
@@ -392,7 +443,10 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
       const mode = repeatModeRef.current;
       if (mode === 'one') {
         audio.currentTime = 0;
-        audio.play().catch((err) => console.error('[AudioPlayer] Repeat-one play failed:', err));
+        audio.play().catch((err: unknown) => {
+          if (isPlaybackAbortError(err)) return;
+          console.error('[AudioPlayer] Repeat-one play failed:', err);
+        });
       } else {
         playNext();
       }
@@ -434,7 +488,8 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
     if (isPlaying) {
       audio.pause();
     } else {
-      audio.play().catch((err) => {
+      audio.play().catch((err: unknown) => {
+        if (isPlaybackAbortError(err)) return;
         console.error('[AudioPlayer] Resume failed:', err);
         setError('Playback could not resume.');
       });
