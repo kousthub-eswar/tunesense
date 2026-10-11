@@ -2,6 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import { authService } from '../services/auth/AuthService.js';
 import { signupSchema, loginSchema } from '../validators/authValidators.js';
 import { AUTH_COOKIE_NAME } from '../middleware/authMiddleware.js';
+import {
+  clearAccountLoginFailures,
+  recordAccountLoginFailure,
+} from '../middleware/rateLimiter.js';
 import { config } from '../config/index.js';
 
 export const getCookieOptions = () => ({
@@ -47,10 +51,15 @@ export async function signup(req: Request, res: Response, next: NextFunction): P
  * POST /api/auth/login
  */
 export async function login(req: Request, res: Response, next: NextFunction): Promise<void> {
+  let normalizedEmail: string | undefined;
   try {
     const validatedData = loginSchema.parse(req.body);
+    normalizedEmail = validatedData.email;
 
     const { user, token } = await authService.login(validatedData);
+
+    // Authentication succeeded: clear any existing failed login attempts for this account
+    clearAccountLoginFailures(normalizedEmail);
 
     res.cookie(AUTH_COOKIE_NAME, token, getCookieOptions());
 
@@ -62,6 +71,10 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
     });
   } catch (err: unknown) {
     if (err && typeof err === 'object' && 'status' in err && err.status === 401) {
+      // Increment failure counter only on confirmed invalid credentials
+      if (normalizedEmail) {
+        recordAccountLoginFailure(normalizedEmail);
+      }
       res.status(401).json({
         error: {
           message: 'Invalid email or password.',
