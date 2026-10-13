@@ -10,9 +10,10 @@
     "start": "node dist/server.js",
     "seed:demo": "tsx src/utils/seedDemoData.ts",
     "clean:demo": "tsx src/utils/seedDemoData.ts --clean",
-    "verify:stage12": "node dist/utils/verifyStage12.js",
-    "verify:stage13": "node dist/utils/verifyStage13.js",
-    "verify:stage14": "node dist/utils/verifyStage14.js"
+    "verify:stage12": "tsx src/utils/verifyStage12.ts",
+    "verify:stage13": "tsx src/utils/verifyStage13.ts",
+    "verify:stage14": "tsx src/utils/verifyStage14.ts",
+    "verify:hardening": "tsx src/utils/verifyHardening.ts"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",
