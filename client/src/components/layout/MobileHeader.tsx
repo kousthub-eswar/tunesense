@@ -15,6 +15,8 @@ import {
   LogOut,
   LogIn,
   UserPlus,
+  Camera,
+  Navigation,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext.js';
 import { Avatar } from '../ui/Avatar.js';
@@ -41,6 +43,8 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
   const navItems = [
     { label: 'Home', path: '/home', icon: Home },
     { label: 'Discover', path: '/discover', icon: Compass },
+    { label: 'Photo to Music', path: '/photo-music', icon: Camera, badge: 'Vibe' },
+    { label: 'Emotional GPS', path: '/emotional-gps', icon: Navigation, badge: 'Journey' },
     { label: 'Search', path: '/search', icon: Search },
     { label: 'Recommendations', path: '/recommendations', icon: Sparkles, badge: 'Explainable' },
     { label: 'Your Library', path: '/library', icon: Library },

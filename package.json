@@ -14,6 +14,8 @@
     "seed:clean": "npm run clean:demo --prefix server",
     "verify": "npm run verify:stage14 --prefix server",
     "verify:hardening": "npm run verify:hardening --prefix server",
+    "verify:vibe": "npm run verify:vibe --prefix server",
+    "verify:gps": "npm run verify:gps --prefix server",
     "install:all": "npm install && npm install --prefix client && npm install --prefix server"
   },
   "devDependencies": {

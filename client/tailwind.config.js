@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     screens: {
       xs: '360px',
@@ -12,65 +12,105 @@ export default {
     },
     extend: {
       colors: {
-        bg: {
-          main: '#09090D',
-          elevated: '#13131B',
-          subtle: '#1B1B27',
+        // Core Design Tokens with Dynamic Mode Support
+        fog: 'rgb(var(--fog-rgb) / <alpha-value>)',
+        ink: {
+          DEFAULT: 'rgb(var(--ink-rgb) / <alpha-value>)',
+          primary: 'var(--ink-primary)',
+          secondary: 'var(--ink-secondary)',
+          muted: 'var(--ink-muted)',
+          subtle: 'var(--ink-subtle)',
         },
+        ultramarine: {
+          DEFAULT: '#3D3BF3',
+          hover: '#2D2BE3',
+          subtle: 'rgba(61, 59, 243, 0.08)',
+          glow: 'rgba(61, 59, 243, 0.25)',
+        },
+        tangerine: '#FF7A3D',
+        mint: '#5ADBB5',
+        orchid: '#C77DFF',
+
+        // Mood Hues
+        mood: {
+          energetic: '#FF7A3D',
+          happy: '#FFC93C',
+          relaxed: '#5ADBB5',
+          chill: '#6EC6FF',
+          melancholic: '#6C7BD9',
+          focus: '#3D3BF3',
+          party: '#FF4D8D',
+          sleepy: '#C77DFF',
+          stressed: '#FF7A3D',
+          calm: '#5ADBB5',
+        },
+
+        // Surface / Frosted Panels
         surface: {
-          DEFAULT: '#13131B',
-          secondary: '#1B1B27',
-          hover: '#1F1F2C',
-          border: '#272735',
-          'border-active': 'rgba(150, 100, 255, 0.5)',
+          DEFAULT: 'rgb(var(--surface-rgb) / 0.70)',
+          solid: 'var(--surface-solid)',
+          hover: 'rgb(var(--surface-rgb) / 0.88)',
+          border: 'var(--surface-border)',
+          subtle: 'rgb(var(--surface-rgb) / 0.40)',
+          secondary: 'rgb(var(--surface-rgb) / 0.80)',
+        },
+
+        // Legacy compatibility mappings pointing cleanly to new palette
+        brand: {
+          50: '#F0F1FE',
+          100: '#E1E3FD',
+          200: '#C3C6FC',
+          300: '#999EFA',
+          400: '#6468F6',
+          500: '#3D3BF3', // ultramarine
+          600: '#2D2BE3',
+          700: '#1F1DC7',
         },
         content: {
-          primary: '#F7F5FF',
-          secondary: '#A2A0B5',
-          muted: '#6F6D82',
+          DEFAULT: 'rgb(var(--ink-rgb) / <alpha-value>)',
+          primary: 'var(--ink-primary)',
+          secondary: 'var(--ink-secondary)',
+          muted: 'var(--ink-muted)',
         },
-        brand: {
-          50: '#f5f3ff',
-          100: '#ede9fe',
-          200: '#ddd6fe',
-          300: '#c4b5fd',
-          400: '#B59AFF', // Highlight accent
-          500: '#9664FF', // Primary accent
-          600: '#844df0',
-          700: '#7037dc',
+        bg: {
+          main: 'rgb(var(--fog-rgb) / <alpha-value>)',
+          elevated: 'rgb(var(--surface-rgb) / 0.75)',
+          subtle: 'rgb(var(--surface-rgb) / 0.50)',
         },
         vibe: {
-          cyan: '#38bdf8',
-          emerald: '#34d399',
-          amber: '#fbbf24',
-          rose: '#fb7185',
+          cyan: '#6EC6FF',
+          emerald: '#5ADBB5',
+          amber: '#FFC93C',
+          rose: '#FF4D8D',
         },
       },
       fontFamily: {
-        sans: [
-          'Plus Jakarta Sans',
-          'Inter',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          'Segoe UI',
-          'Roboto',
-          'sans-serif',
-        ],
+        display: ['"Bricolage Grotesque"', 'sans-serif'],
+        body: ['"Figtree"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        sans: ['"Figtree"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+      },
+      fontSize: {
+        'scale-14': ['14px', { lineHeight: '1.55' }],
+        'scale-16': ['16px', { lineHeight: '1.55' }],
+        'scale-20': ['20px', { lineHeight: '1.4' }],
+        'scale-28': ['28px', { lineHeight: '1.25', letterSpacing: '-0.02em' }],
+        'scale-44': ['44px', { lineHeight: '1.15', letterSpacing: '-0.03em' }],
+        'scale-72': ['72px', { lineHeight: '1.05', letterSpacing: '-0.04em' }],
       },
       borderRadius: {
-        card: '16px',
-        button: '12px',
-        input: '12px',
-        artwork: '12px',
-        player: '16px',
+        album: '20px',
+        panel: '28px',
+        chip: '10px',
+        button: '9999px',
+        full: '9999px',
       },
       boxShadow: {
-        card: '0 4px 20px -2px rgba(0, 0, 0, 0.5)',
-        player: '0 -4px 24px -2px rgba(0, 0, 0, 0.65)',
-        glow: 'none',
+        panel: '0 8px 30px rgba(27, 31, 59, 0.06)',
+        pill: '0 12px 36px rgba(27, 31, 59, 0.12)',
+        subtle: '0 4px 20px rgba(27, 31, 59, 0.05)',
       },
-      spacing: {
-        'safe-bottom': 'calc(env(safe-area-inset-bottom, 0px) + 72px)',
+      maxWidth: {
+        content: '1200px',
       },
     },
   },

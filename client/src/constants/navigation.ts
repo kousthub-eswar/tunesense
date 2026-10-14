@@ -3,6 +3,7 @@ import { NavItem } from '../types/index.js';
 export const NAVIGATION_ITEMS: NavItem[] = [
   { id: 'home', label: 'Home', path: '/home', iconName: 'Home' },
   { id: 'discover', label: 'Discover', path: '/discover', iconName: 'Compass' },
+  { id: 'photo-music', label: 'Vibe', path: '/photo-music', iconName: 'Camera' },
   { id: 'library', label: 'Library', path: '/library', iconName: 'Library' },
   { id: 'profile', label: 'Profile', path: '/profile', iconName: 'User' },
 ];

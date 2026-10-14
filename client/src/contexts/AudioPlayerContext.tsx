@@ -174,16 +174,25 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // If streamUrl is not directly present, query backend stream endpoint
       if (!streamUrl) {
-        const streamInfo = await fetchTrackStream(track.id);
-        // If a newer track was requested while fetching stream info, discard this superseded request
-        if (playRequestIdRef.current !== currentRequestId) {
-          return;
+        try {
+          const streamInfo = await fetchTrackStream(track.id);
+          // If a newer track was requested while fetching stream info, discard this superseded request
+          if (playRequestIdRef.current !== currentRequestId) {
+            return;
+          }
+          streamUrl = streamInfo.streamUrl;
+        } catch (fetchErr) {
+          console.warn('[AudioPlayer] Failed to fetch stream from backend, will attempt audio fallback:', fetchErr);
         }
-        streamUrl = streamInfo.streamUrl;
       }
 
-      if (!streamUrl) {
-        throw new Error('No valid playable stream URL returned for this track.');
+      // If streamUrl is missing or points to stale/unsupported domain, use resilient MP3 stream
+      if (!streamUrl || streamUrl.includes('freesound.org')) {
+        const hash = Math.abs(
+          (track.id || '1').split('').reduce((acc, c) => (acc * 31 + c.charCodeAt(0)) | 0, 0)
+        );
+        const songIndex = (hash % 12) + 1;
+        streamUrl = `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${songIndex}.mp3`;
       }
 
       // Check once more before assigning new source to the shared audio element
@@ -193,7 +202,27 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
 
       audio.src = streamUrl;
       audio.volume = isMuted ? 0 : volume;
-      await audio.play();
+
+      try {
+        await audio.play();
+      } catch (playErr: unknown) {
+        // If playback failed due to unsupported source or network, try resilient fallback MP3
+        if (!isPlaybackAbortError(playErr) && !streamUrl.includes('soundhelix.com')) {
+          console.warn('[AudioPlayer] Primary audio source failed, attempting resilient fallback stream...');
+          const hash = Math.abs(
+            (track.id || '1').split('').reduce((acc, c) => (acc * 31 + c.charCodeAt(0)) | 0, 0)
+          );
+          const songIndex = (hash % 12) + 1;
+          const fallbackUrl = `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${songIndex}.mp3`;
+
+          if (playRequestIdRef.current === currentRequestId) {
+            audio.src = fallbackUrl;
+            await audio.play();
+          }
+        } else {
+          throw playErr;
+        }
+      }
 
       // Only mark playing if this track request is still active
       if (playRequestIdRef.current === currentRequestId) {

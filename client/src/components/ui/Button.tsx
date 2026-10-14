@@ -23,25 +23,25 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseStyles =
-    'inline-flex items-center justify-center font-medium transition-all duration-200 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-main disabled:opacity-50 disabled:pointer-events-none select-none rounded-button';
+    'inline-flex items-center justify-center font-medium rounded-full transition-all duration-200 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-ultramarine focus-visible:ring-offset-2 focus-visible:ring-offset-fog dark:focus-visible:ring-offset-slate-950 disabled:opacity-50 disabled:pointer-events-none select-none';
 
   const sizeStyles = {
-    sm: 'text-xs px-3 py-2 min-h-[36px] gap-1.5',
-    md: 'text-sm px-4 py-2.5 min-h-[44px] gap-2',
-    lg: 'text-base px-6 py-3 min-h-[50px] gap-2.5',
+    sm: 'text-scale-14 px-3.5 py-1.5 min-h-[36px] gap-1.5',
+    md: 'text-scale-16 px-5 py-2.5 min-h-[44px] gap-2',
+    lg: 'text-scale-16 px-6 py-3 min-h-[50px] gap-2.5 font-semibold',
   };
 
   const variantStyles = {
     primary:
-      'bg-brand-500 text-white hover:bg-brand-600 shadow-sm active:bg-brand-700',
+      'bg-ultramarine text-white hover:bg-ultramarine-hover shadow-sm active:bg-ultramarine-hover',
     secondary:
-      'bg-surface hover:bg-surface-hover text-content-primary border border-surface-border active:border-surface-border-active',
+      'bg-white/70 dark:bg-slate-800/80 hover:bg-white/95 dark:hover:bg-slate-700 text-ink dark:text-slate-100 border border-white/60 dark:border-white/10 backdrop-blur-md shadow-subtle active:bg-white dark:active:bg-slate-800',
     ghost:
-      'bg-transparent hover:bg-white/5 text-content-secondary hover:text-content-primary active:bg-white/10',
+      'bg-transparent hover:bg-black/5 dark:hover:bg-white/5 text-ink/70 dark:text-slate-300 hover:text-ink dark:hover:text-white active:bg-black/10 dark:active:bg-white/10',
     outline:
-      'bg-transparent border border-surface-border text-content-primary hover:bg-white/5 active:bg-white/10',
+      'bg-transparent border border-ink/20 dark:border-white/20 text-ink dark:text-slate-100 hover:bg-white/60 dark:hover:bg-white/10 active:bg-white/80 dark:active:bg-white/20',
     danger:
-      'bg-vibe-rose text-white hover:bg-rose-600 shadow-sm',
+      'bg-tangerine text-white hover:opacity-90 shadow-sm',
   };
 
   return (

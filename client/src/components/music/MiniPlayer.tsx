@@ -8,7 +8,7 @@ import {
   Disc,
   AlertCircle,
   Loader2,
-  Maximize2,
+  ChevronUp,
 } from 'lucide-react';
 import { IconButton } from '../ui/IconButton.js';
 import { MusicArtwork } from './MusicArtwork.js';
@@ -40,9 +40,12 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ className }) => {
 
   useEffect(() => {
     if (currentTrack && isAuthenticated) {
-      libraryService.checkLikes([currentTrack.id]).then((res) => {
-        setIsLiked(Boolean(res[currentTrack.id]));
-      }).catch(() => {});
+      libraryService
+        .checkLikes([currentTrack.id])
+        .then((res) => {
+          setIsLiked(Boolean(res[currentTrack.id]));
+        })
+        .catch(() => {});
     }
   }, [currentTrack?.id, isAuthenticated]);
 
@@ -65,21 +68,23 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ className }) => {
 
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
-  // Return null when no track is queued or active (removes intrusive standby banner)
   if (!currentTrack) {
     return null;
   }
 
   return (
     <div
+      onClick={() => navigate('/player')}
+      role="region"
+      aria-label="Now playing bar"
       className={cn(
-        'mx-3 mb-2 bg-[#15151f]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-player overflow-hidden select-none transition-all duration-200',
+        'group relative w-full bg-white/85 dark:bg-slate-900/90 hover:bg-white/95 dark:hover:bg-slate-900/98 backdrop-blur-2xl border border-white/80 dark:border-white/10 rounded-full shadow-pill transition-all duration-300 cursor-pointer overflow-hidden select-none',
         className
       )}
     >
-      {/* Interactive Progress Seek Bar */}
+      {/* Integrated Slim Progress Line along the top */}
       <div
-        className="w-full bg-white/10 h-1 cursor-pointer relative group flex items-center"
+        className="w-full h-1 bg-black/5 dark:bg-white/10 cursor-pointer relative"
         onClick={(e) => {
           e.stopPropagation();
           const rect = e.currentTarget.getBoundingClientRect();
@@ -89,106 +94,101 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ className }) => {
         }}
       >
         <div
-          className="bg-brand-500 h-1 transition-all duration-100 group-hover:bg-brand-400"
+          className="h-full bg-ultramarine transition-all duration-100 rounded-full"
           style={{ width: `${progressPercent}%` }}
-        />
-        <div
-          className="absolute w-2.5 h-2.5 bg-white rounded-full -ml-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow"
-          style={{ left: `${progressPercent}%` }}
         />
       </div>
 
-      {/* Mini Player Body */}
-      <div
-        onClick={() => navigate('/player')}
-        className="px-3 py-2 flex items-center justify-between gap-2.5 cursor-pointer hover:bg-white/[0.03] transition-colors"
-      >
-        {/* Track Artwork & Info */}
-        <div className="flex items-center gap-2.5 min-w-0 flex-1">
-          <MusicArtwork
-            src={currentTrack.artworkUrl}
-            alt={currentTrack.title}
-            size="sm"
-            className="rounded-lg shadow-sm"
-            fallbackIcon={
-              <Disc
-                className={cn(
-                  'w-5 h-5 text-brand-400',
-                  isPlaying && 'animate-spin'
-                )}
-                style={{ animationDuration: '4s' }}
-              />
-            }
-          />
+      <div className="px-3.5 py-2 flex items-center justify-between gap-3">
+        {/* Artwork thumb + Track info */}
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 shadow-sm border border-black/5 dark:border-white/10 relative">
+            <MusicArtwork
+              src={currentTrack.artworkUrl}
+              alt={currentTrack.title}
+              size="sm"
+              className="w-full h-full object-cover"
+              fallbackIcon={
+                <Disc
+                  className={cn(
+                    'w-5 h-5 text-ultramarine',
+                    isPlaying && 'animate-spin'
+                  )}
+                  style={{ animationDuration: '4s' }}
+                />
+              }
+            />
+          </div>
 
           <div className="min-w-0 flex-1">
-            <h5 className="text-xs font-semibold text-content-primary truncate">
+            <h5 className="text-scale-14 font-semibold text-ink dark:text-slate-100 truncate leading-tight">
               {currentTrack.title}
             </h5>
-            <p className="text-[11px] text-content-secondary truncate">
+            <p className="text-xs text-ink/60 dark:text-slate-400 truncate mt-0.5">
               {currentTrack.artistName}
             </p>
           </div>
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
-          {/* Like Heart Button */}
+        <div
+          className="flex items-center gap-1.5 shrink-0"
+          onClick={(e) => e.stopPropagation()}
+        >
           {isAuthenticated && (
             <IconButton
               icon={
                 <Heart
                   className={cn(
-                    'w-3.5 h-3.5 transition-colors',
-                    isLiked ? 'text-brand-400 fill-brand-400' : 'text-content-secondary'
+                    'w-4 h-4 transition-colors',
+                    isLiked ? 'text-tangerine fill-tangerine' : 'text-ink/50 dark:text-slate-400 hover:text-ink dark:hover:text-white'
                   )}
                 />
               }
               aria-label={isLiked ? 'Unlike song' : 'Like song'}
               size="sm"
               onClick={handleLikeClick}
+              className="hover:bg-black/5 dark:hover:bg-white/10"
             />
           )}
 
-          {/* Play / Pause Button */}
           <button
             type="button"
             onClick={togglePlayPause}
             disabled={isLoading}
-            className="w-8 h-8 rounded-full bg-brand-500 hover:bg-brand-400 text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm"
+            className="w-9 h-9 rounded-full bg-ultramarine hover:bg-ultramarine-hover text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ultramarine"
             aria-label={isPlaying ? 'Pause' : 'Play'}
           >
             {isLoading ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+              <Loader2 className="w-4 h-4 animate-spin text-white" />
             ) : isPlaying ? (
-              <Pause className="w-3.5 h-3.5 fill-white" />
+              <Pause className="w-4 h-4 fill-white" />
             ) : (
-              <Play className="w-3.5 h-3.5 fill-white ml-0.5" />
+              <Play className="w-4 h-4 fill-white ml-0.5" />
             )}
           </button>
 
-          {/* Next Track Button */}
           <IconButton
-            icon={<SkipForward className="w-3.5 h-3.5 text-content-secondary hover:text-white" />}
+            icon={<SkipForward className="w-4 h-4 text-ink/60 dark:text-slate-400 hover:text-ink dark:hover:text-white" />}
             aria-label="Next track"
             size="sm"
             onClick={playNext}
+            className="hover:bg-black/5 dark:hover:bg-white/10"
           />
 
-          {/* Expand Full Player Button */}
           <IconButton
-            icon={<Maximize2 className="w-3.5 h-3.5 text-content-muted hover:text-white" />}
-            aria-label="Expand player"
+            icon={<ChevronUp className="w-4 h-4 text-ink/40 dark:text-slate-400 group-hover:text-ink/80 dark:group-hover:text-slate-200 transition-colors" />}
+            aria-label="Open full player"
             size="sm"
             onClick={() => navigate('/player')}
+            className="hover:bg-black/5 hidden xs:inline-flex"
           />
         </div>
       </div>
 
-      {/* Error Notice */}
       {error && (
-        <div className="bg-vibe-rose/15 border-t border-vibe-rose/30 px-3 py-1 flex items-center gap-1.5 text-[10px] text-rose-300">
-          <AlertCircle className="w-3 h-3 shrink-0 text-vibe-rose" />
+        <div className="bg-tangerine/10 border-t border-tangerine/20 px-3.5 py-1 flex items-center gap-1.5 text-[11px] text-[#A63A0B]">
+          <AlertCircle className="w-3.5 h-3.5 shrink-0 text-tangerine" />
           <span className="truncate">{error}</span>
         </div>
       )}

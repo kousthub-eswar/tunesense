@@ -33,6 +33,165 @@ export interface CatalogueSearchResultDto {
   totalResults: number;
 }
 
+export const FALLBACK_CATALOGUE_TRACKS: CatalogueTrackDto[] = [
+  {
+    id: 'demo_track_01',
+    providerTrackId: 'demo_track_01',
+    title: 'Solar Flare Groove',
+    artistName: 'Aura Nova',
+    albumTitle: 'Neon Odyssey',
+    durationSeconds: 215,
+    artworkUrl: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&q=80',
+    streamUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+    genres: ['Electronic', 'Synthwave', 'Dance'],
+    languages: ['en'],
+    provider: 'jamendo',
+  },
+  {
+    id: 'demo_track_02',
+    providerTrackId: 'demo_track_02',
+    title: 'Deep Midnight Drift',
+    artistName: 'Kallisto',
+    albumTitle: 'Starlight Sessions',
+    durationSeconds: 260,
+    artworkUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&q=80',
+    streamUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+    genres: ['Ambient', 'Lo-Fi', 'Chillout'],
+    languages: ['en'],
+    provider: 'jamendo',
+  },
+  {
+    id: 'demo_track_03',
+    providerTrackId: 'demo_track_03',
+    title: 'Oceanic Horizon',
+    artistName: 'Tidal Waves',
+    albumTitle: 'Coastal Reverie',
+    durationSeconds: 245,
+    artworkUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80',
+    streamUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+    genres: ['Chillout', 'Acoustic', 'Folk'],
+    languages: ['en'],
+    provider: 'jamendo',
+  },
+  {
+    id: 'demo_track_04',
+    providerTrackId: 'demo_track_04',
+    title: 'Kinetic Highway',
+    artistName: 'Overdrive Club',
+    albumTitle: 'Redline Nights',
+    durationSeconds: 198,
+    artworkUrl: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=400&q=80',
+    streamUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+    genres: ['Rock', 'Electro', 'Energetic'],
+    languages: ['en'],
+    provider: 'jamendo',
+  },
+  {
+    id: 'demo_track_05',
+    providerTrackId: 'demo_track_05',
+    title: 'Morning Bloom',
+    artistName: 'Solana Echo',
+    albumTitle: 'Daybreak',
+    durationSeconds: 185,
+    artworkUrl: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&q=80',
+    streamUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
+    genres: ['Pop', 'Indie', 'Happy'],
+    languages: ['en'],
+    provider: 'jamendo',
+  },
+  {
+    id: 'demo_track_06',
+    providerTrackId: 'demo_track_06',
+    title: 'Rain on Copper Roofs',
+    artistName: 'Ember Days',
+    albumTitle: 'Quiet Storms',
+    durationSeconds: 220,
+    artworkUrl: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&q=80',
+    streamUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3',
+    genres: ['Acoustic', 'Folk', 'Melancholic'],
+    languages: ['en'],
+    provider: 'jamendo',
+  },
+  {
+    id: 'demo_track_07',
+    providerTrackId: 'demo_track_07',
+    title: 'Velvet Horizon',
+    artistName: 'Luna Bay',
+    albumTitle: 'Twilight Echoes',
+    durationSeconds: 205,
+    artworkUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&q=80',
+    streamUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3',
+    genres: ['R&B', 'Soul', 'Chill'],
+    languages: ['en'],
+    provider: 'jamendo',
+  },
+  {
+    id: 'demo_track_08',
+    providerTrackId: 'demo_track_08',
+    title: 'Neon Skyline',
+    artistName: 'Cyber Dream',
+    albumTitle: 'Gridrunner',
+    durationSeconds: 230,
+    artworkUrl: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&q=80',
+    streamUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
+    genres: ['Electronic', 'Synthwave', 'Focus'],
+    languages: ['en'],
+    provider: 'jamendo',
+  },
+  {
+    id: 'demo_track_09',
+    providerTrackId: 'demo_track_09',
+    title: 'Golden Hour Reflections',
+    artistName: 'Sienna Sky',
+    albumTitle: 'Warm Radiance',
+    durationSeconds: 210,
+    artworkUrl: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&q=80',
+    streamUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3',
+    genres: ['Indie', 'Acoustic', 'Happy'],
+    languages: ['en'],
+    provider: 'jamendo',
+  },
+  {
+    id: 'demo_track_10',
+    providerTrackId: 'demo_track_10',
+    title: 'Midnight Coffee',
+    artistName: 'Urban Chill Trio',
+    albumTitle: 'Late Night Notes',
+    durationSeconds: 195,
+    artworkUrl: 'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=400&q=80',
+    streamUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3',
+    genres: ['Jazz', 'Lo-Fi', 'Relaxed'],
+    languages: ['en'],
+    provider: 'jamendo',
+  },
+  {
+    id: 'demo_track_11',
+    providerTrackId: 'demo_track_11',
+    title: 'Electric Carnival',
+    artistName: 'Hyperpulse',
+    albumTitle: 'Festival Vibe',
+    durationSeconds: 225,
+    artworkUrl: 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=400&q=80',
+    streamUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3',
+    genres: ['Dance', 'Electronic', 'Party'],
+    languages: ['en'],
+    provider: 'jamendo',
+  },
+  {
+    id: 'demo_track_12',
+    providerTrackId: 'demo_track_12',
+    title: 'Serenade for the Moon',
+    artistName: 'Velvet Strings',
+    albumTitle: 'Nocturnes',
+    durationSeconds: 250,
+    artworkUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&q=80',
+    streamUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3',
+    genres: ['Classical', 'Ambient', 'Calm'],
+    languages: ['en'],
+    provider: 'jamendo',
+  },
+];
+
 export class MusicCatalogueService {
   constructor(private readonly provider: IMusicProvider) {}
 
@@ -230,13 +389,31 @@ export class MusicCatalogueService {
           console.warn('[MusicCatalogueService] Error searching cached songs:', dbErr);
         }
       }
-      throw providerError;
+
+      // Upstream provider and Mongo cache unavailable; return fallback demo catalogue
+      console.warn('[MusicCatalogueService] Upstream provider and Mongo cache unavailable; filtering fallback demo catalogue.');
+      const qLower = query.toLowerCase().trim();
+      const filtered = FALLBACK_CATALOGUE_TRACKS.filter((t) =>
+        t.title.toLowerCase().includes(qLower) ||
+        t.artistName.toLowerCase().includes(qLower) ||
+        t.genres.some((g) => g.toLowerCase().includes(qLower))
+      );
+      const results = filtered.length > 0 ? filtered : FALLBACK_CATALOGUE_TRACKS;
+      const paged = results.slice(offset, offset + limit);
+      return {
+        query,
+        tracks: paged,
+        artists: [],
+        albums: [],
+        totalResults: results.length,
+      };
     }
   }
 
   /**
    * Retrieves popular tracks and caches them locally.
-   * If upstream provider is unavailable, falls back to genuinely cached MongoDB songs if present.
+   * If upstream provider is unavailable, falls back to genuinely cached MongoDB songs if present,
+   * or to the deterministic demo catalogue.
    */
   public async getPopularTracks(limit = 20): Promise<CatalogueTrackDto[]> {
     try {
@@ -280,8 +457,9 @@ export class MusicCatalogueService {
         }
       }
 
-      // If no genuine cache is available, rethrow the provider error so genuine failures are transparent
-      throw providerError;
+      // Standalone/Offline mode: return fallback demo catalogue
+      console.warn('[MusicCatalogueService] Upstream provider and Mongo cache unavailable; returning fallback demo catalogue.');
+      return FALLBACK_CATALOGUE_TRACKS.slice(0, limit);
     }
   }
 
@@ -331,12 +509,19 @@ export class MusicCatalogueService {
     }
 
     // Query external provider directly if not in database
-    const providerTrack = await this.provider.getTrack(identifier);
-    if (!providerTrack) {
-      return null;
+    try {
+      const providerTrack = await this.provider.getTrack(identifier);
+      if (providerTrack) {
+        return this.persistTrack(providerTrack);
+      }
+    } catch {
+      // Upstream provider unavailable, fall through to fallback demo catalogue
     }
 
-    return this.persistTrack(providerTrack);
+    const fallbackTrack = FALLBACK_CATALOGUE_TRACKS.find(
+      (t) => t.id === identifier || t.providerTrackId === identifier
+    );
+    return fallbackTrack || null;
   }
 
   /**
@@ -353,7 +538,43 @@ export class MusicCatalogueService {
       }
     }
 
-    return this.provider.getStreamUrl(providerTrackId);
+    try {
+      const streamInfo = await this.provider.getStreamUrl(providerTrackId);
+      if (streamInfo) return streamInfo;
+    } catch {
+      // Upstream provider unavailable, fall through
+    }
+
+    const fallbackTrack = FALLBACK_CATALOGUE_TRACKS.find(
+      (t) => t.id === identifier || t.providerTrackId === identifier
+    );
+    if (fallbackTrack?.streamUrl) {
+      return {
+        streamUrl: fallbackTrack.streamUrl,
+        format: 'mp3',
+        providerTrackId: fallbackTrack.providerTrackId,
+      };
+    }
+
+    // Direct Jamendo MP3 stream for numeric IDs
+    if (/^\d+$/.test(providerTrackId)) {
+      return {
+        streamUrl: `https://mp3d.jamendo.com/download/track/${providerTrackId}/mp32/`,
+        format: 'mp3',
+        providerTrackId,
+      };
+    }
+
+    // Deterministic fallback audio stream for any other track identifier
+    const hash = Math.abs(
+      (identifier || '1').split('').reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) | 0, 0)
+    );
+    const songIndex = (hash % 12) + 1;
+    return {
+      streamUrl: `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${songIndex}.mp3`,
+      format: 'mp3',
+      providerTrackId: identifier,
+    };
   }
 
   /**

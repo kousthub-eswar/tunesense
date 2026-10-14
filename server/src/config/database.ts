@@ -25,12 +25,16 @@ function sanitizeMongoUri(uri: string): string {
   }
 }
 
+// Disable buffering commands so unhandled queries fail fast rather than hanging for 10000ms
+mongoose.set('bufferCommands', false);
+
 /**
  * Connects to MongoDB Atlas using Mongoose.
  * If MONGODB_URI is not provided or connection fails, enters a documented degraded state.
  */
 export async function connectDatabase(): Promise<boolean> {
   if (!config.mongodbUri) {
+    mongoose.set('bufferCommands', false);
     console.warn(
       '\n[TuneSense Database] Configuration Warning: MONGODB_URI is not configured in environment.'
     );

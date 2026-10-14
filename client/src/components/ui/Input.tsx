@@ -23,35 +23,35 @@ export const Input: React.FC<InputProps> = ({
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={inputId} className="block text-xs font-semibold text-content-secondary mb-1.5 uppercase tracking-wider">
+        <label htmlFor={inputId} className="block text-scale-14 font-medium text-ink/80 dark:text-slate-300 mb-1.5">
           {label}
         </label>
       )}
       <div className="relative flex items-center">
         {isSearch && (
-          <div className="absolute left-3.5 pointer-events-none text-content-muted">
+          <div className="absolute left-3.5 pointer-events-none text-ink/40 dark:text-slate-500">
             <Search className="w-4 h-4" />
           </div>
         )}
         <input
           id={inputId}
           className={cn(
-            'w-full bg-surface text-content-primary rounded-input border border-surface-border px-3.5 py-2.5 text-sm placeholder:text-content-muted',
-            'transition-colors duration-200 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500',
+            'w-full bg-white/80 dark:bg-slate-900/80 text-ink dark:text-slate-100 rounded-[14px] border border-slate-200/80 dark:border-white/10 px-4 py-2.5 text-scale-14 placeholder:text-ink/40 dark:placeholder:text-slate-500 shadow-sm',
+            'transition-all duration-200 focus:outline-none focus:border-ultramarine focus:ring-2 focus:ring-ultramarine/20',
             isSearch && 'pl-10',
             Boolean(rightElement) && 'pr-11',
-            error && 'border-vibe-rose focus:border-vibe-rose focus:ring-vibe-rose',
+            error && 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/20',
             className
           )}
           {...props}
         />
         {rightElement && (
-          <div className="absolute right-2.5 flex items-center text-content-muted">
+          <div className="absolute right-3 flex items-center text-ink/40 dark:text-slate-400">
             {rightElement}
           </div>
         )}
       </div>
-      {error && <p className="text-xs text-vibe-rose mt-1.5">{error}</p>}
+      {error && <p className="text-xs text-rose-500 mt-1.5 font-medium">{error}</p>}
     </div>
   );
 };
@@ -75,27 +75,27 @@ export const Select: React.FC<SelectProps> = ({
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={selectId} className="block text-xs font-semibold text-content-secondary mb-1.5 uppercase tracking-wider">
+        <label htmlFor={selectId} className="block text-scale-14 font-medium text-ink/80 dark:text-slate-300 mb-1.5">
           {label}
         </label>
       )}
       <select
         id={selectId}
         className={cn(
-          'w-full bg-surface text-content-primary rounded-input border border-surface-border px-3.5 py-2.5 text-sm appearance-none cursor-pointer',
-          'transition-colors duration-200 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500',
-          error && 'border-vibe-rose',
+          'w-full bg-white/80 dark:bg-slate-900/80 text-ink dark:text-slate-100 rounded-[14px] border border-slate-200/80 dark:border-white/10 px-4 py-2.5 text-scale-14 appearance-none cursor-pointer shadow-sm',
+          'transition-all duration-200 focus:outline-none focus:border-ultramarine focus:ring-2 focus:ring-ultramarine/20',
+          error && 'border-rose-500',
           className
         )}
         {...props}
       >
         {options.map((opt) => (
-          <option key={opt.value} value={opt.value} className="bg-bg-elevated text-content-primary">
+          <option key={opt.value} value={opt.value} className="bg-white dark:bg-slate-900 text-ink dark:text-slate-100">
             {opt.label}
           </option>
         ))}
       </select>
-      {error && <p className="text-xs text-vibe-rose mt-1.5">{error}</p>}
+      {error && <p className="text-xs text-rose-500 mt-1.5 font-medium">{error}</p>}
     </div>
   );
 };
@@ -129,7 +129,7 @@ export const Toggle: React.FC<ToggleProps> = ({
         <div
           className={cn(
             'w-11 h-6 rounded-full transition-colors duration-200 border',
-            checked ? 'bg-brand-500 border-brand-500' : 'bg-surface hover:bg-surface-hover border-surface-border',
+            checked ? 'bg-ultramarine border-ultramarine' : 'bg-slate-200 dark:bg-slate-800 border-slate-300 dark:border-slate-700',
             disabled && 'opacity-40 cursor-not-allowed'
           )}
         />
@@ -140,7 +140,7 @@ export const Toggle: React.FC<ToggleProps> = ({
           )}
         />
       </div>
-      {label && <span className="text-sm text-content-primary">{label}</span>}
+      {label && <span className="text-scale-14 text-ink dark:text-slate-200 font-medium">{label}</span>}
     </label>
   );
 };

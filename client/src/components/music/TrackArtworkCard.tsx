@@ -77,13 +77,13 @@ export const TrackArtworkCard: React.FC<TrackArtworkCardProps> = ({
       <div
         onClick={handleCardClick}
         className={cn(
-          'group flex flex-col w-36 sm:w-40 md:w-44 shrink-0 rounded-xl p-2.5 bg-surface/60 hover:bg-surface border border-surface-border/60 hover:border-surface-border transition-all duration-200 cursor-pointer select-none',
-          isActive && 'border-brand-500/40 bg-surface ring-1 ring-brand-500/20',
+          'group flex flex-col w-36 sm:w-44 md:w-48 shrink-0 rounded-[24px] p-3 bg-white/70 dark:bg-slate-900/70 hover:bg-white/95 dark:hover:bg-slate-800/90 backdrop-blur-xl border border-white/60 dark:border-white/10 shadow-panel transition-all duration-200 cursor-pointer select-none text-ink dark:text-slate-100',
+          isActive && 'ring-2 ring-ultramarine ring-offset-2 ring-offset-fog dark:ring-offset-slate-950',
           className
         )}
       >
-        {/* Artwork Image Container */}
-        <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-surface-secondary mb-2 shadow-sm">
+        {/* Artwork Image Container with 20px radius */}
+        <div className="relative w-full aspect-square rounded-[20px] overflow-hidden bg-black/5 dark:bg-white/5 mb-2.5 shadow-sm">
           {track.artworkUrl ? (
             <img
               src={track.artworkUrl}
@@ -92,14 +92,14 @@ export const TrackArtworkCard: React.FC<TrackArtworkCardProps> = ({
               loading="lazy"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-brand-400">
+            <div className="w-full h-full flex items-center justify-center text-ultramarine">
               <Disc className={cn('w-10 h-10', isPlaying && 'animate-spin')} />
             </div>
           )}
 
-          {/* Badge if provided */}
+          {/* Badge if provided (sentence case, 10px chip radius) */}
           {badge && (
-            <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-sm text-[10px] font-semibold text-brand-300 border border-white/10 uppercase tracking-wider pointer-events-none">
+            <span className="absolute top-2 left-2 px-2.5 py-0.5 rounded-[10px] bg-white/90 dark:bg-slate-800/90 backdrop-blur-md text-[11px] font-semibold text-ink dark:text-slate-100 border border-white/60 dark:border-white/10 shadow-subtle pointer-events-none">
               {badge}
             </span>
           )}
@@ -107,18 +107,17 @@ export const TrackArtworkCard: React.FC<TrackArtworkCardProps> = ({
           {/* Overlay Actions on Hover / Active */}
           <div
             className={cn(
-              'absolute inset-0 bg-black/35 backdrop-blur-[1px] flex items-center justify-center transition-opacity duration-200',
+              'absolute inset-0 bg-ink/20 backdrop-blur-[1px] flex items-center justify-center transition-opacity duration-200',
               isActive && isPlaying ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
             )}
           >
-            {/* Play / Pause Circular Button */}
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 onPlay?.();
               }}
-              className="w-10 h-10 rounded-full bg-brand-500 hover:bg-brand-400 text-white flex items-center justify-center shadow-md transition-transform active:scale-95"
+              className="w-10 h-10 rounded-full bg-ultramarine hover:bg-ultramarine-hover text-white flex items-center justify-center shadow-pill transition-transform active:scale-95"
               aria-label={isActive && isPlaying ? 'Pause' : 'Play'}
             >
               {isActive && isPlaying ? (
@@ -135,44 +134,41 @@ export const TrackArtworkCard: React.FC<TrackArtworkCardProps> = ({
               <button
                 type="button"
                 onClick={handleLike}
-                className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white hover:scale-110 transition-transform"
+                className="w-7 h-7 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-md flex items-center justify-center text-ink dark:text-slate-100 hover:scale-110 transition-transform shadow-sm"
                 aria-label={isLiked ? 'Unlike song' : 'Like song'}
               >
                 <Heart
                   className={cn(
                     'w-3.5 h-3.5 transition-colors',
-                    isLiked ? 'text-brand-400 fill-brand-400' : 'text-white'
+                    isLiked ? 'text-tangerine fill-tangerine' : 'text-ink/60 dark:text-slate-400'
                   )}
                 />
               </button>
               <button
                 type="button"
                 onClick={handlePlaylist}
-                className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white hover:scale-110 transition-transform"
+                className="w-7 h-7 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-md flex items-center justify-center text-ink dark:text-slate-100 hover:scale-110 transition-transform shadow-sm"
                 aria-label="Add to playlist"
               >
-                <ListPlus className="w-3.5 h-3.5 text-white" />
+                <ListPlus className="w-3.5 h-3.5 text-ink/60 dark:text-slate-400" />
               </button>
             </div>
           )}
         </div>
 
-        {/* Track Metadata with line-clamp-2 */}
-        <div className="min-w-0 flex flex-col flex-1 justify-between">
+        {/* Track Title and Artist (Sentence case) */}
+        <div className="flex-1 min-w-0">
           <h4
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/song/${track.id}`);
             }}
-            className={cn(
-              'text-xs sm:text-sm font-semibold line-clamp-2 leading-snug min-h-[2.1rem] hover:text-brand-300 transition-colors',
-              isActive ? 'text-brand-400' : 'text-content-primary'
-            )}
+            className="font-display font-bold text-scale-14 text-ink hover:text-ultramarine transition-colors truncate"
             title={track.title}
           >
             {track.title}
           </h4>
-          <p className="text-[11px] sm:text-xs text-content-secondary truncate mt-1">
+          <p className="text-xs text-ink/60 truncate mt-0.5 font-medium">
             {track.artistName}
           </p>
         </div>

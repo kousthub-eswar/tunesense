@@ -233,6 +233,20 @@ export async function seedDemoData(): Promise<SeedResult> {
     genres: ['classical'],
   });
 
+  const albumSolarBrilliance: any = await Album.create({
+    title: 'Solar Brilliance',
+    artistIds: [artistSolarEchoes._id],
+    artworkUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80',
+    genres: ['pop', 'electronic'],
+  });
+
+  const albumAbyssalShadows: any = await Album.create({
+    title: 'Abyssal Shadows',
+    artistIds: [artistVelvetStrings._id],
+    artworkUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&q=80',
+    genres: ['dark ambient', 'ambient'],
+  });
+
   // 6. Create Songs
   const song1: any = await Song.create({
     title: 'Cybernetic Glow',
@@ -391,6 +405,168 @@ export async function seedDemoData(): Promise<SeedResult> {
       valence: 0.4,
       acousticness: 0.92,
       instrumentalness: 0.95,
+    },
+  });
+
+  // 4 ULTRA-BRIGHT, WARM, HIGH-ENERGY TRACKS (for bright, sunny photos)
+  await Song.create({
+    title: 'Sunburst Festival',
+    artistIds: [artistSolarEchoes._id],
+    albumId: albumSolarBrilliance._id,
+    durationSeconds: 195,
+    artworkUrl: albumSolarBrilliance.artworkUrl,
+    provider: 'tunesense_demo',
+    providerTrackId: 'demo_track_9',
+    genres: ['pop', 'dance'],
+    languages: ['en'],
+    metadata: {
+      tempo: 128,
+      energy: 0.95,
+      danceability: 0.88,
+      valence: 0.92,
+      acousticness: 0.1,
+      instrumentalness: 0.2,
+    },
+  });
+
+  await Song.create({
+    title: 'Golden Hour Radiance',
+    artistIds: [artistNeonWave._id],
+    albumId: albumSolarBrilliance._id,
+    durationSeconds: 210,
+    artworkUrl: albumSolarBrilliance.artworkUrl,
+    provider: 'tunesense_demo',
+    providerTrackId: 'demo_track_10',
+    genres: ['indie pop', 'electronic'],
+    languages: ['en'],
+    metadata: {
+      tempo: 122,
+      energy: 0.88,
+      danceability: 0.82,
+      valence: 0.90,
+      acousticness: 0.15,
+      instrumentalness: 0.1,
+    },
+  });
+
+  await Song.create({
+    title: 'Daybreak Anthem',
+    artistIds: [artistStoneThunder._id],
+    albumId: albumSolarBrilliance._id,
+    durationSeconds: 205,
+    artworkUrl: albumSolarBrilliance.artworkUrl,
+    provider: 'tunesense_demo',
+    providerTrackId: 'demo_track_11',
+    genres: ['electro pop', 'electronic'],
+    languages: ['en'],
+    metadata: {
+      tempo: 130,
+      energy: 0.92,
+      danceability: 0.79,
+      valence: 0.86,
+      acousticness: 0.08,
+      instrumentalness: 0.3,
+    },
+  });
+
+  await Song.create({
+    title: 'Summer Euphoria',
+    artistIds: [artistSolarEchoes._id],
+    albumId: albumSolarBrilliance._id,
+    durationSeconds: 220,
+    artworkUrl: albumSolarBrilliance.artworkUrl,
+    provider: 'tunesense_demo',
+    providerTrackId: 'demo_track_12',
+    genres: ['disco', 'pop'],
+    languages: ['en'],
+    metadata: {
+      tempo: 125,
+      energy: 0.89,
+      danceability: 0.85,
+      valence: 0.94,
+      acousticness: 0.12,
+      instrumentalness: 0.15,
+    },
+  });
+
+  // 4 DEEP DARK, MOODY, COOL AMBIENT TRACKS (for dark, shadowed photos)
+  await Song.create({
+    title: 'Shadows of the Abyss',
+    artistIds: [artistVelvetStrings._id],
+    albumId: albumAbyssalShadows._id,
+    durationSeconds: 275,
+    artworkUrl: albumAbyssalShadows.artworkUrl,
+    provider: 'tunesense_demo',
+    providerTrackId: 'demo_track_13',
+    genres: ['dark ambient', 'ambient'],
+    languages: ['instrumental'],
+    metadata: {
+      tempo: 62,
+      energy: 0.12,
+      danceability: 0.18,
+      valence: 0.15,
+      acousticness: 0.85,
+      instrumentalness: 0.95,
+    },
+  });
+
+  await Song.create({
+    title: 'Cimmerian Gloom',
+    artistIds: [artistVelvetStrings._id],
+    albumId: albumAbyssalShadows._id,
+    durationSeconds: 290,
+    artworkUrl: albumAbyssalShadows.artworkUrl,
+    provider: 'tunesense_demo',
+    providerTrackId: 'demo_track_14',
+    genres: ['drone', 'dark ambient'],
+    languages: ['instrumental'],
+    metadata: {
+      tempo: 58,
+      energy: 0.18,
+      danceability: 0.22,
+      valence: 0.12,
+      acousticness: 0.78,
+      instrumentalness: 0.92,
+    },
+  });
+
+  await Song.create({
+    title: 'Obsidian Echoes',
+    artistIds: [artistNeonWave._id],
+    albumId: albumAbyssalShadows._id,
+    durationSeconds: 260,
+    artworkUrl: albumAbyssalShadows.artworkUrl,
+    provider: 'tunesense_demo',
+    providerTrackId: 'demo_track_15',
+    genres: ['minimalism', 'ambient'],
+    languages: ['instrumental'],
+    metadata: {
+      tempo: 70,
+      energy: 0.15,
+      danceability: 0.20,
+      valence: 0.18,
+      acousticness: 0.88,
+      instrumentalness: 0.96,
+    },
+  });
+
+  await Song.create({
+    title: 'Midnight Monolith',
+    artistIds: [artistSolarEchoes._id],
+    albumId: albumAbyssalShadows._id,
+    durationSeconds: 285,
+    artworkUrl: albumAbyssalShadows.artworkUrl,
+    provider: 'tunesense_demo',
+    providerTrackId: 'demo_track_16',
+    genres: ['cinematic', 'ambient'],
+    languages: ['instrumental'],
+    metadata: {
+      tempo: 65,
+      energy: 0.22,
+      danceability: 0.16,
+      valence: 0.14,
+      acousticness: 0.92,
+      instrumentalness: 0.98,
     },
   });
 

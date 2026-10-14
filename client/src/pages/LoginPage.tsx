@@ -178,6 +178,21 @@ export const LoginPage: React.FC = () => {
                 Sign In
               </Button>
             </div>
+
+            {/* Quick-fill Demo Account Button */}
+            <div className="pt-3 border-t border-surface-border/60 text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail('alice@demo.tunesense.ai');
+                  setPassword('DemoPassword123!');
+                  setFieldErrors({});
+                }}
+                className="w-full py-2 px-3 rounded-xl bg-surface-secondary/70 hover:bg-surface-secondary border border-surface-border/80 text-[11px] text-content-secondary hover:text-brand-300 font-medium transition-colors flex items-center justify-center gap-1.5"
+              >
+                <span>Demo Sign-In: <strong className="text-brand-400 font-mono">alice@demo.tunesense.ai</strong></span>
+              </button>
+            </div>
           </form>
         </Card>
 

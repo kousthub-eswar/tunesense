@@ -5,6 +5,8 @@ import { ProtectedRoute } from '../components/auth/ProtectedRoute.js';
 import { LandingPage } from '../pages/LandingPage.js';
 import { HomePage } from '../pages/HomePage.js';
 import { DiscoverPage } from '../pages/DiscoverPage.js';
+import { PhotoMusicPage } from '../pages/PhotoMusicPage.js';
+import { EmotionalGpsPage } from '../pages/EmotionalGpsPage.js';
 import { SearchPage } from '../pages/SearchPage.js';
 import { SongDetailPage } from '../pages/SongDetailPage.js';
 import { RecommendationsPage } from '../pages/RecommendationsPage.js';
@@ -31,6 +33,8 @@ export const AppRoutes: React.FC = () => {
         {/* Core Discovery & Browsing (accessible to all listeners) */}
         <Route path="/home" element={<HomePage />} />
         <Route path="/discover" element={<DiscoverPage />} />
+        <Route path="/photo-music" element={<PhotoMusicPage />} />
+        <Route path="/emotional-gps" element={<EmotionalGpsPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/song/:id" element={<SongDetailPage />} />
         <Route path="/player" element={<PlayerPage />} />

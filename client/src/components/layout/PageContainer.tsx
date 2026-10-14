@@ -13,14 +13,14 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   hasBottomNav = true,
 }) => {
   return (
-    <main
+    <div
       className={cn(
-        'w-full flex-1 px-3.5 sm:px-5 md:px-8 py-4 md:py-6 md:max-w-6xl md:mx-auto overflow-x-hidden',
-        hasBottomNav && 'pb-[calc(9.5rem+env(safe-area-inset-bottom))] md:pb-28',
+        'w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 overflow-x-hidden text-ink',
+        hasBottomNav && 'pb-24 md:pb-20',
         className
       )}
     >
       {children}
-    </main>
+    </div>
   );
 };

@@ -1,10 +1,8 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { MobileHeader } from './MobileHeader.js';
-import { DesktopSidebar } from './DesktopSidebar.js';
+import { TopNav } from './TopNav.js';
 import { BottomNavigation } from './BottomNavigation.js';
 import { MiniPlayer } from '../music/MiniPlayer.js';
-import { DesktopPlayer } from '../music/DesktopPlayer.js';
 import { cn } from '../../utils/cn.js';
 
 export interface AppShellProps {
@@ -16,35 +14,38 @@ export const AppShell: React.FC<AppShellProps> = ({ className }) => {
   const isPlayerPage = location.pathname === '/player';
 
   return (
-    <div className="min-h-screen w-full bg-bg-main flex flex-col md:flex-row selection:bg-brand-500/20 text-content-primary">
-      {/* Desktop Sidebar (visible on md screens and above) */}
-      <DesktopSidebar />
+    <div className="min-h-screen w-full bg-fog dark:bg-[#0B0E17] text-ink dark:text-slate-100 relative flex flex-col selection:bg-ultramarine/20 selection:text-ink dark:selection:text-white transition-colors duration-300">
+      {/* Ambient Two-Color Field Background with 900ms smooth transition */}
+      <div className="ambient-field-bg" aria-hidden="true" />
 
-      {/* Main App Content Area */}
-      <div className={cn('flex-1 flex flex-col min-w-0 min-h-screen relative w-full overflow-x-hidden', className)}>
-        {/* Mobile Header (hidden on md and above, and hidden on expanded player page) */}
-        {!isPlayerPage && (
-          <div className="md:hidden">
-            <MobileHeader />
-          </div>
+      {/* Slim Top Bar (Logo, 4 Main Links, Profile) */}
+      {!isPlayerPage && <TopNav />}
+
+      {/* Main Content Area - max 1200px, left-aligned, generous whitespace */}
+      <main
+        className={cn(
+          'relative z-10 flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-32 md:pb-28',
+          className
         )}
+      >
+        <Outlet />
+      </main>
 
-        {/* Content Outlet */}
-        <div className="flex-1 flex flex-col w-full min-w-0">
-          <Outlet />
-        </div>
-
-        {/* Mobile Floating Stack: MiniPlayer + Bottom Navigation (hidden on md, and hidden on expanded player page) */}
-        {!isPlayerPage && (
-          <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-bg-main via-bg-main/95 to-transparent pt-3 pointer-events-auto">
+      {/* Floating Player Pill docked at bottom center */}
+      {!isPlayerPage && (
+        <div className="fixed bottom-20 md:bottom-6 left-0 right-0 z-40 px-4 pointer-events-none flex justify-center">
+          <div className="w-full max-w-[620px] pointer-events-auto">
             <MiniPlayer />
-            <BottomNavigation />
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* Desktop Persistent Bottom Player (hidden on mobile, and hidden when in expanded player view) */}
-      {!isPlayerPage && <DesktopPlayer />}
+      {/* Mobile Bottom Tab Bar */}
+      {!isPlayerPage && (
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-30">
+          <BottomNavigation />
+        </div>
+      )}
     </div>
   );
 };

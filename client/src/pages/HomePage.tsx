@@ -17,6 +17,8 @@ import {
   Coffee,
   Guitar,
   Target,
+  Camera,
+  Navigation,
 } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer.js';
 import { Button } from '../components/ui/Button.js';
@@ -341,7 +343,89 @@ export const HomePage: React.FC = () => {
         </div>
       </header>
 
-      {/* 2. MOOD SELECTION CHIPS */}
+      {/* 2. FLAGSHIP ENTRY POINTS: Photo to Music & Emotional GPS */}
+      <section className="mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Flagship Entry Point 1: Photo to Music */}
+          <div
+            onClick={() => navigate('/photo-music')}
+            className="group relative overflow-hidden rounded-[28px] p-6 bg-white/75 dark:bg-slate-900/75 hover:bg-white/95 dark:hover:bg-slate-800/90 backdrop-blur-xl border border-white/70 dark:border-white/10 shadow-panel transition-all duration-300 cursor-pointer flex flex-col justify-between text-ink dark:text-slate-100"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 rounded-[16px] bg-orchid/15 text-[#8836C7] dark:text-orchid flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm">
+                  <Camera className="w-6 h-6" />
+                </div>
+                <span className="px-3 py-1 rounded-[10px] text-xs font-semibold bg-orchid/10 text-[#8836C7] dark:text-orchid border border-orchid/25">
+                  Visual vibe match
+                </span>
+              </div>
+
+              <h2 className="font-display text-scale-20 sm:text-scale-28 font-bold text-ink dark:text-slate-100 tracking-tight group-hover:text-ultramarine transition-colors">
+                Photo to music
+              </h2>
+              <p className="text-scale-14 text-ink/65 dark:text-slate-300 mt-1.5 leading-relaxed prose-readable">
+                Drop any image to extract brightness, warmth, and saturation in-browser. Watch the interface recolor to your photo's dominant hues and stream matching acoustic tracks.
+              </p>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-black/5 dark:border-white/10 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs text-ink/60 dark:text-slate-400">
+                <div className="flex -space-x-1">
+                  <span className="w-4 h-4 rounded-full bg-tangerine border-2 border-white dark:border-slate-800 shadow-sm" />
+                  <span className="w-4 h-4 rounded-full bg-mood-happy border-2 border-white dark:border-slate-800 shadow-sm" />
+                  <span className="w-4 h-4 rounded-full bg-orchid border-2 border-white dark:border-slate-800 shadow-sm" />
+                </div>
+                <span>Energy • Mood • Rhythm</span>
+              </div>
+
+              <span className="inline-flex items-center gap-1 text-scale-14 font-semibold text-ultramarine group-hover:translate-x-0.5 transition-transform">
+                <span>Analyze a photo</span>
+                <ArrowRight className="w-4 h-4" />
+              </span>
+            </div>
+          </div>
+
+          {/* Flagship Entry Point 2: Emotional GPS */}
+          <div
+            onClick={() => navigate('/emotional-gps')}
+            className="group relative overflow-hidden rounded-[28px] p-6 bg-white/75 dark:bg-slate-900/75 hover:bg-white/95 dark:hover:bg-slate-800/90 backdrop-blur-xl border border-white/70 dark:border-white/10 shadow-panel transition-all duration-300 cursor-pointer flex flex-col justify-between text-ink dark:text-slate-100"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 rounded-[16px] bg-mint/20 text-[#0F8A64] dark:text-mint flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm">
+                  <Navigation className="w-6 h-6 transform -rotate-45" />
+                </div>
+                <span className="px-3 py-1 rounded-[10px] text-xs font-semibold bg-mint/15 text-[#0F8A64] dark:text-mint border border-mint/30">
+                  Waypoint guidance
+                </span>
+              </div>
+
+              <h2 className="font-display text-scale-20 sm:text-scale-28 font-bold text-ink dark:text-slate-100 tracking-tight group-hover:text-ultramarine transition-colors">
+                Emotional GPS
+              </h2>
+              <p className="text-scale-14 text-ink/65 dark:text-slate-300 mt-1.5 leading-relaxed prose-readable">
+                Navigate from where you are emotionally to where you want to be. Interpolates 5 harmonic waypoints on an interactive SVG valence-energy map with explainable transition steps.
+              </p>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-black/5 dark:border-white/10 flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-xs text-ink/60 dark:text-slate-400">
+                <span>🌪️ Stressed</span>
+                <span className="text-mint font-bold">➔</span>
+                <span>🌊 Calm (5 steps)</span>
+              </div>
+
+              <span className="inline-flex items-center gap-1 text-scale-14 font-semibold text-ultramarine group-hover:translate-x-0.5 transition-transform">
+                <span>Plan your journey</span>
+                <ArrowRight className="w-4 h-4" />
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. MOOD SELECTION CHIPS */}
       <section className="mb-6">
         <MoodSelector
           activeMood={activeMood}

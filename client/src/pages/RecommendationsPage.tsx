@@ -11,15 +11,16 @@ import {
   Activity,
 } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer.js';
-import { Card } from '../components/ui/Card.js';
 import { Badge } from '../components/ui/Badge.js';
 import { Button } from '../components/ui/Button.js';
 import { MoodSelector } from '../components/recommendation/MoodSelector.js';
 import { RecommendationCard } from '../components/recommendation/RecommendationCard.js';
+import { SongCard } from '../components/music/SongCard.js';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext.js';
 import { recommendationService } from '../services/recommendationService.js';
 import { analyticsService } from '../services/analyticsService.js';
-import { RecommendationItemDto } from '../types/index.js';
+import { RecommendationItemDto, RecordImpressionItem } from '../types/index.js';
+import { cn } from '../utils/cn.js';
 
 interface StrategyOption {
   id: string;
@@ -32,42 +33,42 @@ interface StrategyOption {
 const STRATEGIES: StrategyOption[] = [
   {
     id: 'hybrid',
-    name: 'Hybrid Personalization',
+    name: 'Hybrid personalization',
     code: 'R4',
     icon: Sparkles,
     description: 'Blends content features, collaborative signals, and current listening context',
   },
   {
     id: 'collaborative',
-    name: 'Collaborative Personalization',
+    name: 'Collaborative personalization',
     code: 'R5',
     icon: Users,
     description: 'Cosine similarity over sparse user interaction matrices blended with acoustic matching',
   },
   {
     id: 'context',
-    name: 'Context-Aware',
+    name: 'Context-aware',
     code: 'R3',
     icon: Zap,
     description: 'Real-time situational matching across time of day and day of week patterns',
   },
   {
     id: 'behaviour',
-    name: 'Behavioural Personalization',
+    name: 'Behavioral personalization',
     code: 'R2',
     icon: Activity,
     description: 'Emphasizes recent completion rates, repeat listening habits, and emerging trends',
   },
   {
     id: 'content',
-    name: 'Acoustic Similarity',
+    name: 'Acoustic similarity',
     code: 'R1',
     icon: Compass,
     description: 'Direct acoustic attribute cosine similarity and genre affinity modeling',
   },
   {
     id: 'popularity',
-    name: 'Popularity Baseline',
+    name: 'Popularity baseline',
     code: 'R0',
     icon: TrendingUp,
     description: 'Catalog-wide trending momentum and listener engagement benchmark',
@@ -81,20 +82,19 @@ export const RecommendationsPage: React.FC = () => {
 
   const [activeStrategy, setActiveStrategy] = useState<string>('hybrid');
   const [activeMood, setActiveMood] = useState<string | null>(() => {
-    return sessionStorage.getItem(MOOD_STORAGE_KEY) || null;
+    return sessionStorage.getItem(MOOD_STORAGE_KEY);
   });
   const [recommendations, setRecommendations] = useState<RecommendationItemDto[]>([]);
+  const [recRequestId, setRecRequestId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [recRequestId, setRecRequestId] = useState<string | null>(null);
 
   const fetchRecommendations = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-
     try {
       const res = await recommendationService.getRecommendations(
-        15,
+        12,
         activeStrategy,
         activeMood || undefined
       );
@@ -102,25 +102,26 @@ export const RecommendationsPage: React.FC = () => {
       setRecommendations(res.recommendations || []);
       setRecRequestId(res.recommendationRequestId || null);
 
-      // Record recommendation impressions in analytics
       if (res.recommendationRequestId && res.recommendations && res.recommendations.length > 0) {
-        const impressionItems = res.recommendations.map((rec, idx) => ({
-          songId: rec.song.id,
-          strategy: res.strategy,
-          recommendationScore: rec.score,
+        const impressionItems: RecordImpressionItem[] = res.recommendations.map((r, idx) => ({
+          songId: r.song.id,
+          strategy: activeStrategy,
+          recommendationScore: r.score,
           position: idx + 1,
           mood: activeMood || undefined,
           recommendationRequestId: res.recommendationRequestId!,
         }));
-        analyticsService.recordImpressions(impressionItems).catch((err) => {
-          console.warn('[RecommendationsPage] Non-blocking impression error:', err);
-        });
+        analyticsService.recordImpressions(impressionItems).catch(() => {});
       }
-    } catch (err: any) {
-      console.error('[RecommendationsPage] Fetch error:', err);
-      const msg = err.message || 'Failed to generate recommendations. Please try another strategy.';
-      setError(msg);
+    } catch (err) {
+      console.error('[RecommendationsPage] Error fetching recommendations:', err);
       setRecommendations([]);
+      setRecRequestId(null);
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Unable to generate personalized recommendations. Please try again.'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -157,37 +158,39 @@ export const RecommendationsPage: React.FC = () => {
 
   const currentStrategyObj = STRATEGIES.find((s) => s.id === activeStrategy) || STRATEGIES[0];
 
+  const featuredRec = recommendations[0];
+  const listRecs = recommendations.slice(1);
+
   return (
     <PageContainer>
       {/* Page Header */}
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
           <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <Badge variant="brand" size="sm">
+            <div className="flex items-center gap-2 mb-2">
+              <Badge variant="ultramarine" size="sm">
                 <Sparkles className="w-3 h-3 mr-1" />
-                Explainable Recommendation Engine
+                Explainable recommendations
               </Badge>
-              <Badge variant="neutral" size="sm" className="font-mono text-[10px]">
+              <Badge variant="neutral" size="sm" className="font-mono">
                 {currentStrategyObj.code}
               </Badge>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-content-primary tracking-tight">
-              Recommendation Lab
+            <h1 className="font-display text-scale-28 sm:text-scale-44 font-bold text-ink tracking-tight">
+              Recommendation lab
             </h1>
-            <p className="text-xs sm:text-sm text-content-secondary mt-1 max-w-xl">
-              Inspect TuneSense's transparent recommendation strategies (R0 to R5) with explainability badges and acoustic scoring.
+            <p className="text-scale-16 text-ink/65 mt-1 max-w-xl">
+              Inspect transparent recommendation models (R0 to R5) with score dimension breakdowns and explainability signals.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+          <div className="flex items-center gap-2.5 self-start sm:self-center shrink-0">
             <Button
               variant="secondary"
               size="sm"
               onClick={fetchRecommendations}
               disabled={isLoading}
               leftIcon={<RotateCcw className={isLoading ? 'w-3.5 h-3.5 animate-spin' : 'w-3.5 h-3.5'} />}
-              className="text-xs"
             >
               Regenerate
             </Button>
@@ -197,9 +200,8 @@ export const RecommendationsPage: React.FC = () => {
               onClick={handlePlayAll}
               disabled={isLoading || recommendations.length === 0}
               leftIcon={<Play className="w-3.5 h-3.5 fill-current" />}
-              className="text-xs"
             >
-              Play All ({recommendations.length})
+              Play all ({recommendations.length})
             </Button>
           </div>
         </div>
@@ -207,15 +209,15 @@ export const RecommendationsPage: React.FC = () => {
 
       {/* Strategy Selector Pills */}
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-2 px-0.5">
-          <span className="text-xs font-semibold text-content-muted uppercase tracking-wider">
-            Recommendation Strategy
+        <div className="flex items-center justify-between mb-2.5 px-0.5">
+          <span className="text-xs font-semibold text-ink/70">
+            Recommendation strategy
           </span>
-          <span className="text-[11px] text-content-muted">
-            Algorithm: <strong className="text-brand-300 font-mono">{activeStrategy}</strong>
+          <span className="text-xs text-ink/50">
+            Active: <strong className="text-ultramarine font-semibold">{currentStrategyObj.name}</strong>
           </span>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
           {STRATEGIES.map((strat) => {
             const Icon = strat.icon;
             const isSelected = activeStrategy === strat.id;
@@ -223,29 +225,24 @@ export const RecommendationsPage: React.FC = () => {
               <button
                 key={strat.id}
                 onClick={() => setActiveStrategy(strat.id)}
-                className={`p-3 rounded-xl border text-left transition-all duration-150 flex flex-col justify-between group ${
+                className={cn(
+                  'p-3.5 rounded-[20px] border text-left transition-all duration-200 flex flex-col justify-between group shadow-subtle select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-ultramarine',
                   isSelected
-                    ? 'bg-brand-500/15 border-brand-500/40 text-brand-300 shadow-sm'
-                    : 'bg-surface/60 hover:bg-surface border-surface-border/80 text-content-secondary hover:text-content-primary'
-                }`}
+                    ? 'bg-white dark:bg-slate-800 text-ink dark:text-white border-ultramarine/40 shadow-pill ring-1 ring-ultramarine/30'
+                    : 'bg-white/70 dark:bg-slate-900/70 hover:bg-white dark:hover:bg-slate-800 border-white/60 dark:border-white/10 text-ink/75 dark:text-slate-300 hover:text-ink dark:hover:text-white'
+                )}
               >
-                <div className="flex items-center justify-between w-full mb-1.5">
-                  <Icon
-                    className={`w-4 h-4 ${
-                      isSelected ? 'text-brand-400' : 'text-content-muted group-hover:text-content-secondary'
-                    }`}
-                  />
-                  <span
-                    className={`text-[10px] font-mono px-1 rounded ${
-                      isSelected ? 'bg-brand-500/30 text-brand-200' : 'bg-surface text-content-muted'
-                    }`}
-                  >
+                <div className="flex items-center justify-between w-full mb-2">
+                  <div className={cn('w-7 h-7 rounded-full flex items-center justify-center text-xs', isSelected ? 'bg-ultramarine text-white' : 'bg-black/5 dark:bg-white/10 text-ink/70 dark:text-slate-300')}>
+                    <Icon className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="text-[11px] font-mono font-semibold px-1.5 py-0.5 rounded-[10px] bg-black/5 dark:bg-white/10 text-ink/60 dark:text-slate-400">
                     {strat.code}
                   </span>
                 </div>
                 <div>
-                  <p className="text-xs font-semibold truncate leading-tight">{strat.name}</p>
-                  <p className="text-[10px] text-content-muted line-clamp-1 mt-0.5">
+                  <p className="text-scale-14 font-semibold text-ink dark:text-slate-100 truncate leading-tight">{strat.name}</p>
+                  <p className="text-xs text-ink/50 dark:text-slate-400 line-clamp-2 mt-1 leading-snug">
                     {strat.description}
                   </p>
                 </div>
@@ -264,74 +261,130 @@ export const RecommendationsPage: React.FC = () => {
         />
       </div>
 
-      {/* Explanation Banner */}
-      <Card className="mb-6 p-3.5 bg-surface/50 border-surface-border flex items-start gap-3">
-        <Info className="w-4 h-4 text-brand-400 shrink-0 mt-0.5" />
-        <div className="text-xs text-content-secondary leading-relaxed">
-          <strong className="text-content-primary font-semibold">{currentStrategyObj.name} ({currentStrategyObj.code}): </strong>
-          {currentStrategyObj.description}. Every card below highlights exactly why each song was selected for your session.
+      {/* Strategy Explanation Notice */}
+      <div className="mb-8 p-4 rounded-[28px] bg-white/70 dark:bg-slate-900/75 backdrop-blur-xl border border-white/60 dark:border-white/10 shadow-panel flex items-start gap-3 text-ink dark:text-slate-100">
+        <Info className="w-4 h-4 text-ultramarine shrink-0 mt-0.5" />
+        <div className="text-xs text-ink/75 dark:text-slate-300 leading-relaxed">
+          <strong className="text-ink dark:text-white font-semibold">{currentStrategyObj.name} ({currentStrategyObj.code}): </strong>
+          {currentStrategyObj.description}. Use the drawer trigger on each card to inspect exact mathematical component weights.
         </div>
-      </Card>
+      </div>
 
-      {/* Recommendations Grid */}
+      {/* Recommendations Content */}
       {isLoading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
-          {Array.from({ length: 10 }).map((_, idx) => (
-            <div
-              key={idx}
-              className="h-64 rounded-card bg-surface/50 border border-surface-border animate-pulse"
-            />
-          ))}
+        <div className="space-y-4">
+          <div className="flex flex-col gap-3">
+            {Array.from({ length: 6 }).map((_, idx) => (
+              <div
+                key={idx}
+                className="h-16 rounded-[20px] bg-white/50 border border-white/60 animate-pulse"
+              />
+            ))}
+          </div>
+          <p className="text-center text-xs text-ink/50 font-medium pt-2">
+            Scoring candidates via {currentStrategyObj.name} ({currentStrategyObj.code})...
+          </p>
         </div>
       ) : error ? (
-        <Card className="p-8 text-center bg-surface/40 border-surface-border">
-          <div className="w-12 h-12 rounded-full bg-vibe-rose/10 border border-vibe-rose/20 text-vibe-rose flex items-center justify-center mx-auto mb-3">
+        <div className="p-8 rounded-[28px] text-center bg-white/75 backdrop-blur-xl border border-white/70 shadow-panel">
+          <div className="w-12 h-12 rounded-full bg-tangerine/10 text-tangerine flex items-center justify-center mx-auto mb-3">
             <Zap className="w-6 h-6" />
           </div>
-          <h3 className="text-base font-bold text-content-primary mb-1">Recommendation Generation Notice</h3>
-          <p className="text-xs text-content-secondary max-w-md mx-auto mb-4">{error}</p>
+          <h3 className="font-display text-scale-16 font-bold text-ink mb-1">
+            Recommendation notice
+          </h3>
+          <p className="text-xs text-ink/65 max-w-md mx-auto mb-4">{error}</p>
           <Button variant="secondary" size="sm" onClick={fetchRecommendations}>
-            Try Again
+            Try again
           </Button>
-        </Card>
+        </div>
       ) : recommendations.length === 0 ? (
-        <Card className="p-8 text-center bg-surface/40 border-surface-border">
-          <div className="w-12 h-12 rounded-full bg-surface border border-surface-border text-brand-400 flex items-center justify-center mx-auto mb-3">
+        <div className="p-8 rounded-[28px] text-center bg-white/75 backdrop-blur-xl border border-white/70 shadow-panel">
+          <div className="w-12 h-12 rounded-full bg-ultramarine/10 text-ultramarine flex items-center justify-center mx-auto mb-3">
             <Sparkles className="w-6 h-6" />
           </div>
-          <h3 className="text-base font-bold text-content-primary mb-1">No Recommendations Found</h3>
-          <p className="text-xs text-content-secondary max-w-md mx-auto mb-4">
-            Try switching to another strategy (like Hybrid Personalization or Popularity) or selecting a different listening mood.
+          <h3 className="font-display text-scale-16 font-bold text-ink mb-1">
+            No recommendations found
+          </h3>
+          <p className="text-xs text-ink/65 max-w-md mx-auto mb-4">
+            Try switching to another strategy (like Hybrid Personalization) or selecting a different listening mood.
           </p>
           <Button variant="secondary" size="sm" onClick={() => setActiveStrategy('hybrid')}>
-            Switch to Hybrid Personalization
+            Switch to hybrid personalization
           </Button>
-        </Card>
+        </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
-          {recommendations.map((rec, index) => {
-            const isActive = currentTrack?.id === rec.song.id;
-            const handleRecPlay = () => {
-              const recSongs = recommendations.map((r) => r.song);
-              setQueue(recSongs, index, {
-                recommendationRequestId: recRequestId || undefined,
-                recommendationStrategy: activeStrategy,
-                recommendationPosition: index + 1,
-              });
-            };
+        <div className="space-y-8">
+          {/* Featured Top Recommendation (Large Card with edge-to-edge artwork) */}
+          {featuredRec && (
+            <div>
+              <div className="flex items-center justify-between mb-3 px-0.5">
+                <span className="text-xs font-semibold text-ink/60">
+                  Top algorithmic match
+                </span>
+                <span className="text-xs font-semibold text-ultramarine">
+                  Rank #1
+                </span>
+              </div>
+              <div className="max-w-md">
+                <RecommendationCard
+                  recItem={featuredRec}
+                  isActive={currentTrack?.id === featuredRec.song.id}
+                  isPlaying={currentTrack?.id === featuredRec.song.id && isPlaying}
+                  onPlay={() => {
+                    const recSongs = recommendations.map((r) => r.song);
+                    setQueue(recSongs, 0, {
+                      recommendationRequestId: recRequestId || undefined,
+                      recommendationStrategy: activeStrategy,
+                      recommendationPosition: 1,
+                    });
+                  }}
+                  className="w-full"
+                />
+              </div>
+            </div>
+          )}
 
-            return (
-              <RecommendationCard
-                key={`${rec.song.id}-${index}`}
-                recItem={rec}
-                isActive={isActive}
-                isPlaying={isActive && isPlaying}
-                onPlay={handleRecPlay}
-                onClick={handleRecPlay}
-                className="w-full min-w-0 max-w-none"
-              />
-            );
-          })}
+          {/* Subsequent Recommendations: Song List as Elegant Rows */}
+          {listRecs.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-3 px-0.5">
+                <span className="text-xs font-semibold text-ink/60">
+                  Subsequent recommendations
+                </span>
+                <span className="text-xs text-ink/50">
+                  {listRecs.length} tracks
+                </span>
+              </div>
+              <div className="flex flex-col gap-2.5">
+                {listRecs.map((rec, index) => {
+                  const actualIndex = index + 1;
+                  const isActive = currentTrack?.id === rec.song.id;
+                  const handleRecPlay = () => {
+                    const recSongs = recommendations.map((r) => r.song);
+                    setQueue(recSongs, actualIndex, {
+                      recommendationRequestId: recRequestId || undefined,
+                      recommendationStrategy: activeStrategy,
+                      recommendationPosition: actualIndex + 1,
+                    });
+                  };
+
+                  return (
+                    <SongCard
+                      key={`${rec.song.id}-${actualIndex}`}
+                      track={rec.song}
+                      reason={rec.reason}
+                      isActive={isActive}
+                      isPlaying={isActive && isPlaying}
+                      onPlay={handleRecPlay}
+                      onClick={handleRecPlay}
+                      variant="row"
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </PageContainer>

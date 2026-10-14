@@ -65,14 +65,14 @@ export const FeaturedTrackHero: React.FC<FeaturedTrackHeroProps> = ({
       <div
         onClick={onPlay}
         className={cn(
-          'relative overflow-hidden rounded-2xl bg-surface border border-surface-border p-3.5 sm:p-5 transition-all duration-300 hover:border-brand-500/35 cursor-pointer group select-none shadow-sm',
-          isActive && 'border-brand-500/40 ring-1 ring-brand-500/20',
+          'relative overflow-hidden rounded-[28px] bg-white/75 dark:bg-slate-900/75 hover:bg-white/90 dark:hover:bg-slate-800/90 backdrop-blur-xl border border-white/70 dark:border-white/10 p-4 sm:p-6 transition-all duration-300 shadow-panel cursor-pointer group select-none text-ink dark:text-slate-100',
+          isActive && 'ring-2 ring-ultramarine ring-offset-2 ring-offset-fog dark:ring-offset-slate-950',
           className
         )}
       >
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 sm:gap-5">
-          {/* Compact Artwork */}
-          <div className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 shrink-0 rounded-xl overflow-hidden bg-surface-secondary border border-surface-border shadow-md">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+          {/* Artwork with 20px radius */}
+          <div className="relative w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 shrink-0 rounded-[20px] overflow-hidden bg-black/5 shadow-sm">
             {track.artworkUrl ? (
               <img
                 src={track.artworkUrl}
@@ -81,18 +81,18 @@ export const FeaturedTrackHero: React.FC<FeaturedTrackHeroProps> = ({
                 loading="eager"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-brand-400">
-                <Disc className={cn('w-10 h-10', isActive && isPlaying && 'animate-spin')} style={{ animationDuration: '6s' }} />
+              <div className="w-full h-full flex items-center justify-center text-ultramarine">
+                <Disc className={cn('w-12 h-12', isActive && isPlaying && 'animate-spin')} style={{ animationDuration: '6s' }} />
               </div>
             )}
 
             {/* Pulsing indicator when active */}
             {isActive && isPlaying && (
-              <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center">
+              <div className="absolute inset-0 bg-ultramarine/30 backdrop-blur-[1px] flex items-center justify-center">
                 <div className="flex items-center gap-1">
-                  <span className="w-1 h-4 bg-brand-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-1 h-6 bg-brand-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-1 h-3 bg-brand-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <span className="w-1 h-4 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-1 h-6 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-1 h-3 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
               </div>
             )}
@@ -101,29 +101,29 @@ export const FeaturedTrackHero: React.FC<FeaturedTrackHeroProps> = ({
           {/* Details & Playback Action */}
           <div className="min-w-0 flex-1 w-full flex flex-col justify-between py-0.5">
             <div>
-              {/* Contextual Tag */}
-              <div className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wider uppercase text-brand-400 mb-1">
-                <Sparkles className="w-3 h-3 text-brand-400" />
-                <span>Featured for You</span>
+              {/* Contextual Tag (sentence case) */}
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-ultramarine mb-1.5">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Featured for you</span>
               </div>
 
-              {/* Track Title */}
+              {/* Track Title in confident Bricolage Grotesque */}
               <h2
                 onClick={(e) => {
                   e.stopPropagation();
                   navigate(`/song/${track.id}`);
                 }}
-                className="text-base sm:text-lg md:text-xl font-bold text-content-primary hover:text-brand-300 transition-colors truncate tracking-tight"
+                className="font-display text-scale-20 sm:text-scale-28 font-bold text-ink hover:text-ultramarine transition-colors truncate tracking-tight"
                 title={track.title}
               >
                 {track.title}
               </h2>
 
               {/* Artist Name */}
-              <p className="text-xs sm:text-sm text-content-secondary mt-0.5 truncate font-medium">
+              <p className="text-scale-16 text-ink/65 mt-1 truncate font-medium">
                 {track.artistName}
                 {track.albumTitle && (
-                  <span className="text-content-muted font-normal">
+                  <span className="text-ink/40 font-normal">
                     {' '}• {track.albumTitle}
                   </span>
                 )}
@@ -131,28 +131,55 @@ export const FeaturedTrackHero: React.FC<FeaturedTrackHeroProps> = ({
             </div>
 
             {/* Actions Bar */}
-            <div className="flex items-center gap-2.5 mt-3 sm:mt-4 pt-1">
+            <div className="flex items-center gap-2.5 mt-4 pt-1">
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   onPlay();
                 }}
-                className="h-9 sm:h-10 px-4 sm:px-5 rounded-full bg-brand-500 hover:bg-brand-600 text-white font-semibold text-xs flex items-center gap-2 shadow-sm transition-transform active:scale-95"
+                className="h-10 px-5 rounded-full bg-ultramarine hover:bg-ultramarine-hover text-white font-semibold text-scale-14 flex items-center gap-2 shadow-sm transition-transform active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-ultramarine"
                 aria-label={isActive && isPlaying ? 'Pause featured track' : 'Play featured track'}
               >
                 {isActive && isPlaying ? (
                   <>
-                    <Pause className="w-3.5 h-3.5 fill-white" />
+                    <Pause className="w-4 h-4 fill-white" />
                     <span>Pause</span>
                   </>
                 ) : (
                   <>
-                    <Play className="w-3.5 h-3.5 fill-white ml-0.5" />
-                    <span>Play Now</span>
+                    <Play className="w-4 h-4 fill-white ml-0.5" />
+                    <span>Play now</span>
                   </>
                 )}
               </button>
+
+              {isAuthenticated && (
+                <button
+                  type="button"
+                  onClick={handleLike}
+                  className="w-10 h-10 rounded-full bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 text-ink dark:text-slate-100 border border-white/80 dark:border-white/10 shadow-subtle flex items-center justify-center transition-transform active:scale-95"
+                  aria-label={isLiked ? 'Unlike song' : 'Like song'}
+                >
+                  <Heart
+                    className={cn(
+                      'w-4 h-4 transition-colors',
+                      isLiked ? 'text-tangerine fill-tangerine' : 'text-ink/50 dark:text-slate-400'
+                    )}
+                  />
+                </button>
+              )}
+
+              {isAuthenticated && (
+                <button
+                  type="button"
+                  onClick={handlePlaylist}
+                  className="w-10 h-10 rounded-full bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 text-ink dark:text-slate-100 border border-white/80 dark:border-white/10 shadow-subtle flex items-center justify-center transition-transform active:scale-95"
+                  aria-label="Add to playlist"
+                >
+                  <ListPlus className="w-4 h-4 text-ink/60 dark:text-slate-400" />
+                </button>
+              )}
 
               <button
                 type="button"
@@ -160,39 +187,11 @@ export const FeaturedTrackHero: React.FC<FeaturedTrackHeroProps> = ({
                   e.stopPropagation();
                   navigate(`/song/${track.id}`);
                 }}
-                className="h-9 sm:h-10 px-3.5 rounded-full bg-surface-secondary hover:bg-surface-hover border border-surface-border text-content-secondary hover:text-content-primary text-xs font-medium flex items-center gap-1.5 transition-colors"
-                title="View track details"
+                className="w-10 h-10 rounded-full bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 text-ink dark:text-slate-100 border border-white/80 dark:border-white/10 shadow-subtle flex items-center justify-center transition-transform active:scale-95 ml-auto"
+                aria-label="Track information"
               >
-                <Info className="w-3.5 h-3.5" />
-                <span>Details</span>
+                <Info className="w-4 h-4 text-ink/50 dark:text-slate-400" />
               </button>
-
-              {isAuthenticated && (
-                <>
-                  <button
-                    type="button"
-                    onClick={handleLike}
-                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-surface-secondary hover:bg-surface-hover border border-surface-border flex items-center justify-center text-content-secondary hover:text-content-primary transition-colors active:scale-95 ml-auto sm:ml-0"
-                    aria-label={isLiked ? 'Unlike song' : 'Like song'}
-                  >
-                    <Heart
-                      className={cn(
-                        'w-3.5 h-3.5 transition-colors',
-                        isLiked ? 'text-brand-400 fill-brand-400' : 'text-content-secondary'
-                      )}
-                    />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handlePlaylist}
-                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-surface-secondary hover:bg-surface-hover border border-surface-border flex items-center justify-center text-content-secondary hover:text-content-primary transition-colors active:scale-95"
-                    aria-label="Add to playlist"
-                  >
-                    <ListPlus className="w-3.5 h-3.5" />
-                  </button>
-                </>
-              )}
             </div>
           </div>
         </div>
@@ -208,5 +207,3 @@ export const FeaturedTrackHero: React.FC<FeaturedTrackHeroProps> = ({
     </>
   );
 };
-
-export default FeaturedTrackHero;

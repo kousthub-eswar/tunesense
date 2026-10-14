@@ -1,10 +1,10 @@
-export type NavTabId = 'home' | 'discover' | 'library' | 'profile';
+export type NavTabId = 'home' | 'discover' | 'photo-music' | 'library' | 'profile';
 
 export interface NavItem {
   id: NavTabId;
   label: string;
   path: string;
-  iconName: 'Home' | 'Compass' | 'Library' | 'User';
+  iconName: 'Home' | 'Compass' | 'Camera' | 'Library' | 'User';
 }
 
 export interface HealthResponse {
@@ -95,6 +95,7 @@ export interface SafeUser {
   id: string;
   name: string;
   email: string;
+  avatarUrl?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -411,4 +412,138 @@ export interface HistoryItem {
   playedAt: string;
   eventType: string;
   completionPercent?: number;
+}
+
+// ==========================================
+// COUNTERFACTUAL WHAT-IF RECOMMENDATION LAB INTERFACES
+// ==========================================
+
+export interface CounterfactualWeightsDto {
+  content: number;
+  behaviour: number;
+  context: number;
+  collaborative: number;
+  popularity: number;
+  novelty: number;
+  mood?: number;
+}
+
+export type RankShiftStatus =
+  | 'entered_top_k'
+  | 'left_top_k'
+  | 'moved_up'
+  | 'moved_down'
+  | 'unchanged'
+  | 'outside_top_k';
+
+export interface ScoreComponentContribution {
+  baseline: number;
+  counterfactual: number;
+  delta: number;
+  weightBaseline: number;
+  weightCounterfactual: number;
+  weightDelta: number;
+  scoreImpact: number;
+}
+
+export interface DominantDriverDto {
+  component: string;
+  weightDelta: number;
+  componentScore: number;
+  scoreImpact: number;
+  direction: 'helped' | 'hurt' | 'neutral';
+  description: string;
+}
+
+export interface RankShiftItemDto {
+  song: TrackItem;
+  baselineRank: number | null;
+  counterfactualRank: number | null;
+  rankDelta: number;
+  status: RankShiftStatus;
+  baselineScore: number;
+  counterfactualScore: number;
+  scoreDelta: number;
+  baselineComponents: Record<string, number>;
+  counterfactualComponents: Record<string, number>;
+  componentDeltas: Record<string, number>;
+  componentContributions?: Record<string, ScoreComponentContribution>;
+  baselineReason: string;
+  counterfactualReason: string;
+  dominantDriver: DominantDriverDto;
+  explanation: string;
+}
+
+export interface CounterfactualAnalysisSummaryDto {
+  totalCandidatesEvaluated: number;
+  k: number;
+  enteredTopK: number;
+  leftTopK: number;
+  rankDisplacementSum: number;
+  meanRankDisplacement: number;
+  rankBiasedOverlap: number;
+  topKOverlapCount: number;
+  isIdentical: boolean;
+}
+
+export interface SensitivityDimensionDto {
+  dimension: string;
+  currentWeight: number;
+  plusStepRankDelta: number;
+  minusStepRankDelta: number;
+  gradient: number;
+  sensitivityRating: 'high' | 'medium' | 'low';
+}
+
+export interface MinimalChangeRecourseDto {
+  targetSongId: string;
+  targetSongTitle: string;
+  targetRank: number;
+  achievable: boolean;
+  currentRank: number | null;
+  minimalWeights?: CounterfactualWeightsDto;
+  weightDeltas?: Record<string, number>;
+  l1Distance?: number;
+  explanation: string;
+}
+
+export interface CounterfactualSimulationRequestDto {
+  weights?: Partial<CounterfactualWeightsDto>;
+  context?: {
+    timeOfDay?: 'morning' | 'afternoon' | 'evening' | 'late_night';
+    dayOfWeek?: 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+    mood?: string;
+  };
+  mood?: string;
+  limit?: number;
+  applyDiversity?: boolean;
+  targetSongId?: string;
+  targetRank?: number;
+  applyConfidenceDampening?: boolean;
+}
+
+export interface CounterfactualSimulationResponseDto {
+  experimentId: string;
+  algorithmVersion: string;
+  generatedAt: string;
+  baselineWeights: CounterfactualWeightsDto;
+  counterfactualWeights: CounterfactualWeightsDto;
+  normalizedBaselineWeights: CounterfactualWeightsDto;
+  normalizedCounterfactualWeights: CounterfactualWeightsDto;
+  baselineContext: {
+    timeOfDay: string;
+    dayOfWeek: string;
+    mood?: string;
+  };
+  counterfactualContext: {
+    timeOfDay: string;
+    dayOfWeek: string;
+    mood?: string;
+  };
+  baselineRecommendations: any[];
+  counterfactualRecommendations: any[];
+  rankShifts: RankShiftItemDto[];
+  summary: CounterfactualAnalysisSummaryDto;
+  sensitivityAnalysis?: SensitivityDimensionDto[];
+  recourseResult?: MinimalChangeRecourseDto;
 }

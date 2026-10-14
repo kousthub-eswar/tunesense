@@ -18,7 +18,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
   ...props
 }) => {
   const baseStyles =
-    'inline-flex items-center justify-center rounded-full transition-all duration-200 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-main disabled:opacity-40 disabled:pointer-events-none select-none';
+    'inline-flex items-center justify-center rounded-full transition-all duration-200 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-ultramarine focus-visible:ring-offset-2 focus-visible:ring-offset-fog dark:focus-visible:ring-offset-slate-950 disabled:opacity-40 disabled:pointer-events-none select-none';
 
   const sizeStyles = {
     sm: 'w-8 h-8 text-sm min-w-[32px] min-h-[32px]',
@@ -27,9 +27,9 @@ export const IconButton: React.FC<IconButtonProps> = ({
   };
 
   const variantStyles = {
-    primary: 'bg-brand-500 text-white hover:bg-brand-600 shadow-sm',
-    secondary: 'bg-surface hover:bg-surface-hover text-content-primary border border-surface-border',
-    ghost: 'bg-transparent hover:bg-white/10 text-content-secondary hover:text-content-primary',
+    primary: 'bg-ultramarine text-white hover:bg-ultramarine-hover shadow-sm',
+    secondary: 'bg-white/70 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 text-ink dark:text-slate-100 border border-white/60 dark:border-white/10 shadow-subtle',
+    ghost: 'bg-transparent hover:bg-black/5 dark:hover:bg-white/5 text-ink/70 dark:text-slate-300 hover:text-ink dark:hover:text-white',
   };
 
   return (

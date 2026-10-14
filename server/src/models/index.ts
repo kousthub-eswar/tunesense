@@ -11,3 +11,4 @@ export { UserSongInteraction } from './UserSongInteraction.js';
 export { UserSimilarity } from './UserSimilarity.js';
 export { UserLibrary } from './UserLibrary.js';
 export { Playlist } from './Playlist.js';
+export { CounterfactualExperimentLog } from './CounterfactualExperimentLog.js';

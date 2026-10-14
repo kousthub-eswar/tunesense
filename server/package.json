@@ -13,7 +13,9 @@
     "verify:stage12": "tsx src/utils/verifyStage12.ts",
     "verify:stage13": "tsx src/utils/verifyStage13.ts",
     "verify:stage14": "tsx src/utils/verifyStage14.ts",
-    "verify:hardening": "tsx src/utils/verifyHardening.ts"
+    "verify:hardening": "tsx src/utils/verifyHardening.ts",
+    "verify:vibe": "tsx src/utils/verifyPhotoMusic.ts",
+    "verify:gps": "tsx src/utils/verifyEmotionalGps.ts"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",
