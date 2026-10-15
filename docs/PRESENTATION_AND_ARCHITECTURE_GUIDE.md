@@ -277,3 +277,18 @@ If your teacher asks you: *"Where in your code are the users stored? Where are t
 ### Q4: *"How do you guarantee that a 5-step journey never repeats an artist or song?"*
 > **Answer:**  
 > *"In `JourneyRecommendationService.ts`, we maintain two stateful Sets: `usedSongIds` and `usedArtists`. At each step $i$, candidate tracks are sorted by distance to the waypoint. The algorithm selects the first candidate where `!usedSongIds.has(song.id) && !usedArtists.has(artist.name)`. Once selected, their IDs are added to the Sets, guaranteeing 5 completely distinct tracks and 5 distinct artists."*
+
+---
+
+## 7. Demo User Personas & Listening Patterns (For Live Presentation)
+
+Every demo user shares the password: **`DemoPassword123!`**  
+All 4 personas can be selected with **1 click** directly on the [Login Page](http://localhost:5173/login).
+
+| Persona Name | Email | Primary Genres & Energy | Listening Pattern / Behavior | Algorithmic Concept Demonstrated |
+| :--- | :--- | :--- | :--- | :--- |
+| **Alice Parker** | `alice@demo.tunesense.ai` | Electronic, Ambient <br>*(Energy: 0.75, Mood: Energetic)* | Heavy evening listener of synthwave and ambient electronic; completed multiple sessions over the past 8 days. | **Content-Based Filtering (R1) & Recency Decay (R2)**: Feed prioritizes high-energy synthwave with time-decay weighting. |
+| **Bob Martinez** | `bob@demo.tunesense.ai` | Electronic, Ambient, Synthwave <br>*(Energy: 0.70, Mood: Energetic)* | Shares ~80% overlap with Alice on core electronic tracks, but also listened to *'Electric Sunset'*. | **User-User Collaborative Filtering (R5)**: Proves that Bob's tracks are cross-recommended to Alice based on cosine taste similarity. |
+| **Charlie Vance** | `charlie@demo.tunesense.ai` | Rock, Hard Rock <br>*(Energy: 0.90, Mood: Energetic)* | Pure rock & heavy guitar enthusiast. **Dislikes Electronic & Screamo**. | **Negative Constraint Filtering & Anti-Popularity Bias**: Proves viral electronic tracks are strictly suppressed from Charlie's feed. |
+| **Dana Sterling** | `dana@demo.tunesense.ai` | Classical, Ambient <br>*(Energy: 0.30, Mood: Calm)* | **Brand new user with 0 historical listening events**. | **Cold-Start Fallback (R0 / R1)**: Proves the system handles zero-history users smoothly by falling back to onboarding questionnaire seeds without crashing. |
+

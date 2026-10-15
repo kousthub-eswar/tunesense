@@ -179,19 +179,76 @@ export const LoginPage: React.FC = () => {
               </Button>
             </div>
 
-            {/* Quick-fill Demo Account Button */}
-            <div className="pt-3 border-t border-surface-border/60 text-center">
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail('alice@demo.tunesense.ai');
-                  setPassword('DemoPassword123!');
-                  setFieldErrors({});
-                }}
-                className="w-full py-2 px-3 rounded-xl bg-surface-secondary/70 hover:bg-surface-secondary border border-surface-border/80 text-[11px] text-content-secondary hover:text-brand-300 font-medium transition-colors flex items-center justify-center gap-1.5"
-              >
-                <span>Demo Sign-In: <strong className="text-brand-400 font-mono">alice@demo.tunesense.ai</strong></span>
-              </button>
+            {/* Quick-fill Demo Account Personas */}
+            <div className="pt-4 border-t border-surface-border/60">
+              <p className="text-[11px] font-semibold text-content-muted uppercase tracking-wider mb-2.5 text-center">
+                Select Demo Persona to Present
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail('alice@demo.tunesense.ai');
+                    setPassword('DemoPassword123!');
+                    setFieldErrors({});
+                  }}
+                  className="p-2 text-left rounded-xl bg-surface-secondary/60 hover:bg-surface-secondary border border-surface-border/70 hover:border-brand-500/50 transition-all text-xs group"
+                >
+                  <div className="font-semibold text-content-primary group-hover:text-brand-300 flex items-center justify-between">
+                    <span>Alice Parker</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-brand-500/20 text-brand-300 font-mono">EDM</span>
+                  </div>
+                  <div className="text-[10px] text-content-muted mt-0.5">Content-Based / Recency</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail('bob@demo.tunesense.ai');
+                    setPassword('DemoPassword123!');
+                    setFieldErrors({});
+                  }}
+                  className="p-2 text-left rounded-xl bg-surface-secondary/60 hover:bg-surface-secondary border border-surface-border/70 hover:border-accent-purple/50 transition-all text-xs group"
+                >
+                  <div className="font-semibold text-content-primary group-hover:text-accent-purple flex items-center justify-between">
+                    <span>Bob Martinez</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono">CF</span>
+                  </div>
+                  <div className="text-[10px] text-content-muted mt-0.5">Collaborative Filter Peer</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail('charlie@demo.tunesense.ai');
+                    setPassword('DemoPassword123!');
+                    setFieldErrors({});
+                  }}
+                  className="p-2 text-left rounded-xl bg-surface-secondary/60 hover:bg-surface-secondary border border-surface-border/70 hover:border-accent-amber/50 transition-all text-xs group"
+                >
+                  <div className="font-semibold text-content-primary group-hover:text-accent-amber flex items-center justify-between">
+                    <span>Charlie Vance</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono">Rock</span>
+                  </div>
+                  <div className="text-[10px] text-content-muted mt-0.5">Negative Filter (Anti-EDM)</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail('dana@demo.tunesense.ai');
+                    setPassword('DemoPassword123!');
+                    setFieldErrors({});
+                  }}
+                  className="p-2 text-left rounded-xl bg-surface-secondary/60 hover:bg-surface-secondary border border-surface-border/70 hover:border-accent-emerald/50 transition-all text-xs group"
+                >
+                  <div className="font-semibold text-content-primary group-hover:text-accent-emerald flex items-center justify-between">
+                    <span>Dana Sterling</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">Cold</span>
+                  </div>
+                  <div className="text-[10px] text-content-muted mt-0.5">Cold-Start / Classical Calm</div>
+                </button>
+              </div>
             </div>
           </form>
         </Card>
