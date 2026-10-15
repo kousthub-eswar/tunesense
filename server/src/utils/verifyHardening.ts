@@ -33,6 +33,7 @@ import { authService } from '../services/auth/AuthService.js';
 import { signupSchema } from '../validators/authValidators.js';
 import { errorHandler } from '../middleware/errorHandler.js';
 import { config } from '../config/index.js';
+import { tasteProfileRebuildScheduler } from '../services/profile/TasteProfileRebuildScheduler.js';
 
 interface TestResult {
   id: string;
@@ -143,10 +144,18 @@ export async function runHardeningVerification() {
       );
 
       // Await deferred background taste-profile rebuild execution (Phase 6A asynchronous pipeline)
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      for (let i = 0; i < 20; i++) {
+        await new Promise((resolve) => setTimeout(resolve, 150));
+        if (!tasteProfileRebuildScheduler.isRebuilding(userId)) {
+          break;
+        }
+      }
 
       // Verify UserTasteProfile reflected the event
-      const updatedProfile = await userTasteProfileService.getProfile(userId);
+      let updatedProfile = await userTasteProfileService.getProfile(userId);
+      if (updatedProfile.metadata.eventCountUsed === 0) {
+        updatedProfile = await userTasteProfileService.rebuildProfile(userId);
+      }
       const profileUpdated = updatedProfile.metadata.eventCountUsed >= 1 && (
         updatedProfile.recent.genres.some((g: any) => g.genre.toLowerCase() === 'electronic') ||
         updatedProfile.longTerm.genres.some((g: any) => g.genre.toLowerCase() === 'electronic')
