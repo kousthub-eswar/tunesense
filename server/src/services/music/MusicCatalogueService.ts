@@ -267,7 +267,7 @@ export class MusicCatalogueService {
           albumId: albumDoc?._id,
           genres: providerTrack.genres,
           languages: providerTrack.languages,
-          durationSeconds: providerTrack.durationSeconds,
+          durationSeconds: Math.max(providerTrack.durationSeconds || 180, 1),
           artworkUrl: providerTrack.artworkUrl,
           provider: providerTrack.provider,
           providerTrackId: providerTrack.providerTrackId,
@@ -418,10 +418,15 @@ export class MusicCatalogueService {
   public async getPopularTracks(limit = 20): Promise<CatalogueTrackDto[]> {
     try {
       const rawTracks = await this.provider.getPopularTracks(limit);
-      return await Promise.all(rawTracks.map((track) => this.persistTrack(track)));
+      if (rawTracks && rawTracks.length > 0) {
+        return await Promise.all(rawTracks.map((track) => this.persistTrack(track)));
+      }
     } catch (providerError) {
-      const dbState = getDatabaseState();
-      // If MongoDB is connected and genuinely contains cached songs, fall back to them
+      console.warn('[MusicCatalogueService] Upstream provider error in getPopularTracks:', providerError);
+    }
+
+    const dbState = getDatabaseState();
+    // If MongoDB is connected and genuinely contains cached songs, fall back to them
       if (dbState.isConnected) {
         try {
           const cachedSongs = await Song.find()
@@ -460,7 +465,6 @@ export class MusicCatalogueService {
       // Standalone/Offline mode: return fallback demo catalogue
       console.warn('[MusicCatalogueService] Upstream provider and Mongo cache unavailable; returning fallback demo catalogue.');
       return FALLBACK_CATALOGUE_TRACKS.slice(0, limit);
-    }
   }
 
   /**

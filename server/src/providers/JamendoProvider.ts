@@ -211,12 +211,20 @@ export class JamendoProvider implements IMusicProvider {
    * Retrieves popular tracks for browse/discover cold start.
    */
   public async getPopularTracks(limit = 20): Promise<ProviderTrack[]> {
-    const data = await this.fetchJamendo<RawJamendoTrack>('/tracks/', {
+    let data = await this.fetchJamendo<RawJamendoTrack>('/tracks/', {
       limit: Math.min(Math.max(limit, 1), 50),
       include: 'musicinfo',
       audioformat: 'mp32',
-      order: 'popularity_total',
+      order: 'popularity_month',
     });
+
+    if (!data.results || data.results.length === 0) {
+      data = await this.fetchJamendo<RawJamendoTrack>('/tracks/', {
+        limit: Math.min(Math.max(limit, 1), 50),
+        audioformat: 'mp32',
+        order: 'buzzrate',
+      });
+    }
 
     return data.results.map((raw) => this.normalizeTrack(raw));
   }
