@@ -160,7 +160,7 @@ export class JamendoProvider implements IMusicProvider {
       };
     }
 
-    const data = await this.fetchJamendo<RawJamendoTrack>('/tracks/', {
+    let data = await this.fetchJamendo<RawJamendoTrack>('/tracks/', {
       namesearch: cleanQuery,
       limit: Math.min(Math.max(limit, 1), 50),
       offset: Math.max(offset, 0),
@@ -168,6 +168,15 @@ export class JamendoProvider implements IMusicProvider {
       audioformat: 'mp32',
       order: 'relevance',
     });
+
+    if (!data.results || data.results.length === 0) {
+      data = await this.fetchJamendo<RawJamendoTrack>('/tracks/', {
+        fuzzytags: cleanQuery,
+        limit: Math.min(Math.max(limit, 1), 50),
+        offset: Math.max(offset, 0),
+        include: 'musicinfo',
+      });
+    }
 
     const tracks = data.results.map((raw) => this.normalizeTrack(raw));
 
